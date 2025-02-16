@@ -3,7 +3,7 @@ import '../../style/style.less'
 import { NTag, NInput, NSpace, NInputGroup } from 'naive-ui'
 import { createAlova } from 'alova';
 import adapterFetch from 'alova/fetch';
-import { defineProps, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const alovaInstance = createAlova({
     requestAdapter: adapterFetch(),
@@ -55,7 +55,7 @@ const fetchStatus = async () => {
 fetchStatus()
 
 const statusText = ref("查询中...")
-const statusicon = ref("https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg")
+const statusicon = ref("/vite.svg")
 
 watch(
     () => status.value,
@@ -66,14 +66,14 @@ watch(
                 if (status.value.icon != null) {
                     statusicon.value = status.value.icon
                 } else {
-                    statusicon.value = "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                    statusicon.value = "/vite.svg"
                 }
             } else {
-                statusicon.value = "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                statusicon.value = "/vite.svg"
             }
         } else {
             statusText.value = "离线"
-            statusicon.value = "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            statusicon.value = "/vite.svg"
         }
     }
 )
@@ -83,19 +83,18 @@ watch(
     <div class="card">
         <div class="card-cover">
             <div class="card-type" v-text="info.type"></div>
-            <img src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg">
+            <img src="/vite.svg">
         </div>
         <div class="card-split">
             <div class="card-icon">
                 <img :src="statusicon">
             </div>
             <div class="card-info">
-                <h1 style="line-height: 0;" v-text="info.name"></h1>
+                <h1 class="title" v-text="info.name"></h1>
                 <div>
                     <n-input-group>
                         <NTag size="small" type="primary" v-text="statusText"></NTag>
-                        <n-input placeholder="Error！QAQ" :value="info.ip" readonly="true"
-                            size="tiny" />
+                        <n-input placeholder="Error！QAQ" :value="info.ip" readonly="true" size="tiny" />
                     </n-input-group>
                 </div>
             </div>
@@ -154,6 +153,17 @@ watch(
         max-height: 40%;
         display: flex;
 
+        .card-info {
+            .title {
+                margin: 0;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+            }
+        }
+
         .card-icon {
             overflow: hidden;
             box-sizing: border-box;
@@ -175,5 +185,4 @@ watch(
     .card-tags {
         margin-left: 0.6rem;
     }
-}
-</style>
+}</style>

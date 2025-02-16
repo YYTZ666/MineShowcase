@@ -44,17 +44,17 @@ fetchData()
     <div class="grid-list">
         <ServerCard
             v-for="server in serverlist"
-            :key="server.id" 
-            :name="server.name" 
-            :type="server.type" 
-            :version="server.version" 
-            :desc="server.desc" 
-            :link="server.link" 
-            :ip="server.ip" 
-            :is_member="server.is_member" 
-            :is_hide="server.is_hide" 
-            :auth_mode="server.auth_mode" 
-            :tags="server.tags" 
+            :key="server.id"
+            :name="server.name"
+            :type="server.type"
+            :version="server.version"
+            :desc="server.desc"
+            :link="server.link"
+            :ip="server.ip"
+            :is_member="server.is_member"
+            :is_hide="server.is_hide"
+            :auth_mode="server.auth_mode"
+            :tags="server.tags"
         />
     </div>
 </template>
