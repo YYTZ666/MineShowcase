@@ -1,11 +1,6 @@
-<script setup>
-
-
-</script>
-
 <template>
     <div class="navbar">
-        Nav
+        MineShowcase
     </div>
 </template>
 

@@ -1,11 +1,6 @@
-<script setup>
-
-
-</script>
-
 <template>
     <div class="c_header">
-        Header
+        MineShowcase
     </div>
 </template>
 

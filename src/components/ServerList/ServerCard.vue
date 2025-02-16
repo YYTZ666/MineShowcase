@@ -5,12 +5,8 @@ import '../../style/style.less'
 import { NTag, NInput, NSpace, NInputGroup, useNotification } from 'naive-ui'
 import { createAlova } from 'alova';
 import adapterFetch from 'alova/fetch';
+import vueHook from 'alova/vue';
 import { ref, watch } from 'vue'
-
-const alovaInstance = createAlova({
-    requestAdapter: adapterFetch(),
-    responded: response => response.json()
-});
 
 interface Status {
     online: boolean
@@ -31,6 +27,7 @@ interface Status {
 
 const info = defineProps<{
     name: string
+    id: number
     type: 'JAVA' | 'BEDROCK'
     version: string
     desc: string
@@ -44,6 +41,22 @@ const info = defineProps<{
 
 const status = ref<Status | undefined>(undefined)
 
+
+const alovaInstance = createAlova({
+    requestAdapter: adapterFetch(),
+    id: info.id,
+    statesHook: vueHook,
+    responded: response => response.json()
+});
+
+const getStatus = (ip: string) =>
+    alovaInstance.Get<Status>(`https://v2.mscpo.giize.com/?ip=${ip}`, {
+        cacheFor: {
+            mode: "restore",
+            expire: 60 * 10 * 1000
+        },
+    });
+
 const fetchStatus = async () => {
     try {
         let host = '';
@@ -54,7 +67,7 @@ const fetchStatus = async () => {
             host = `https://v2.mscpo.giize.com/bedrock/?ip=${info.ip}`;
         }
 
-        const response = await alovaInstance.Get<Status>(host);
+        const response = await getStatus(host);
         status.value = response;
     } catch (error) {
         console.error('Request failed:', error);
