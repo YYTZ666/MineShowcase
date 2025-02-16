@@ -55,7 +55,7 @@ const fetchStatus = async () => {
 fetchStatus()
 
 const statusText = ref("查询中...")
-const statusicon = ref("/vite.svg")
+const statusicon = ref("/noicon.svg")
 
 watch(
     () => status.value,
@@ -66,14 +66,14 @@ watch(
                 if (status.value.icon != null) {
                     statusicon.value = status.value.icon
                 } else {
-                    statusicon.value = "/vite.svg"
+                    statusicon.value = "/noicon.svg"
                 }
             } else {
-                statusicon.value = "/vite.svg"
+                statusicon.value = "/noicon.svg"
             }
         } else {
             statusText.value = "离线"
-            statusicon.value = "/vite.svg"
+            statusicon.value = "/noicon.svg"
         }
     }
 )
@@ -83,7 +83,7 @@ watch(
     <div class="card">
         <div class="card-cover">
             <div class="card-type" v-text="info.type"></div>
-            <img src="/vite.svg">
+            <img src="/noimage.svg">
         </div>
         <div class="card-split">
             <div class="card-icon">
@@ -143,9 +143,13 @@ watch(
         }
 
         img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            max-width: 50%;
+            max-height: 50%;
+            object-fit: contain;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     }
 
@@ -185,4 +189,5 @@ watch(
     .card-tags {
         margin-left: 0.6rem;
     }
-}</style>
+}
+</style>

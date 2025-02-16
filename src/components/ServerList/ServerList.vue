@@ -10,25 +10,25 @@ const alovaInstance = createAlova({
 });
 
 interface Info {
-  id: number
-  name: string
-  type: 'JAVA' | 'BEDROCK'
-  version: string
-  desc: string
-  link: string
-  ip: string | null
-  is_member: boolean
-  is_hide: boolean
-  auth_mode: string
-  tags: Array<string>
+    id: number
+    name: string
+    type: 'JAVA' | 'BEDROCK'
+    version: string
+    desc: string
+    link: string
+    ip: string | null
+    is_member: boolean
+    is_hide: boolean
+    auth_mode: string
+    tags: Array<string>
 }
 
 const serverlist = ref<Info[]>([]);
 
 const fetchData = async () => {
     try {
-        const response = await alovaInstance.Get<Info[]>('http://tblstudio.cn:5231/servers/random/?offset=0&limit=10'); 
-        serverlist.value  = response;
+        const response = await alovaInstance.Get<Info[]>('http://tblstudio.cn:5231/servers/random/?offset=0&limit=10');
+        serverlist.value = response;
     } catch (error) {
         console.error('Request  failed:', error);
     }
