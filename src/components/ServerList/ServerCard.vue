@@ -54,7 +54,7 @@ const fetchStatus = async () => {
 
 fetchStatus()
 
-const statusText = ref("查询")
+const statusText = ref("查询中...")
 const statusicon = ref("https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg")
 
 watch(
@@ -63,7 +63,11 @@ watch(
         if (status.value?.online) {
             statusText.value = "在线"
             if (status.value != undefined) {
-                statusicon.value = status.value.icon
+                if (status.value.icon != null) {
+                    statusicon.value = status.value.icon
+                } else {
+                    statusicon.value = "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                }
             } else {
                 statusicon.value = "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
             }
@@ -89,8 +93,8 @@ watch(
                 <h1 style="line-height: 0;" v-text="info.name"></h1>
                 <div>
                     <n-input-group>
-                        <NTag size="small" :style="{ width: '20%' }" type="primary" v-text="statusText"></NTag>
-                        <n-input :style="{ width: '80%' }" placeholder="Error！QAQ" :value="info.ip" readonly="true"
+                        <NTag size="small" type="primary" v-text="statusText"></NTag>
+                        <n-input placeholder="Error！QAQ" :value="info.ip" readonly="true"
                             size="tiny" />
                     </n-input-group>
                 </div>
