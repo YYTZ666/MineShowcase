@@ -58,12 +58,14 @@ fetchStatus()
 
 const statusText = ref("查询中...")
 const statusicon = ref(IMG_noicon)
+const statuscolor = ref({ color: '#747d8c', textColor: '#dfe6e9' })
 
 watch(
     () => status.value,
     () => {
         if (status.value?.online) {
             statusText.value = "在线"
+            statuscolor.value = { color: '#E3F3EB', textColor: '#18A058' }
             if (status.value != undefined) {
                 if (status.value.icon != null) {
                     statusicon.value = status.value.icon
@@ -76,6 +78,7 @@ watch(
         } else {
             statusText.value = "离线"
             statusicon.value = IMG_noicon
+            statuscolor.value = { color: '#747d8c', textColor: '#f1f2f6' }
         }
     }
 )
@@ -95,7 +98,9 @@ watch(
                 <h1 class="title" v-text="info.name"></h1>
                 <div>
                     <n-input-group>
-                        <NTag size="small" type="primary" v-text="statusText"></NTag>
+                        <NTag size="small" :color="statuscolor" v-text="statusText">
+                        </NTag>
+
                         <n-input placeholder="Error！QAQ" :value="info.ip" readonly="true" size="tiny" />
                     </n-input-group>
                 </div>
@@ -103,7 +108,7 @@ watch(
         </div>
         <div class="card-tags">
             <n-space>
-                <n-tag type="success" size="small" :bordered="false" v-for="tag in info.tags" v-text="tag"></n-tag>
+                <n-tag size="small" :bordered="false" v-for="tag in info.tags" v-text="tag"></n-tag>
             </n-space>
         </div>
     </div>
