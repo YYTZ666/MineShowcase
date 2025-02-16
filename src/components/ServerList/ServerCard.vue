@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import IMG_noicon from '../../assets/noicon.svg'
+import IMG_noimage from '../../assets/noimage.svg'
 import '../../style/style.less'
 import { NTag, NInput, NSpace, NInputGroup } from 'naive-ui'
 import { createAlova } from 'alova';
@@ -55,7 +57,7 @@ const fetchStatus = async () => {
 fetchStatus()
 
 const statusText = ref("查询中...")
-const statusicon = ref("/noicon.svg")
+const statusicon = ref(IMG_noicon)
 
 watch(
     () => status.value,
@@ -66,14 +68,14 @@ watch(
                 if (status.value.icon != null) {
                     statusicon.value = status.value.icon
                 } else {
-                    statusicon.value = "/noicon.svg"
+                    statusicon.value = IMG_noicon
                 }
             } else {
-                statusicon.value = "/noicon.svg"
+                statusicon.value = IMG_noicon
             }
         } else {
             statusText.value = "离线"
-            statusicon.value = "/noicon.svg"
+            statusicon.value = IMG_noicon
         }
     }
 )
@@ -83,7 +85,7 @@ watch(
     <div class="card">
         <div class="card-cover">
             <div class="card-type" v-text="info.type"></div>
-            <img src="/noimage.svg">
+            <img :src="IMG_noimage">
         </div>
         <div class="card-split">
             <div class="card-icon">
