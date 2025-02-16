@@ -46,13 +46,20 @@ const status = ref<Status | undefined>(undefined)
 
 const fetchStatus = async () => {
     try {
-        const host = "https://v2.mscpo.giize.com/?ip=" + info.ip
-        const response = await alovaInstance.Get<Status>(host)
-        status.value = response
+        let host = '';
+        // 根据 info.type 动态选择 API 地址
+        if (info.type === 'JAVA') {
+            host = `https://v2.mscpo.giize.com/java/?ip=${info.ip}`;
+        } else if (info.type === 'BEDROCK') {
+            host = `https://v2.mscpo.giize.com/bedrock/?ip=${info.ip}`;
+        }
+
+        const response = await alovaInstance.Get<Status>(host);
+        status.value = response;
     } catch (error) {
-        console.error('Request failed:', error)
+        console.error('Request failed:', error);
     }
-}
+};
 
 fetchStatus()
 
