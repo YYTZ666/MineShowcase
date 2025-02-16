@@ -49,8 +49,8 @@ const alovaInstance = createAlova({
     responded: response => response.json()
 });
 
-const getStatus = (ip: string) =>
-    alovaInstance.Get<Status>(`https://v2.mscpo.giize.com/?ip=${ip}`, {
+const getStatus = (host: string) =>
+    alovaInstance.Get<Status>(host, {
         cacheFor: {
             mode: "restore",
             expire: 60 * 10 * 1000
