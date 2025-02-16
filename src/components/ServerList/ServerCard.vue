@@ -154,19 +154,28 @@ const copyToClipboard = (event: MouseEvent) => {
     width: 100%;
     height: 20rem;
     box-sizing: border-box;
-    border: 1px solid @border-color;
-    border-radius: 3px;
+    border: 2px solid @border-color;
+    border-radius: 8px;
+    background: #fffefa;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        background 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+    }
 
     .card-cover {
         height: 60%;
         overflow: hidden;
         box-sizing: border-box;
         margin: 0.6rem;
-        border: 1px solid @border-color;
+        border: 2px dashed @border-color;
         position: relative;
 
         .card-type {
-            box-sizing: border-box;
             position: absolute;
             height: 1.5rem;
             width: 10rem;
@@ -180,6 +189,7 @@ const copyToClipboard = (event: MouseEvent) => {
             color: #000;
             background-color: rgba(255, 255, 255, 0.7);
             border: 1px solid @border-color;
+            border-radius: 5px;
         }
 
         img {
@@ -196,6 +206,7 @@ const copyToClipboard = (event: MouseEvent) => {
     .card-split {
         max-height: 40%;
         display: flex;
+        align-items: center;
 
         .card-info {
             .title {
@@ -205,6 +216,7 @@ const copyToClipboard = (event: MouseEvent) => {
                 display: -webkit-box;
                 -webkit-line-clamp: 1;
                 -webkit-box-orient: vertical;
+                font-size: 1.2rem;
             }
         }
 
@@ -215,13 +227,19 @@ const copyToClipboard = (event: MouseEvent) => {
             margin-top: 0;
             height: 4rem;
             width: 4rem;
-            border: 1px solid @border-color;
-            border-radius: 2px;
+            border: 2px solid @border-color;
+            border-radius: 50%;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            /* 给头像框加上阴影 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
             img {
-                width: 100%;
-                height: 100%;
+                width: 90%;
+                height: 90%;
                 object-fit: cover;
+                border-radius: 50%;
             }
         }
     }
