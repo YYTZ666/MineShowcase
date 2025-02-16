@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { NNotificationProvider } from 'naive-ui';
 import ServerCard from './ServerCard.vue'
 import { createAlova } from 'alova';
 import adapterFetch from 'alova/fetch';
 import { ref } from 'vue'
-
 const alovaInstance = createAlova({
     requestAdapter: adapterFetch(),
     responded: response => response.json()
@@ -42,20 +42,12 @@ fetchData()
     <h1>ServerList</h1>
     <!-- 创建一个容器，用来包含所有的服务器卡片，并将其布局设置为网格布局 -->
     <div class="grid-list">
-        <ServerCard
-            v-for="server in serverlist"
-            :key="server.id"
-            :name="server.name"
-            :type="server.type"
-            :version="server.version"
-            :desc="server.desc"
-            :link="server.link"
-            :ip="server.ip"
-            :is_member="server.is_member"
-            :is_hide="server.is_hide"
-            :auth_mode="server.auth_mode"
-            :tags="server.tags"
-        />
+        <NNotificationProvider placement="bottom-right">
+            <ServerCard v-for="server in serverlist" :key="server.id" :name="server.name" :type="server.type"
+                :version="server.version" :desc="server.desc" :link="server.link" :ip="server.ip"
+                :is_member="server.is_member" :is_hide="server.is_hide" :auth_mode="server.auth_mode"
+                :tags="server.tags" />
+        </NNotificationProvider>
     </div>
 </template>
 

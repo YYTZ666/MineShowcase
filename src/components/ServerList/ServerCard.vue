@@ -2,7 +2,7 @@
 import IMG_noicon from '../../assets/noicon.svg'
 import IMG_noimage from '../../assets/noimage.svg'
 import '../../style/style.less'
-import { NTag, NInput, NSpace, NInputGroup } from 'naive-ui'
+import { NTag, NInput, NSpace, NInputGroup, useNotification } from 'naive-ui'
 import { createAlova } from 'alova';
 import adapterFetch from 'alova/fetch';
 import { ref, watch } from 'vue'
@@ -12,7 +12,7 @@ const alovaInstance = createAlova({
     responded: response => response.json()
 });
 
-interface status {
+interface Status {
     online: boolean
     players: {
         online: number
@@ -42,47 +42,59 @@ const info = defineProps<{
     tags: Array<string>
 }>()
 
-const status = ref<status>()
+const status = ref<Status | undefined>(undefined)
 
 const fetchStatus = async () => {
     try {
         const host = "https://v2.mscpo.giize.com/?ip=" + info.ip
-        const response = await alovaInstance.Get<status>(host);
-        status.value = response;
+        const response = await alovaInstance.Get<Status>(host)
+        status.value = response
     } catch (error) {
-        console.error('Request  failed:', error);
+        console.error('Request failed:', error)
     }
-};
+}
 
 fetchStatus()
 
 const statusText = ref("查询中...")
-const statusicon = ref(IMG_noicon)
-const statuscolor = ref({ color: '#747d8c', textColor: '#dfe6e9' })
+const statusIcon = ref(IMG_noicon)
+const statusColor = ref({ color: '#747d8c', textColor: '#dfe6e9' })
+const notification = useNotification()
 
-watch(
-    () => status.value,
-    () => {
-        if (status.value?.online) {
-            statusText.value = "在线"
-            statuscolor.value = { color: '#E3F3EB', textColor: '#18A058' }
-            if (status.value != undefined) {
-                if (status.value.icon != null) {
-                    statusicon.value = status.value.icon
-                } else {
-                    statusicon.value = IMG_noicon
-                }
-            } else {
-                statusicon.value = IMG_noicon
-            }
-        } else {
-            statusText.value = "离线"
-            statusicon.value = IMG_noicon
-            statuscolor.value = { color: '#747d8c', textColor: '#f1f2f6' }
-        }
+watch(status, (newStatus) => {
+    if (newStatus?.online) {
+        statusText.value = "在线"
+        statusColor.value = { color: '#E3F3EB', textColor: '#18A058' }
+        statusIcon.value = newStatus.icon ?? IMG_noicon
+    } else {
+        statusText.value = "离线"
+        statusIcon.value = IMG_noicon
+        statusColor.value = { color: '#747d8c', textColor: '#f1f2f6' }
     }
-)
+})
+
+const copyToClipboard = (event: MouseEvent) => {
+    const input = event.target as HTMLInputElement
+    const text = input.value
+
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            notification.success({
+                content: '复制成功！OwO',
+                duration: 2500,
+                keepAliveOnHover: true
+            })
+        })
+        .catch(() => {
+            notification.error({
+                content: '复制失败，请重试！QAQ',
+                duration: 2500,
+                keepAliveOnHover: true
+            })
+        })
+}
 </script>
+
 
 <template>
     <div class="card">
@@ -92,16 +104,17 @@ watch(
         </div>
         <div class="card-split">
             <div class="card-icon">
-                <img :src="statusicon">
+                <img :src="statusIcon">
             </div>
             <div class="card-info">
                 <h1 class="title" v-text="info.name"></h1>
                 <div>
                     <n-input-group>
-                        <NTag size="small" :color="statuscolor" v-text="statusText">
+                        <NTag size="small" :color="statusColor" v-text="statusText">
                         </NTag>
 
-                        <n-input placeholder="Error！QAQ" :value="info.ip" readonly="true" size="tiny" />
+                        <n-input placeholder="Error！QAQ" :value="info.ip" readonly="true" size="tiny"
+                            @click="copyToClipboard" />
                     </n-input-group>
                 </div>
             </div>
