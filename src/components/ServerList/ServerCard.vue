@@ -2,8 +2,8 @@
 import IMG_noicon from '../../assets/noicon.svg'
 import IMG_noimage from '../../assets/noimage.svg'
 import '../../style/style.less'
-import { ref } from 'vue'
-import { NTag, NInput, NSpace, NInputGroup, useNotification } from 'naive-ui'
+import { computed, ref } from 'vue'
+import { NTag, NInput, NSpace, NInputGroup, useNotification, NTooltip } from 'naive-ui'
 import { fetch_status } from '../../hooks/api'
 import { useRequest } from 'alova/client'
 import { invalidateCache } from 'alova'
@@ -35,7 +35,7 @@ const info = defineProps<{
     ip: string | null
     is_member: boolean
     is_hide: boolean
-    auth_mode: string
+    auth_mode: 'OFFLINE' | 'OFFICIAL' | 'YGGDRASIL'
     tags: Array<string>
 }>()
 
@@ -62,7 +62,6 @@ const getStatus = (host: string) =>
     })
 
 const { data, onSuccess, onError } = useRequest(getStatus(host()))
-
 const statusText = ref<string>("查询中...")
 const statusIcon = ref<string>(IMG_noicon)
 const statusColor = ref<{ color: string; textColor: string }>({ color: '#00C5CD', textColor: '#dfe6e9' })
@@ -80,6 +79,18 @@ onSuccess(() => {
         invalidateCache(getStatus(host()))
     }
 })
+
+
+const isOnline = computed(() => data.value?.online ?? false)
+
+const formatNumber = (num: number): string => {
+    if (num >= 100000000) {  // 大于亿
+        return (num / 100000000).toFixed(2) + '亿'
+    } else if (num >= 10000) {  // 大于万
+        return (num / 10000).toFixed(2) + '万'
+    }
+    return num.toString()
+}
 
 onError(() => {
     statusText.value = "错误"
@@ -109,6 +120,7 @@ const copyToClipboard = (event: MouseEvent) => {
             })
         })
 }
+
 </script>
 
 
@@ -123,19 +135,41 @@ const copyToClipboard = (event: MouseEvent) => {
                 <img :src="statusIcon" />
             </div>
             <div class="card-info">
-                <h1 class="title" v-text="info.name"></h1>
+                <h1 class="title">
+                    {{ info.name }}
+                    <span v-if="isOnline" style="font-size: 0.8rem; color: #747d8c;">
+                        ({{ formatNumber(data.players.online) }} / {{ formatNumber(data.players.max) }})
+                    </span>
+                </h1>
+
                 <div>
                     <n-input-group>
                         <NTag size="small" :color="statusColor" v-text="statusText"></NTag>
                         <n-input placeholder="Error！QAQ" :value="info.ip" readonly="true" size="tiny"
-                            @click="copyToClipboard" />
+                            @click="copyToClipboard"
+                            style="width: auto; min-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
                     </n-input-group>
                 </div>
+
             </div>
         </div>
         <div class="card-tags">
-            <n-space size="small">
-                <n-tag size="small" :bordered="false" v-for="tag in info.tags" v-text="tag"></n-tag>
+            <n-space size="small" class="tags-wrapper">
+                <n-tag size="small" :bordered="false"
+                    :type="info.auth_mode === 'OFFLINE' ? 'error' : info.auth_mode === 'OFFICIAL' ? 'success' : 'info'"
+                    v-text="info.auth_mode === 'OFFLINE' ? '离线服' : info.auth_mode === 'OFFICIAL' ? '正版服' : info.auth_mode === 'YGGDRASIL' ? '外置登录' : '未知'">
+                </n-tag>
+                <n-tooltip v-if="info.is_member == true" trigger="hover" placement="top-start">
+                    <template #trigger>
+                        <n-tag size="small" :bordered="false" type="info">成员服</n-tag>
+                    </template>
+                    <span>此服务器是集体宣传组织的成员服
+                        <br>我们可以确保其可以长期运行</span>
+                </n-tooltip>
+                <n-tag v-for="(tag, index) in info.tags.slice(0, 4)" :key="index" size="small" :bordered="false"
+                    :title="tag" v-text="tag" />
+                <span v-if="info.tags.length > 4">...
+                </span>
             </n-space>
         </div>
     </div>
@@ -209,6 +243,7 @@ const copyToClipboard = (event: MouseEvent) => {
                 text-overflow: ellipsis;
                 overflow: hidden;
                 display: -webkit-box;
+                line-clamp: 1;
                 -webkit-line-clamp: 1;
                 -webkit-box-orient: vertical;
                 font-size: 1.2rem;
