@@ -135,13 +135,12 @@ const copyToClipboard = (event: MouseEvent) => {
                 <img :src="statusIcon" />
             </div>
             <div class="card-info">
-                <h1 class="title">
-                    {{ info.name }}
-                    <span v-if="isOnline" style="font-size: 0.8rem; color: #747d8c;">
+                <div class="title-box">
+                    <h1 class="title">{{ info.name }}</h1>
+                    <span class="t_player_num" v-if="isOnline">
                         ({{ formatNumber(data.players.online) }} / {{ formatNumber(data.players.max) }})
                     </span>
-                </h1>
-
+                </div>
                 <div>
                     <n-input-group>
                         <NTag size="small" :color="statusColor" v-text="statusText"></NTag>
@@ -150,7 +149,6 @@ const copyToClipboard = (event: MouseEvent) => {
                             style="width: auto; min-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
                     </n-input-group>
                 </div>
-
             </div>
         </div>
         <div class="card-tags">
@@ -242,15 +240,27 @@ const copyToClipboard = (event: MouseEvent) => {
         align-items: center;
 
         .card-info {
-            .title {
-                margin: 0;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                display: -webkit-box;
-                line-clamp: 1;
-                -webkit-line-clamp: 1;
-                -webkit-box-orient: vertical;
-                font-size: 1.2rem;
+            .title-box {
+                display: flex;
+                align-items: center;
+                .title {
+                    margin: 0;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    display: -webkit-box;
+                    line-clamp: 1;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    font-size: 1.3rem;
+                }
+                .t_player_num {
+                    font-weight: bold;
+                    font-size: 0.8rem;
+                    color: #747d8c;
+                    line-clamp: 1;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                }
             }
         }
 
@@ -260,7 +270,9 @@ const copyToClipboard = (event: MouseEvent) => {
             margin: 0.6rem;
             margin-top: 0;
             height: 4rem;
+            min-height: 4rem;
             width: 4rem;
+            min-width: 4rem;
             border: 2px solid @border-color;
             border-radius: 50%;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
@@ -287,6 +299,7 @@ const copyToClipboard = (event: MouseEvent) => {
         flex-wrap: wrap;
         overflow-y: auto;
         scrollbar-width: none;
+
         &::-webkit-scrollbar {
             display: none;
         }

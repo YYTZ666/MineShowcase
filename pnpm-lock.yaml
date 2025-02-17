@@ -18,6 +18,9 @@ importers:
         specifier: ^4.5.0
         version: 4.5.0(vue@3.5.13(typescript@5.7.3))
     devDependencies:
+      '@alova/mock':
+        specifier: ^2.0.11
+        version: 2.0.11(alova@3.2.8)
       '@css-render/vue3-ssr':
         specifier: ^0.15.14
         version: 0.15.14(vue@3.5.13(typescript@5.7.3))
@@ -56,6 +59,11 @@ importers:
         version: 2.2.0(typescript@5.7.3)
 
 packages:
+
+  '@alova/mock@2.0.11':
+    resolution: {integrity: sha512-PvKXpKk6I/89YaaNjwcbjHbSwvbg6oqk/dEX1gwIkjbch/fWxHzYmi3qPB6Fh8IVHaEcXuggJRZ+spdkG0WZ4g==}
+    peerDependencies:
+      alova: ^3.0.20
 
   '@alova/shared@1.1.2':
     resolution: {integrity: sha512-8q/gMHFpzm7XYcaUlsyTCMDRRhFnewwheTeObMjPl1+bFdr+wZuBEHEPYIyd8tyzLwfrqpBeonaMN2tlngM8EA==}
@@ -1569,6 +1577,11 @@ packages:
     resolution: {integrity: sha512-8F0OI5dpWIA5IGG5NHUg9staDwz/ZPxZtvGVf01j7vHqSyZ0raHY+78atOVxRqb73AotX22uV1pXt3gYSstGag==}
 
 snapshots:
+
+  '@alova/mock@2.0.11(alova@3.2.8)':
+    dependencies:
+      '@alova/shared': 1.1.2
+      alova: 3.2.8
 
   '@alova/shared@1.1.2': {}
 

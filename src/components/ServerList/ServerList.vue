@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { NNotificationProvider } from 'naive-ui';
+import { NNotificationProvider, NPagination } from 'naive-ui';
 import ServerCard from './ServerCard.vue'
 import { ServerAPI } from '../../hooks/api'
-import { useRequest } from 'alova/client'
+import { usePagination } from 'alova/client';
 
 interface Info {
+    server_list: List[]
+    total_member: number
+}
+
+interface List {
     id: number
     name: string
     type: 'JAVA' | 'BEDROCK'
@@ -18,14 +23,22 @@ interface Info {
     tags: Array<string>
 }
 
-const { loading, error, data } = useRequest(ServerAPI.Get<Info[]>('/servers/random',
+const { loading, data, page, pageCount, error } = usePagination(
+    (page, pageSize) =>
+        ServerAPI.Get<Info>('/servers',
+            {
+                params: {
+                    offset: (page - 1) * pageSize,
+                    limit: 10
+                }
+            }),
     {
-        // params: {
-        //     offset: 0,
-        //     limit: 10
-        // }
+        total: response => response.total_member,
+        data: response => response.server_list,
+        initialPage: 1,
+        initialPageSize: 10
     }
-))
+)
 
 const random = () => {
     for (let i = data.value.length - 1; i > 0; i--) {
@@ -47,12 +60,13 @@ const random = () => {
     <div v-else>
         <NNotificationProvider placement="bottom-right">
             <TransitionGroup tag="div" name="fade" class="grid-list">
-                <ServerCard v-for="server in data" :key="server.id" :id="server.id" :name="server.name"
-                    :type="server.type" :version="server.version" :desc="server.desc" :link="server.link"
-                    :ip="server.ip" :is_member="server.is_member" :is_hide="server.is_hide"
-                    :auth_mode="server.auth_mode" :tags="server.tags" />
+                <ServerCard v-for="server in data" :key="server.id" :id="server.id" :name="server.name" :type="server.type"
+                    :version="server.version" :desc="server.desc" :link="server.link" :ip="server.ip"
+                    :is_member="server.is_member" :is_hide="server.is_hide" :auth_mode="server.auth_mode"
+                    :tags="server.tags" />
             </TransitionGroup>
         </NNotificationProvider>
+        <n-pagination v-model:page="page" :page-count="pageCount" simple />
     </div>
 </template>
 
@@ -63,6 +77,7 @@ const random = () => {
     grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
     gap: 20px;
     transition: 0.3s all;
+
     @media screen and (max-width: 768px) {
         grid-template-columns: 1fr;
     }
