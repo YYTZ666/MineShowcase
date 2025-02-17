@@ -1,13 +1,8 @@
 <script setup lang="ts">
 import { NNotificationProvider } from 'naive-ui';
 import ServerCard from './ServerCard.vue'
-import { createAlova } from 'alova';
-import adapterFetch from 'alova/fetch';
-import { ref } from 'vue'
-const alovaInstance = createAlova({
-    requestAdapter: adapterFetch(),
-    responded: response => response.json()
-});
+import { ServerAPI } from '../../hooks/api'
+import { useRequest } from 'alova/client'
 
 interface Info {
     id: number
@@ -23,28 +18,27 @@ interface Info {
     tags: Array<string>
 }
 
-const serverlist = ref<Info[]>([]);
-
-const fetchData = async () => {
-    try {
-        const response = await alovaInstance.Get<Info[]>('http://tblstudio.cn:5231/servers/random/?offset=0&limit=10');
-        serverlist.value = response;
-    } catch (error) {
-        console.error('Request  failed:', error);
-    }
-};
-
-fetchData()
+const { loading, error, data } = useRequest(ServerAPI.Get<Info[]>('/servers/random/',
+        {
+            // params: {
+            //     offset: 0,
+            //     limit: 10
+            // }
+        }
+    )
+)
 </script>
 
 
 <template>
     <h1>ServerList</h1>
     <!-- 创建一个容器，用来包含所有的服务器卡片，并将其布局设置为网格布局 -->
-    <div class="grid-list">
+    <div v-if="loading">Loading...</div>
+    <div v-else-if="error">{{ error.message }}</div>
+    <div class="grid-list" v-else>
         <NNotificationProvider placement="bottom-right">
             <ServerCard
-                v-for="server in serverlist"
+                v-for="server in data"
                 :key="server.id"
                 :id="server.id"
                 :name="server.name"

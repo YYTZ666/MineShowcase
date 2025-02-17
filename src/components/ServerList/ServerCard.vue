@@ -2,11 +2,11 @@
 import IMG_noicon from '../../assets/noicon.svg'
 import IMG_noimage from '../../assets/noimage.svg'
 import '../../style/style.less'
+import { ref } from 'vue'
 import { NTag, NInput, NSpace, NInputGroup, useNotification } from 'naive-ui'
-import { createAlova } from 'alova';
-import adapterFetch from 'alova/fetch';
-import vueHook from 'alova/vue';
-import { ref, watch } from 'vue'
+import { fetch_status } from '../../hooks/api'
+import { useRequest } from 'alova/client'
+import { invalidateCache } from 'alova'
 
 interface Status {
     online: boolean
@@ -39,59 +39,55 @@ const info = defineProps<{
     tags: Array<string>
 }>()
 
-const status = ref<Status | undefined>(undefined)
-
-
-const alovaInstance = createAlova({
-    requestAdapter: adapterFetch(),
-    id: info.id,
-    statesHook: vueHook,
-    responded: response => response.json()
-});
+const host = () => {
+    // 根据 info.type 动态选择 API 地址
+    if (info.type === 'JAVA') {
+        return "/java/"
+    } else if (info.type === 'BEDROCK') {
+        return "/bedrock/"
+    } else {
+        return "/"
+    }
+}
 
 const getStatus = (host: string) =>
-    alovaInstance.Get<Status>(host, {
+    fetch_status.Get<Status>(host, {
+        params: {
+            ip: info.ip
+        },
         cacheFor: {
             mode: "restore",
             expire: 60 * 10 * 1000
-        },
-    });
-
-const fetchStatus = async () => {
-    try {
-        let host = '';
-        // 根据 info.type 动态选择 API 地址
-        if (info.type === 'JAVA') {
-            host = `https://v2.mscpo.giize.com/java/?ip=${info.ip}`;
-        } else if (info.type === 'BEDROCK') {
-            host = `https://v2.mscpo.giize.com/bedrock/?ip=${info.ip}`;
         }
+    })
 
-        const response = await getStatus(host);
-        status.value = response;
-    } catch (error) {
-        console.error('Request failed:', error);
-    }
-};
+const { data, onSuccess, onError } = useRequest(getStatus(host()))
 
-fetchStatus()
+const statusText = ref<string>("查询中...")
+const statusIcon = ref<string>(IMG_noicon)
+const statusColor = ref<{ color: string; textColor: string }>({ color: '#00C5CD', textColor: '#dfe6e9' })
 
-const statusText = ref("查询中...")
-const statusIcon = ref(IMG_noicon)
-const statusColor = ref({ color: '#747d8c', textColor: '#dfe6e9' })
-const notification = useNotification()
-
-watch(status, (newStatus) => {
-    if (newStatus?.online) {
+onSuccess(() => {
+    if (data.value.online) {
         statusText.value = "在线"
         statusColor.value = { color: '#E3F3EB', textColor: '#18A058' }
-        statusIcon.value = newStatus.icon ?? IMG_noicon
+        statusIcon.value = data.value.icon ?? IMG_noicon
     } else {
         statusText.value = "离线"
-        statusIcon.value = IMG_noicon
         statusColor.value = { color: '#747d8c', textColor: '#f1f2f6' }
+        statusIcon.value = IMG_noicon
+        // 如果服务器不在线失效缓存
+        invalidateCache(getStatus(host()))
     }
 })
+
+onError(() => {
+    statusText.value = "错误"
+    statusColor.value = { color: '#E9967A', textColor: '#CD5555' }
+    statusIcon.value = IMG_noicon
+})
+
+const notification = useNotification()
 
 const copyToClipboard = (event: MouseEvent) => {
     const input = event.target as HTMLInputElement
@@ -124,15 +120,13 @@ const copyToClipboard = (event: MouseEvent) => {
         </div>
         <div class="card-split">
             <div class="card-icon">
-                <img :src="statusIcon">
+                <img :src="statusIcon" />
             </div>
             <div class="card-info">
                 <h1 class="title" v-text="info.name"></h1>
                 <div>
                     <n-input-group>
-                        <NTag size="small" :color="statusColor" v-text="statusText">
-                        </NTag>
-
+                        <NTag size="small" :color="statusColor" v-text="statusText"></NTag>
                         <n-input placeholder="Error！QAQ" :value="info.ip" readonly="true" size="tiny"
                             @click="copyToClipboard" />
                     </n-input-group>
