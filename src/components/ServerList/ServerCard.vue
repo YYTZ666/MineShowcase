@@ -232,7 +232,7 @@ const copyToClipboard = (event: MouseEvent) => {
             img {
                 width: 90%;
                 height: 90%;
-                object-fit: cover;
+                object-fit: contain;
                 border-radius: 50%;
             }
         }
