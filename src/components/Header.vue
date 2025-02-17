@@ -1,6 +1,6 @@
 <template>
     <div class="c_header">
-        <img src="/vite.svg" />MineShowcase
+        <img src="/logo.webp" />MineShowcase
     </div>
 </template>
 
@@ -8,5 +8,9 @@
 .c_header {
     height: 100%;
     width: 100%;
+
+    img {
+        height: 100%;
+    }
 }
 </style>
