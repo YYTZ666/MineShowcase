@@ -4,25 +4,37 @@ import IMG_noimage from '../../assets/noimage.svg'
 import '../../style/style.less'
 import { computed, ref } from 'vue'
 import { NTag, NInput, NSpace, NInputGroup, useNotification, NTooltip } from 'naive-ui'
-import { fetch_status } from '../../hooks/api'
+import { ServerAPI } from '../../hooks/api'
 import { useRequest } from 'alova/client'
 import { invalidateCache } from 'alova'
 
 interface Status {
-    online: boolean
-    players: {
-        online: number
-        max: number
-    }
-    delay: number
+    id: number
+    name: string
+    ip: string | null
+    type: 'JAVA' | 'BEDROCK'
     version: string
-    motd: {
-        plain: string
-        html: string
-        minecraft: string
-        ansi: string
-    }
-    icon: string
+    desc: string
+    link: string
+    is_member: boolean
+    is_hide: boolean
+    auth_mode: 'OFFLINE' | 'OFFICIAL' | 'YGGDRASIL'
+    tags: Array<string>
+    status: {
+        players: {
+            online: number
+            max: number
+        }
+        delay: number
+        version: string
+        motd: {
+            plain: string
+            html: string
+            minecraft: string
+            ansi: string
+        }
+        icon: string | null
+    } | null
 }
 
 const info = defineProps<{
@@ -39,49 +51,28 @@ const info = defineProps<{
     tags: Array<string>
 }>()
 
-const host = () => {
-    // 根据 info.type 动态选择 API 地址
-    if (info.type === 'JAVA') {
-        return "/java/"
-    } else if (info.type === 'BEDROCK') {
-        return "/bedrock/"
-    } else {
-        return "/"
-    }
-}
 
-const getStatus = (host: string) =>
-    fetch_status.Get<Status>(host, {
-        params: {
-            ip: info.ip
-        },
-        cacheFor: {
-            mode: "restore",
-            expire: 60 * 10 * 1000
-        }
-    })
 
-const { data, onSuccess, onError } = useRequest(getStatus(host()))
+const getStatus = () => ServerAPI.Get<Status>("/servers/info/" + info.id)
+
+const { data, onSuccess, onError } = useRequest(getStatus())
 const statusText = ref<string>("查询中...")
 const statusIcon = ref<string>(IMG_noicon)
 const statusColor = ref<{ color: string; textColor: string }>({ color: '#00C5CD', textColor: '#dfe6e9' })
 
 onSuccess(() => {
-    if (data.value.online) {
+    if (data.value.status) {
         statusText.value = "在线"
         statusColor.value = { color: '#E3F3EB', textColor: '#18A058' }
-        statusIcon.value = data.value.icon ?? IMG_noicon
+        statusIcon.value = data.value.status.icon ?? IMG_noicon
     } else {
         statusText.value = "离线"
         statusColor.value = { color: '#747d8c', textColor: '#f1f2f6' }
         statusIcon.value = IMG_noicon
         // 如果服务器不在线失效缓存
-        invalidateCache(getStatus(host()))
+        invalidateCache(getStatus())
     }
 })
-
-
-const isOnline = computed(() => data.value?.online ?? false)
 
 const formatNumber = (num: number): string => {
     if (num >= 100000000) {  // 大于亿
@@ -137,9 +128,10 @@ const copyToClipboard = (event: MouseEvent) => {
             <div class="card-info">
                 <div class="title-box">
                     <h1 class="title">{{ info.name }}</h1>
-                    <span class="t_player_num" v-if="isOnline">
-                        ({{ formatNumber(data.players.online) }} / {{ formatNumber(data.players.max) }})
+                    <span class="t_player_num" v-if="data && data.status !== null">
+                        ({{ formatNumber(data.status.players.online) }} / {{ formatNumber(data.status.players.max) }})
                     </span>
+
                 </div>
                 <div>
                     <n-input-group>
@@ -243,6 +235,7 @@ const copyToClipboard = (event: MouseEvent) => {
             .title-box {
                 display: flex;
                 align-items: center;
+
                 .title {
                     margin: 0;
                     text-overflow: ellipsis;
@@ -253,6 +246,7 @@ const copyToClipboard = (event: MouseEvent) => {
                     -webkit-box-orient: vertical;
                     font-size: 1.3rem;
                 }
+
                 .t_player_num {
                     font-weight: bold;
                     font-size: 0.8rem;
