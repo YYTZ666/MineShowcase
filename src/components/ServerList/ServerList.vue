@@ -18,7 +18,7 @@ interface Info {
     tags: Array<string>
 }
 
-const { loading, error, data } = useRequest(ServerAPI.Get<Info[]>('/servers/random/',
+const { loading, error, data } = useRequest(ServerAPI.Get<Info[]>('/servers/random',
     {
         // params: {
         //     offset: 0,
@@ -44,10 +44,10 @@ const random = () =>
     <div v-else>
         <NNotificationProvider placement="bottom-right">
             <TransitionGroup tag="div" name="fade" class="grid-list">
-                <ServerCard v-for="server in data" :key="server.id" :id="server.id" :name="server.name" :type="server.type"
-                    :version="server.version" :desc="server.desc" :link="server.link" :ip="server.ip"
-                    :is_member="server.is_member" :is_hide="server.is_hide" :auth_mode="server.auth_mode"
-                    :tags="server.tags" />
+                <ServerCard v-for="server in data" :key="server.id" :id="server.id" :name="server.name"
+                    :type="server.type" :version="server.version" :desc="server.desc" :link="server.link"
+                    :ip="server.ip" :is_member="server.is_member" :is_hide="server.is_hide"
+                    :auth_mode="server.auth_mode" :tags="server.tags" />
             </TransitionGroup>
         </NNotificationProvider>
     </div>
