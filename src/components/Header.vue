@@ -1,6 +1,6 @@
 <template>
     <div class="c_header">
-        MineShowcase
+        <img src="/vite.svg" />MineShowcase
     </div>
 </template>
 

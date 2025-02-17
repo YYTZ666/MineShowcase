@@ -3,7 +3,7 @@ import IMG_noicon from '../../assets/noicon.svg'
 import IMG_noimage from '../../assets/noimage.svg'
 import '../../style/style.less'
 import { ref } from 'vue'
-import { NTag, NInput, NSpace, NInputGroup, useNotification } from 'naive-ui'
+import { NTag, NInput, NInputGroup, useNotification } from 'naive-ui'
 import { fetch_status } from '../../hooks/api'
 import { useRequest } from 'alova/client'
 import { invalidateCache } from 'alova'
@@ -134,9 +134,7 @@ const copyToClipboard = (event: MouseEvent) => {
             </div>
         </div>
         <div class="card-tags">
-            <n-space size="small">
-                <n-tag size="small" :bordered="false" v-for="tag in info.tags" v-text="tag"></n-tag>
-            </n-space>
+            <n-tag size="small" :bordered="false" v-for="tag in info.tags" v-text="tag"></n-tag>
         </div>
     </div>
 </template>
@@ -240,7 +238,17 @@ const copyToClipboard = (event: MouseEvent) => {
     }
 
     .card-tags {
-        margin-left: 0.6rem;
+        box-sizing: border-box;
+        display: flex;
+        padding-inline: 0.6rem;
+        gap: 0.3rem;
+        height: 22px;
+        flex-wrap: wrap;
+        overflow-y: auto;
+        scrollbar-width: none;
+        &::-webkit-scrollbar {
+            display: none;
+        }
     }
 }
 </style>

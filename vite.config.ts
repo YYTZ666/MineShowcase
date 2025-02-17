@@ -1,16 +1,18 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import VueRouter from "unplugin-vue-router/vite"
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    VueRouter({}),
     vue()
   ],
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: "modern"
-      }
-    }
-  }
+  ssr: {
+    noExternal: ['naive-ui', 'vueuc', 'date-fns']
+  },
+  ssgOptions: {
+    script: "async",
+    formatting: "prettify",
+  },
 })

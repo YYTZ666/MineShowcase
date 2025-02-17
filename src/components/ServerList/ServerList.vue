@@ -63,5 +63,8 @@ const random = () => {
     grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
     gap: 20px;
     transition: 0.3s all;
+    @media screen and (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
