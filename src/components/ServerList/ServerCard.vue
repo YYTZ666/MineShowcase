@@ -134,7 +134,7 @@ const copyToClipboard = (event: MouseEvent) => {
             </div>
         </div>
         <div class="card-tags">
-            <n-space>
+            <n-space size="small">
                 <n-tag size="small" :bordered="false" v-for="tag in info.tags" v-text="tag"></n-tag>
             </n-space>
         </div>
@@ -145,6 +145,7 @@ const copyToClipboard = (event: MouseEvent) => {
 @border-color: #ddd;
 
 .card {
+    overflow: hidden;
     width: 100%;
     height: 20rem;
     box-sizing: border-box;

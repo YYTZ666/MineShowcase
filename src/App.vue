@@ -1,24 +1,28 @@
 <script setup lang="ts">
 import NavBar from "./components/NavBar.vue"
 import Header from "./components/Header.vue"
+import { lightTheme } from 'naive-ui'
+import { NConfigProvider } from 'naive-ui';
 import ServerList from "./components/ServerList/ServerList.vue"
 import "./style/style.less"
 </script>
 
 <template>
-  <div class="layout">
-    <header class="header">
-      <Header />
-    </header>
-    <div class="content">
-      <aside class="sidebar">
-        <NavBar />
-      </aside>
-      <main class="main-content">
-        <ServerList />
-      </main>
+  <n-config-provider :theme="lightTheme">
+    <div class="layout">
+      <header class="header">
+        <Header />
+      </header>
+      <div class="content">
+        <aside class="sidebar">
+          <NavBar />
+        </aside>
+        <main class="main-content">
+          <ServerList />
+        </main>
+      </div>
     </div>
-  </div>
+  </n-config-provider>
 </template>
 
 <style scoped lang="less">
@@ -63,6 +67,11 @@ import "./style/style.less"
       height: calc(100vh - @header-height);
       border-right: 1px solid @border-color;
       z-index: 100;
+      transition: 0.3s all;
+
+      @media screen and (max-width: 1200px) {
+        transform: translateX(-@sidebar-width);
+      }
     }
 
     .main-content {
@@ -72,6 +81,10 @@ import "./style/style.less"
       max-height: 100%;
       padding: @padding-size;
       padding-top: 0;
+      transition: 0.3s all;
+      @media screen and (max-width: 1200px) {
+        margin-left: 0;
+      }
     }
   }
 }
