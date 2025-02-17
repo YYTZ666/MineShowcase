@@ -14,7 +14,7 @@ interface Info {
     ip: string | null
     is_member: boolean
     is_hide: boolean
-    auth_mode: string
+    auth_mode: 'OFFLINE' | 'OFFICIAL' | 'YGGDRASIL'
     tags: Array<string>
 }
 
@@ -28,9 +28,9 @@ const { loading, error, data } = useRequest(ServerAPI.Get<Info[]>('/servers/rand
 ))
 
 const random = () => {
-    for (let i = data.value.length  - 1; i > 0; i--) {
-        const j = Math.floor(Math.random()  * (i + 1));
-        [data.value[i], data.value[j]]  = [data.value[j], data.value[i]];
+    for (let i = data.value.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [data.value[i], data.value[j]] = [data.value[j], data.value[i]];
     }
 };
 </script>
