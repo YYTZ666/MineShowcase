@@ -168,8 +168,12 @@ const copyToClipboard = (event: MouseEvent) => {
                 </n-tooltip>
                 <n-tag v-for="(tag, index) in info.tags.slice(0, 4)" :key="index" size="small" :bordered="false"
                     :title="tag" v-text="tag" />
-                <span v-if="info.tags.length > 4">...
-                </span>
+                <n-tooltip v-if="info.tags.length > 4" trigger="hover" placement="top-start">
+                    <template #trigger>
+                        <span>...</span>
+                    </template>
+                    {{ info.tags.slice(4).join(' | ') }}
+                </n-tooltip>
             </n-space>
         </div>
     </div>
