@@ -27,9 +27,12 @@ const { loading, error, data } = useRequest(ServerAPI.Get<Info[]>('/servers/rand
     }
 ))
 
-const random = () =>
-    data.value = data.value.sort(() => Math.random() - 0.5)
-// 注：这个随机方法不能实现真正的随机
+const random = () => {
+    for (let i = data.value.length  - 1; i > 0; i--) {
+        const j = Math.floor(Math.random()  * (i + 1));
+        [data.value[i], data.value[j]]  = [data.value[j], data.value[i]];
+    }
+};
 </script>
 
 
