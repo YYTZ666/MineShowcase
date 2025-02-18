@@ -7,6 +7,7 @@ import { usePagination } from 'alova/client';
 interface Info {
     server_list: List[]
     total_member: number
+    total: number
 }
 
 interface List {
@@ -33,7 +34,7 @@ const { loading, data, page, pageCount, error } = usePagination(
                 }
             }),
     {
-        total: response => response.total_member,
+        total: response => response.total,
         data: response => response.server_list,
         initialPage: 1,
         initialPageSize: 10
