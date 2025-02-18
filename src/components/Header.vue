@@ -8,6 +8,10 @@ import lang from '../languages/index'
             <img src="/logo.webp" />
             <h2>{{ lang.NavBar.title }}</h2>
         </div>
+        <div class="account">
+            <img src="/logo.webp" />
+            <a class="login" href="/login/">登录</a>
+        </div>
     </div>
 </template>
 
@@ -17,6 +21,7 @@ import lang from '../languages/index'
     align-items: center;
     height: 100%;
     width: 100%;
+    justify-content: space-between;
 
     .logo {
         display: flex;
@@ -25,6 +30,18 @@ import lang from '../languages/index'
         height: 2rem;
         img {
             height: 100%;
+        }
+    }
+    .account {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        height: 2rem;
+        img {
+            height: 100%;
+        }
+        .login {
+            font-size: 1rem;
         }
     }
 }

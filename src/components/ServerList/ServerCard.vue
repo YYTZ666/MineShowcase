@@ -118,11 +118,9 @@ const copyToClipboard = (event: MouseEvent) => {
     <div class="card">
         <div class="card-cover">
             <n-carousel effect="card" show-arrow style="width: 100%; height: 100%;" draggable>
-                <img class="carousel-img" src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg">
-                <img class="carousel-img" src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel2.jpeg">
+                <img :src="IMG_noimage">
                 <img class="carousel-img" src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel3.jpeg">
                 <img class="carousel-img" src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel4.jpeg">
-                <img :src="IMG_noimage">
             </n-carousel>
             <div class="card-type" v-text="info.type"></div>
         </div>
