@@ -25,8 +25,8 @@
     "less": "^4.2.2",
     "naive-ui": "^2.41.0",
     "typescript": "~5.7.2",
-    "unplugin-vue-router": "^0.11.2",
     "vite": "^6.1.0",
+    "vite-plugin-pages": "^0.32.4",
     "vue-tsc": "^2.2.0"
   }
 }

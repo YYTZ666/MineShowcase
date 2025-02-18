@@ -10,7 +10,7 @@ import lang from '../languages/index'
         </div>
         <div class="account">
             <img src="/logo.webp" />
-            <a class="login" href="/login/">登录</a>
+            <a class="login" href="/login">登录</a>
         </div>
     </div>
 </template>
