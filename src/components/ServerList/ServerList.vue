@@ -3,6 +3,7 @@ import { NNotificationProvider, NPagination } from 'naive-ui';
 import ServerCard from './ServerCard.vue'
 import { ServerAPI } from '../../hooks/api'
 import { usePagination } from 'alova/client';
+import { ref, watch } from 'vue';
 
 interface Info {
     server_list: List[]
@@ -24,20 +25,19 @@ interface List {
     tags: Array<string>
 }
 
+// 请求分页数据
 const { loading, data, page, pageCount, error } = usePagination(
     (page, pageSize) =>
         ServerAPI.Get<Info>('/servers', {
             params: {
                 offset: (page - 1) * pageSize,
-                limit: 9
+                limit: 10
             }
         }), {
     data: response => response.server_list,
     total: response => response.total,
-
     debounce: 200,
-}
-)
+})
 
 const random = () => {
     for (let i = data.value.length - 1; i > 0; i--) {
@@ -45,6 +45,16 @@ const random = () => {
         [data.value[i], data.value[j]] = [data.value[j], data.value[i]];
     }
 };
+
+// 监听页码变化
+const isChangingPage = ref(false);
+
+watch(page, () => {
+    isChangingPage.value = true;
+    setTimeout(() => {
+        isChangingPage.value = false;
+    }, 300);
+});
 </script>
 
 
@@ -58,12 +68,27 @@ const random = () => {
     <div v-else-if="error">加载失败QAQ (code: {{ error.message }})</div>
     <div v-else>
         <NNotificationProvider placement="bottom-right">
-            <TransitionGroup :key="page" duration="0" tag="div" name="fade" class="grid-list">
-                <ServerCard v-for="server in data" :key="server.id" :id="server.id" :name="server.name" :type="server.type"
-                    :version="server.version" :desc="server.desc" :link="server.link" :ip="server.ip"
-                    :is_member="server.is_member" :is_hide="server.is_hide" :auth_mode="server.auth_mode"
-                    :tags="server.tags" />
-            </TransitionGroup>
+            <Transition name="page-change" mode="out-in">
+                <div :key="page" v-if="!isChangingPage">
+                    <TransitionGroup tag="div" name="fade" class="grid-list">
+                        <ServerCard
+                            v-for="server in data"
+                            :key="server.id"
+                            :id="server.id"
+                            :name="server.name"
+                            :type="server.type"
+                            :version="server.version"
+                            :desc="server.desc"
+                            :link="server.link"
+                            :ip="server.ip"
+                            :is_member="server.is_member"
+                            :is_hide="server.is_hide"
+                            :auth_mode="server.auth_mode"
+                            :tags="server.tags"
+                        />
+                    </TransitionGroup>
+                </div>
+            </Transition>
         </NNotificationProvider>
         <n-pagination v-model:page="page" :page-count="pageCount" simple />
     </div>
@@ -80,5 +105,17 @@ const random = () => {
     @media screen and (max-width: 768px) {
         grid-template-columns: 1fr;
     }
+}
+
+// 翻页动画样式
+.page-change-enter-active,
+.page-change-leave-active {
+    transition: all 0.3s ease;
+}
+
+.page-change-enter-from,
+.page-change-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
 }
 </style>
