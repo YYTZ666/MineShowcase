@@ -1,8 +1,12 @@
+<script setup>
+import lang from '../languages/index'
+</script>
+
 <template>
     <div class="c_header">
         <div class="logo">
             <img src="/logo.webp" />
-            <h2>MineShowcase</h2>
+            <h2>{{ lang.NavBar.title }}</h2>
         </div>
     </div>
 </template>

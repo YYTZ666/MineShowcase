@@ -1,6 +1,10 @@
+<script setup>
+import lang from '../languages/index'
+</script>
+
 <template>
     <div class="navbar">
-        MineShowcase
+        {{ lang }}
     </div>
 </template>
 

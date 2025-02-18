@@ -16,6 +16,7 @@
   "devDependencies": {
     "@alova/mock": "^2.0.11",
     "@css-render/vue3-ssr": "^0.15.14",
+    "@originjs/vite-plugin-content": "^1.0.5",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/server-renderer": "^3.5.13",
     "@vue/tsconfig": "^0.7.0",
