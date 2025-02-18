@@ -117,7 +117,7 @@ onMounted(() => {
         background-color: rgba(255, 255, 255, 0.6);
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-right: 30px;
+        margin-right: 8rem;
         opacity: 0;
         animation: fadeIn 2s forwards;
 
