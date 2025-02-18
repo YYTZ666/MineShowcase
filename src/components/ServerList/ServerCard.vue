@@ -3,7 +3,7 @@ import IMG_noicon from '../../assets/noicon.svg'
 import IMG_noimage from '../../assets/noimage.svg'
 import '../../style/style.less'
 import { ref } from 'vue'
-import { NTag, NInput, NSpace, NInputGroup, useNotification, NTooltip } from 'naive-ui'
+import { NTag, NInput, NSpace, NInputGroup, useNotification, NTooltip, NCarousel } from 'naive-ui'
 import { ServerAPI } from '../../hooks/api'
 import { useRequest } from 'alova/client'
 import { invalidateCache } from 'alova'
@@ -117,8 +117,14 @@ const copyToClipboard = (event: MouseEvent) => {
 <template>
     <div class="card">
         <div class="card-cover">
+            <n-carousel effect="card" show-arrow style="width: 100%; height: 100%;" draggable>
+                <img class="carousel-img" src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel1.jpeg">
+                <img class="carousel-img" src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel2.jpeg">
+                <img class="carousel-img" src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel3.jpeg">
+                <img class="carousel-img" src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel4.jpeg">
+                <img :src="IMG_noimage">
+            </n-carousel>
             <div class="card-type" v-text="info.type"></div>
-            <img :src="IMG_noimage">
         </div>
         <div class="card-split">
             <div class="card-icon">
@@ -212,6 +218,14 @@ const copyToClipboard = (event: MouseEvent) => {
             background-color: rgba(255, 255, 255, 0.7);
             border: 1px solid @border-color;
             border-radius: 5px;
+        }
+
+        .carousel-img {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
         }
 
         img {

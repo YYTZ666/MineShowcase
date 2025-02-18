@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NNotificationProvider, NPagination } from 'naive-ui';
+import { NNotificationProvider, NPagination, NButton } from 'naive-ui';
 import ServerCard from './ServerCard.vue'
 import { ServerAPI } from '../../hooks/api'
 import { usePagination } from 'alova/client';
@@ -31,9 +31,11 @@ const { loading, data, page, pageCount, error } = usePagination(
         ServerAPI.Get<Info>('/servers', {
             params: {
                 offset: (page - 1) * pageSize,
-                limit: 10
+                limit: 12
             }
         }), {
+    initialPage: 1, // 初始页码，默认为1
+    initialPageSize: 12,
     data: response => response.server_list,
     total: response => response.total,
     debounce: 200,
@@ -60,10 +62,9 @@ watch(page, () => {
 
 <template>
     <h1>ServerList</h1>
-    <button @click="random">
-        Random
-    </button>
-    <!-- 创建一个容器，用来包含所有的服务器卡片，并将其布局设置为网格布局 -->
+    <n-button @click="random">随机</n-button>
+    <br>
+    <br>
     <div v-if="loading">Loading...</div>
     <div v-else-if="error">加载失败QAQ (code: {{ error.message }})</div>
     <div v-else>
