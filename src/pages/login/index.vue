@@ -1,6 +1,5 @@
-
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { lightTheme, NForm, NFormItem, NButton, NInput, NRow, NCol, NConfigProvider } from 'naive-ui';
 import "../../style/style.less"
 
@@ -27,14 +26,24 @@ const rules = {
 };
 
 const loading = ref(false);
+
+// 页面加载时，触发动画
+onMounted(() => {
+    document.body.classList.add('page-loaded');
+});
 </script>
+
 
 <template>
     <n-config-provider :theme="lightTheme">
         <div class="layout">
             <div class="l_body">
-                <h1>MineShowcase</h1>
-                <h2>管理实用程序</h2>
+                <transition name="fade-in">
+                    <h1>MineShowcase</h1>
+                </transition>
+                <transition name="fade-in">
+                    <h2>管理实用程序</h2>
+                </transition>
             </div>
             <div class="r_body">
                 <h2>登录</h2>
@@ -69,6 +78,8 @@ const loading = ref(false);
     background-position: center;
     display: flex;
     align-items: center;
+    justify-content: center;
+    flex-direction: row;
 
     .l_body {
         box-sizing: border-box;
@@ -86,12 +97,16 @@ const loading = ref(false);
             background: linear-gradient(to right, #32defd, #f74598);
             -webkit-background-clip: text;
             background-clip: text;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
         }
 
         h2 {
             text-align: center;
             font-size: 25px;
             color: white;
+            opacity: 0;
+            animation: fadeIn 1.5s forwards;
         }
     }
 
@@ -103,6 +118,8 @@ const loading = ref(false);
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         margin-right: 30px;
+        opacity: 0;
+        animation: fadeIn 2s forwards;
 
         h2 {
             margin-bottom: 20px;
@@ -111,6 +128,18 @@ const loading = ref(false);
 
         .n-form-item {
             margin-bottom: 20px;
+        }
+    }
+
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
 
