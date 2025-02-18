@@ -69,7 +69,6 @@ onSuccess(() => {
         statusText.value = "离线"
         statusColor.value = { color: '#747d8c', textColor: '#f1f2f6' }
         statusIcon.value = IMG_noicon
-        // 如果服务器不在线失效缓存
         invalidateCache(getStatus())
     }
 })

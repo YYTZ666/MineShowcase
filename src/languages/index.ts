@@ -9,7 +9,9 @@ interface NavBar {
     title: string;
 }
 
-const translations: Record<string, Lang> = {
+type TranslationRecord = Record<string, Lang>;
+
+const translations: TranslationRecord = {
     'zh-CN': zh_CN,
     'en-US': en_US
 };
@@ -27,4 +29,5 @@ const createFallbackProxy = (primary: Lang, fallback: Lang): Lang => {
     });
 };
 
-export default createFallbackProxy(translations["en-US"], translations["zh-CN"]);
+const defaultLang: Lang = createFallbackProxy(translations["en-US"], translations["zh-CN"]);
+export default defaultLang;

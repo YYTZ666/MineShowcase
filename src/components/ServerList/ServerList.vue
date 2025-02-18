@@ -26,19 +26,17 @@ interface List {
 
 const { loading, data, page, pageCount, error } = usePagination(
     (page, pageSize) =>
-        ServerAPI.Get<Info>('/servers',
-            {
-                params: {
-                    offset: (page - 1) * pageSize,
-                    limit: 10
-                }
-            }),
-    {
-        total: response => response.total,
-        data: response => response.server_list,
-        initialPage: 1,
-        initialPageSize: 10
-    }
+        ServerAPI.Get<Info>('/servers', {
+            params: {
+                offset: (page - 1) * pageSize,
+                limit: 10
+            }
+        }), {
+    data: response => response.server_list,
+    total: response => response.total,
+
+    debounce: 200,
+}
 )
 
 const random = () => {
@@ -60,12 +58,12 @@ const random = () => {
     <div v-else-if="error">加载失败QAQ (code: {{ error.message }})</div>
     <div v-else>
         <NNotificationProvider placement="bottom-right">
-            <TransitionGroup tag="div" name="fade" class="grid-list">
+            <div tag="div" name="fade" class="grid-list">
                 <ServerCard v-for="server in data" :key="server.id" :id="server.id" :name="server.name" :type="server.type"
                     :version="server.version" :desc="server.desc" :link="server.link" :ip="server.ip"
                     :is_member="server.is_member" :is_hide="server.is_hide" :auth_mode="server.auth_mode"
                     :tags="server.tags" />
-            </TransitionGroup>
+            </div>
         </NNotificationProvider>
         <n-pagination v-model:page="page" :page-count="pageCount" simple />
     </div>
