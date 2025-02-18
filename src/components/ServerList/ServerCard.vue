@@ -2,7 +2,7 @@
 import IMG_noicon from '../../assets/noicon.svg'
 import IMG_noimage from '../../assets/noimage.svg'
 import '../../style/style.less'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { NTag, NInput, NSpace, NInputGroup, useNotification, NTooltip } from 'naive-ui'
 import { ServerAPI } from '../../hooks/api'
 import { useRequest } from 'alova/client'
