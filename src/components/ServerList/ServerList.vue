@@ -68,25 +68,15 @@ watch(page, () => {
     <div v-if="loading">Loading...</div>
     <div v-else-if="error">加载失败QAQ (code: {{ error.message }})</div>
     <div v-else>
+        <n-pagination v-model:page="page" :page-count="pageCount" simple />
         <NNotificationProvider placement="bottom-right">
             <Transition name="page-change" mode="out-in">
                 <div :key="page" v-if="!isChangingPage">
                     <TransitionGroup tag="div" name="fade" class="grid-list">
-                        <ServerCard
-                            v-for="server in data"
-                            :key="server.id"
-                            :id="server.id"
-                            :name="server.name"
-                            :type="server.type"
-                            :version="server.version"
-                            :desc="server.desc"
-                            :link="server.link"
-                            :ip="server.ip"
-                            :is_member="server.is_member"
-                            :is_hide="server.is_hide"
-                            :auth_mode="server.auth_mode"
-                            :tags="server.tags"
-                        />
+                        <ServerCard v-for="server in data" :key="server.id" :id="server.id" :name="server.name"
+                            :type="server.type" :version="server.version" :desc="server.desc" :link="server.link"
+                            :ip="server.ip" :is_member="server.is_member" :is_hide="server.is_hide"
+                            :auth_mode="server.auth_mode" :tags="server.tags" />
                     </TransitionGroup>
                 </div>
             </Transition>
