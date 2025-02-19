@@ -1,13 +1,12 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import content from '@originjs/vite-plugin-content'
-import Pages from "vite-plugin-pages";
+import VueRouter from 'unplugin-vue-router/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    Pages({
-      dirs: 'src/pages',
+    VueRouter({
       extensions: [
         'vue',
         'md'
