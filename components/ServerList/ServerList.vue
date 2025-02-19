@@ -62,13 +62,14 @@ watch(page, () => {
 
 <template>
     <h1>ServerList</h1>
-    <n-button @click="random">随机</n-button>
-    <br>
-    <br>
     <div v-if="loading">Loading...</div>
     <div v-else-if="error">加载失败QAQ (code: {{ error.message }})</div>
     <div v-else>
-        <n-pagination v-model:page="page" :page-count="pageCount" simple />
+        <div class="page">
+            <n-button @click="random" size="small">随机</n-button>
+            <n-pagination v-model:page="page" :page-count="pageCount" simple />
+        </div>
+        <br>
         <NNotificationProvider placement="bottom-right">
             <Transition name="page-change" mode="out-in">
                 <div :key="page" v-if="!isChangingPage">
@@ -81,11 +82,16 @@ watch(page, () => {
                 </div>
             </Transition>
         </NNotificationProvider>
-        <n-pagination v-model:page="page" :page-count="pageCount" simple />
+        <br>
+        <n-pagination v-model:page="page" :page-count="pageCount" />
     </div>
 </template>
 
 <style scoped lang="less">
+.page {
+    display: flex;
+    gap: 0.4rem;
+}
 .grid-list {
     display: grid;
     box-sizing: border-box;

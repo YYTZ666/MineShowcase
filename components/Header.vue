@@ -10,7 +10,7 @@ import lang from '../languages/index'
         </div>
         <div class="account">
             <img src="/logo.webp" />
-            <a class="login" href="/login">登录</a>
+            <NuxtLink class="login" to="/login">登录</NuxtLink>
         </div>
     </div>
 </template>

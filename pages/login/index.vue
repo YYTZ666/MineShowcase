@@ -30,7 +30,7 @@ const rules = {
     captchaResponse: [
         {
             required: true,
-            message: '请完成验证码',
+            message: '请完成人机验证',
             trigger: 'blur'
         }
     ]
@@ -96,7 +96,7 @@ const onVerify = (token: string) => {
                     <n-form-item path="password" label="密码">
                         <n-input type="password" v-model:value="form.password" @keydown.enter.prevent />
                     </n-form-item>
-                    <n-form-item path="captchaResponse" label="验证码" v-if="data">
+                    <n-form-item path="captchaResponse" label="验证" v-if="data">
                         <vue-hcaptcha :sitekey="data.hcaptcha_site_key" @verify="onVerify" />
                     </n-form-item>
 
