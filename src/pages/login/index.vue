@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { lightTheme, NForm, NFormItem, NButton, NInput, NRow, NCol, NConfigProvider } from 'naive-ui';
 import "../../style/style.less"
+import { ServerAPI } from '../../hooks/api'
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
+import { useRequest } from 'alova/client';
 
 const form = ref({
     account: '',
-    password: ''
+    password: '',
+    captchaResponse: ''
 });
 
 const rules = {
@@ -22,17 +26,55 @@ const rules = {
             message: '请输入密码',
             trigger: 'blur'
         }
+    ],
+    captchaResponse: [
+        {
+            required: true,
+            message: '请完成验证码',
+            trigger: 'blur'
+        }
     ]
 };
 
+
+interface SiteKey {
+    hcaptcha_site_key: string
+}
+
+interface Login {
+    access_token: string
+    token_type: string
+}
+
 const loading = ref(false);
 
-// 页面加载时，触发动画
-onMounted(() => {
-    document.body.classList.add('page-loaded');
-});
-</script>
+const getSiteKey = () => ServerAPI.Get<SiteKey>("/hcaptcha-site-key");
+const { data } = useRequest(getSiteKey())
+const login = (data: { username: string, password: string, captcha_response: string }) => ServerAPI.Post<Login>("/login", data);
 
+
+const handleSubmit = async () => {
+
+
+    // 发送请求到后端验证hCaptcha、用户名和密码
+    const { data } = useRequest(login({
+        username: form.value.account,
+        password: form.value.password,
+        captcha_response: form.value.captchaResponse
+    }));
+
+    // 登录成功，保存token
+    if (data.value.access_token) {
+        localStorage.setItem('token', data.value.access_token);
+        location.href = '/';
+    }
+};
+
+const onVerify = (token: string) => {
+    form.value.captchaResponse = token;
+};
+
+</script>
 
 <template>
     <n-config-provider :theme="lightTheme">
@@ -54,10 +96,14 @@ onMounted(() => {
                     <n-form-item path="password" label="密码">
                         <n-input type="password" v-model:value="form.password" @keydown.enter.prevent />
                     </n-form-item>
+                    <n-form-item path="captchaResponse" label="验证码" v-if="data">
+                        <vue-hcaptcha :sitekey="data.hcaptcha_site_key" @verify="onVerify" />
+                    </n-form-item>
+
                     <n-row :gutter="[0, 24]">
                         <n-col :span="24">
                             <div style="display: flex; justify-content: flex-end">
-                                <n-button type="primary" :loading="loading">
+                                <n-button type="primary" :loading="loading" @click="handleSubmit">
                                     登录
                                 </n-button>
                             </div>
