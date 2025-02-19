@@ -13,6 +13,14 @@ export default defineNuxtConfig({
       content()
     ]
   },
+  app: {
+    head: {
+      viewport: 'width=device-width,initial-scale=1',
+      link: [
+        { rel: 'icon', href: '/logo.webp', sizes: 'any' }
+      ],
+    },
+  },
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
   modules: ['nuxtjs-naive-ui']
