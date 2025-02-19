@@ -4,6 +4,7 @@ import content from '@originjs/vite-plugin-content'
 export default defineNuxtConfig({
   nitro: {
     static: true,
+    compressPublicAssets: true,
     prerender: {
       crawlLinks: true,
     },
@@ -13,6 +14,9 @@ export default defineNuxtConfig({
       content()
     ]
   },
+  build: {
+    analyze: true
+  },
   app: {
     head: {
       viewport: 'width=device-width,initial-scale=1',
@@ -20,6 +24,19 @@ export default defineNuxtConfig({
         { rel: 'icon', href: '/logo.webp', sizes: 'any' }
       ],
     },
+  },
+  webpack: {
+    optimization: {
+      splitChunks: {
+        chunks: 'all',
+        minSize: 20000,
+        minChunks: 1,
+        automaticNameDelimiter: '-',
+        maxSize: 51200,
+        maxAsyncRequests:6,
+        maxInitialRequests: 6
+      }
+    }
   },
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
