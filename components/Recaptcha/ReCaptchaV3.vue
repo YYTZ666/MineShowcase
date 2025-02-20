@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, provide, defineProps, defineEmits, InjectionKey, watch } from 'vue'
+import { ref, provide, defineProps, defineEmits, InjectionKey } from 'vue'
 import { IReCaptchaLoaderOptions } from 'recaptcha-v3/dist/ReCaptchaLoader'
 import { load as loadReCaptcha, ReCaptchaInstance } from 'recaptcha-v3'
 
