@@ -52,7 +52,7 @@ const info = defineProps<{
 
 
 
-const getStatus = () => ServerAPI.Get<Status>("/servers/v1/servers/info/" + info.id)
+const getStatus = () => ServerAPI.Get<Status>("/v1/servers/info/" + info.id)
 
 const { data, onSuccess, onError } = useRequest(getStatus())
 const statusText = ref<string>("查询中...")
