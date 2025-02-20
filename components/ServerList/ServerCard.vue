@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import IMG_noicon from '../../assets/noicon.svg'
 import IMG_noimage from '../../assets/noimage.svg'
-import '../../style/style.less'
 import { ref } from 'vue'
 import { NTag, NInput, NSpace, NInputGroup, useNotification, NTooltip, NCarousel } from 'naive-ui'
 import { ServerAPI } from '../../hooks/api'
@@ -53,7 +52,7 @@ const info = defineProps<{
 
 
 
-const getStatus = () => ServerAPI.Get<Status>("/servers/info/" + info.id)
+const getStatus = () => ServerAPI.Get<Status>("/servers/v1/servers/info/" + info.id)
 
 const { data, onSuccess, onError } = useRequest(getStatus())
 const statusText = ref<string>("查询中...")

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { lightTheme, NForm, NFormItem, NButton, NInput, NRow, NCol, NConfigProvider } from 'naive-ui';
-import "../../style/style.less"
 import { ServerAPI } from '../../hooks/api'
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import { useRequest } from 'alova/client';
@@ -48,9 +47,9 @@ interface Login {
 
 const loading = ref(false);
 
-const getSiteKey = () => ServerAPI.Get<SiteKey>("/hcaptcha-site-key");
+const getSiteKey = () => ServerAPI.Get<SiteKey>("/auth/v1/hcaptcha-site-key");
 const { data } = useRequest(getSiteKey())
-const login = (data: { username: string, password: string, captcha_response: string }) => ServerAPI.Post<Login>("/login", data);
+const login = (data: { username: string, password: string, captcha_response: string }) => ServerAPI.Post<Login>("/auth/v1/login", data);
 
 
 const handleSubmit = async () => {

@@ -28,7 +28,7 @@ interface List {
 // 请求分页数据
 const { loading, data, page, pageCount, error } = usePagination(
     (page, pageSize) =>
-        ServerAPI.Get<Info>('/servers', {
+        ServerAPI.Get<Info>('/servers/v1/servers', {
             params: {
                 offset: (page - 1) * pageSize,
                 limit: 12

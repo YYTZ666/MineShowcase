@@ -30,7 +30,7 @@ export default defineNuxtConfig({
       splitChunks: {
         chunks: 'all',
         minSize: 20000,
-        minChunks: 1,
+        minChunks: 2,
         automaticNameDelimiter: '-',
         maxSize: 51200,
         maxAsyncRequests:6,

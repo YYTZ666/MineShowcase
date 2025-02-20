@@ -4,7 +4,7 @@ import Header from "../components/Header.vue"
 import { lightTheme } from 'naive-ui'
 import { NConfigProvider } from 'naive-ui';
 import ServerList from "../components/ServerList/ServerList.vue"
-import "../style/style.less"
+import "../assets/css/index.less"
 </script>
 
 <template>
