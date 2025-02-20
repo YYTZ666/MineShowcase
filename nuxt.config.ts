@@ -12,7 +12,7 @@ export default defineNuxtConfig({
   vite: {
     plugins: [
       content()
-    ]
+    ],
   },
   build: {
     analyze: true

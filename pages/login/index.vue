@@ -2,8 +2,8 @@
 import { ref } from 'vue';
 import { lightTheme, NForm, NFormItem, NButton, NInput, NRow, NCol, NConfigProvider } from 'naive-ui';
 import { ServerAPI } from '../../hooks/api'
-import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import { useRequest } from 'alova/client';
+import reCaptchaButton from '../../components/Recaptcha/ReCaptchaV3.vue'
 
 const form = ref({
     account: '',
@@ -37,7 +37,7 @@ const rules = {
 
 
 interface SiteKey {
-    hcaptcha_site_key: string
+    recapcha_sitekey: string
 }
 
 interface Login {
@@ -47,17 +47,18 @@ interface Login {
 
 const loading = ref(false);
 
-const getSiteKey = () => ServerAPI.Get<SiteKey>("/v1/hcaptcha-site-key");
+const getSiteKey = () => ServerAPI.Get<SiteKey>("/v1/reCAPTCHA_site_key");
 const { data } = useRequest(getSiteKey())
 const login = (data: { username: string, password: string, captcha_response: string }) => ServerAPI.Post<Login>("/v1/login", data);
 
+const token = ref("")
 
 const handleSubmit = async () => {
-    // 发送请求到后端验证hCaptcha、用户名和密码
+    // 发送请求到后端验证reCaptcha、用户名和密码
     const { data } = useRequest(login({
         username: form.value.account,
         password: form.value.password,
-        captcha_response: form.value.captchaResponse
+        captcha_response: token.value
     }));
 
     // 登录成功，保存token
@@ -66,11 +67,6 @@ const handleSubmit = async () => {
         location.href = '/';
     }
 };
-
-const onVerify = (token: string) => {
-    form.value.captchaResponse = token;
-};
-
 </script>
 
 <template>
@@ -93,15 +89,17 @@ const onVerify = (token: string) => {
                     <n-form-item path="password" label="密码">
                         <n-input type="password" v-model:value="form.password" @keydown.enter.prevent />
                     </n-form-item>
-                    <n-form-item path="captchaResponse" label="验证" v-if="data">
-                        <vue-hcaptcha :sitekey="data.hcaptcha_site_key" @verify="onVerify" />
-                    </n-form-item>
-
                     <n-row :gutter="[0, 24]">
                         <n-col :span="24">
                             <div style="display: flex; justify-content: flex-end">
-                                <n-button type="primary" :loading="loading" @click="handleSubmit">
-                                    登录
+                                <reCaptchaButton v-if="data" v-model="token" :siteKey="data.recapcha_sitekey"
+                                    action="submit">
+                                    <n-button type="primary" :loading="loading" @click="handleSubmit()">
+                                        登录
+                                    </n-button>
+                                </reCaptchaButton>
+                                <n-button v-else type="primary" :loading="true">
+                                    验证失败
                                 </n-button>
                             </div>
                         </n-col>
