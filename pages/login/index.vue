@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { lightTheme, NForm, NFormItem, NButton, NInput, NRow, NCol, NConfigProvider } from 'naive-ui';
+import { ref } from 'vue'
+import { lightTheme, NForm, NFormItem, NButton, NInput, NRow, NCol, NConfigProvider } from 'naive-ui'
 import { ServerAPI } from '../../hooks/api'
-import { useRequest } from 'alova/client';
+import { useRequest } from 'alova/client'
 import reCaptchaButton from '../../components/Recaptcha/ReCaptchaV3.vue'
 
 const form = ref({
     account: '',
-    password: '',
-    captchaResponse: ''
-});
+    password: ''
+})
 
 const rules = {
     account: [
@@ -25,15 +24,8 @@ const rules = {
             message: '请输入密码',
             trigger: 'blur'
         }
-    ],
-    captchaResponse: [
-        {
-            required: true,
-            message: '请完成人机验证',
-            trigger: 'blur'
-        }
     ]
-};
+}
 
 
 interface SiteKey {
@@ -45,28 +37,28 @@ interface Login {
     token_type: string
 }
 
-const loading = ref(false);
+const loading = ref(false)
 
-const getSiteKey = () => ServerAPI.Get<SiteKey>("/v1/reCAPTCHA_site_key");
+const getSiteKey = () => ServerAPI.Get<SiteKey>("/v1/reCAPTCHA_site_key")
 const { data } = useRequest(getSiteKey())
-const login = (data: { username: string, password: string, captcha_response: string }) => ServerAPI.Post<Login>("/v1/login", data);
+const login = (data: { username: string, password: string, captcha_response: string }) => ServerAPI.Post<Login>("/v1/login", data)
 
 const token = ref("")
 
-const handleSubmit = async () => {
+const handleSubmit = () => {
     // 发送请求到后端验证reCaptcha、用户名和密码
     const { data } = useRequest(login({
         username: form.value.account,
         password: form.value.password,
         captcha_response: token.value
-    }));
+    }))
 
     // 登录成功，保存token
     if (data.value.access_token) {
-        localStorage.setItem('token', data.value.access_token);
-        location.href = '/';
+        localStorage.setItem('token', data.value.access_token)
+        location.href = '/'
     }
-};
+}
 </script>
 
 <template>

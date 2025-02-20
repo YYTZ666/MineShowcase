@@ -14,7 +14,7 @@ const props = defineProps({
     },
     loaderOptions: {
         type: Object as () => IReCaptchaLoaderOptions,
-        default: () => ({})
+        default: () => ({ useRecaptchaNet: true })
     },
     action: {
         type: String,
@@ -31,12 +31,12 @@ const instance = ref<ReCaptchaInstance | undefined>(undefined)
 const loading = ref(false)
 
 // 初始化 reCAPTCHA
-async function initializeReCaptcha() {
+function initializeReCaptcha() {
     return loadReCaptcha(props.siteKey, props.loaderOptions)
 }
 
 // 执行 reCAPTCHA 验证
-async function executeRecaptcha(action: string) {
+function executeRecaptcha(action: string) {
     return instance.value?.execute(action)
 }
 
@@ -59,6 +59,7 @@ initializeReCaptcha()
     .then((wrapper) => {
         isLoaded.value = true
         instance.value = wrapper
+        updateToken();
     })
     .catch((error) => {
         console.error('reCAPTCHA   加载失败:', error)
@@ -69,13 +70,6 @@ provide(VueReCaptchaInjectKey, {
     isLoaded,
     instance,
     executeRecaptcha,
-})
-
-// 监听 isLoaded 变化，加载完成后执行更新 token 操作
-watch(isLoaded, (newValue) => {
-    if (newValue) {
-        updateToken()
-    }
 })
 
 // 定义提供的接口

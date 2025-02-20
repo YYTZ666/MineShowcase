@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { NNotificationProvider, NPagination, NButton } from 'naive-ui';
+import { NNotificationProvider, NPagination, NButton } from 'naive-ui'
 import ServerCard from './ServerCard.vue'
 import { ServerAPI } from '../../hooks/api'
-import { usePagination } from 'alova/client';
-import { ref, watch } from 'vue';
+import { usePagination } from 'alova/client'
+import { ref, watch } from 'vue'
 
 interface Info {
     server_list: List[]
@@ -38,25 +38,25 @@ const { loading, data, page, pageCount, error } = usePagination(
     initialPageSize: 12,
     data: response => response.server_list,
     total: response => response.total,
-    debounce: 200,
+    debounce: 200
 })
 
 const random = () => {
     for (let i = data.value.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [data.value[i], data.value[j]] = [data.value[j], data.value[i]];
+        [data.value[i], data.value[j]] = [data.value[j], data.value[i]]
     }
-};
+}
 
 // 监听页码变化
-const isChangingPage = ref(false);
+const isChangingPage = ref(false)
 
 watch(page, () => {
-    isChangingPage.value = true;
+    isChangingPage.value = true
     setTimeout(() => {
-        isChangingPage.value = false;
-    }, 300);
-});
+        isChangingPage.value = false
+    }, 300)
+})
 </script>
 
 
