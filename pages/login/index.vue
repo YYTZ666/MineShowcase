@@ -47,14 +47,12 @@ interface Login {
 
 const loading = ref(false);
 
-const getSiteKey = () => ServerAPI.Get<SiteKey>("/auth/v1/hcaptcha-site-key");
+const getSiteKey = () => ServerAPI.Get<SiteKey>("/v1/hcaptcha-site-key");
 const { data } = useRequest(getSiteKey())
 const login = (data: { username: string, password: string, captcha_response: string }) => ServerAPI.Post<Login>("/auth/v1/login", data);
 
 
 const handleSubmit = async () => {
-
-
     // 发送请求到后端验证hCaptcha、用户名和密码
     const { data } = useRequest(login({
         username: form.value.account,
