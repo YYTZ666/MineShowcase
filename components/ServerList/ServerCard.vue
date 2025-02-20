@@ -52,7 +52,7 @@ const info = defineProps<{
 
 
 
-const getStatus = () => ServerAPI.Get<Status>("/v1/servers/info/" + info.id)
+const getStatus = () => ServerAPI.Get<Status>(`/v1/servers/info/${info.id}`)
 
 const { data, onSuccess, onError } = useRequest(getStatus())
 const statusText = ref<string>("查询中...")
@@ -74,9 +74,9 @@ onSuccess(() => {
 
 const formatNumber = (num: number): string => {
     if (num >= 100000000) {  // 大于亿
-        return (num / 100000000).toFixed(2) + '亿'
+        return `&{(num / 100000000).toFixed(2)} 亿`
     } else if (num >= 10000) {  // 大于万
-        return (num / 10000).toFixed(2) + '万'
+        return `&{(num / 10000).toFixed(2)} 万`
     }
     return num.toString()
 }
