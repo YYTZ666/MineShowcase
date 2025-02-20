@@ -37,7 +37,7 @@ interface Login {
     token_type: string
 }
 
-const loading = ref(false)
+const isLoaded = ref(false)
 
 const getSiteKey = () => ServerAPI.Get<SiteKey>("/v1/reCAPTCHA_site_key")
 const { data } = useRequest(getSiteKey())
@@ -84,14 +84,14 @@ const handleSubmit = () => {
                     <n-row :gutter="[0, 24]">
                         <n-col :span="24">
                             <div style="display: flex; justify-content: flex-end">
-                                <reCaptchaButton v-if="data" v-model="token" :siteKey="data.recapcha_sitekey"
+                                <reCaptchaButton v-if="data" v-model="token" @loaded="isLoaded" :siteKey="data.recapcha_sitekey"
                                     action="submit">
-                                    <n-button type="primary" :loading="loading" @click="handleSubmit()">
+                                    <n-button type="primary" :loading="isLoaded" @click="handleSubmit()">
                                         登录
                                     </n-button>
                                 </reCaptchaButton>
                                 <n-button v-else type="primary" :loading="true">
-                                    验证失败
+                                    加载中...
                                 </n-button>
                             </div>
                         </n-col>
