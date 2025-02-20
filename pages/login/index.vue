@@ -49,7 +49,7 @@ const loading = ref(false);
 
 const getSiteKey = () => ServerAPI.Get<SiteKey>("/v1/hcaptcha-site-key");
 const { data } = useRequest(getSiteKey())
-const login = (data: { username: string, password: string, captcha_response: string }) => ServerAPI.Post<Login>("/auth/v1/login", data);
+const login = (data: { username: string, password: string, captcha_response: string }) => ServerAPI.Post<Login>("/v1/login", data);
 
 
 const handleSubmit = async () => {
