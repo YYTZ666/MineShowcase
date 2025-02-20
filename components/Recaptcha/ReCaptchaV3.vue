@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, provide, defineProps, defineEmits, InjectionKey, onMounted, watch } from 'vue'
+import { ref, provide, defineProps, defineEmits, InjectionKey, watch } from 'vue'
 import { IReCaptchaLoaderOptions } from 'recaptcha-v3/dist/ReCaptchaLoader'
 import { load as loadReCaptcha, ReCaptchaInstance } from 'recaptcha-v3'
 
@@ -32,35 +32,35 @@ const loading = ref(false)
 
 // 初始化 reCAPTCHA
 async function initializeReCaptcha() {
-    return loadReCaptcha(props.siteKey,  props.loaderOptions) 
+    return loadReCaptcha(props.siteKey, props.loaderOptions)
 }
 
 // 执行 reCAPTCHA 验证
 async function executeRecaptcha(action: string) {
-    return instance.value?.execute(action) 
+    return instance.value?.execute(action)
 }
 
 // 更新 Token
 async function updateToken() {
-    loading.value   = true
+    loading.value = true
     try {
-        const token = await executeRecaptcha(props.action) 
+        const token = await executeRecaptcha(props.action)
         console.log('reCAPTCHA   token:', token)
         emits('update:modelValue', token)
     } catch (error) {
         console.error('reCAPTCHA   验证失败:', error)
     } finally {
-        loading.value   = false
+        loading.value = false
     }
 }
 
 // 初始化 reCAPTCHA 实例
 initializeReCaptcha()
-   .then((wrapper) => {
-        isLoaded.value  = true
-        instance.value  = wrapper
+    .then((wrapper) => {
+        isLoaded.value = true
+        instance.value = wrapper
     })
-   .catch((error) => {
+    .catch((error) => {
         console.error('reCAPTCHA   加载失败:', error)
     })
 
