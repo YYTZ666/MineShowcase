@@ -72,13 +72,13 @@ onUnmounted(() => {
                 <main class="main-content">
                     <br />
                     <ClientOnly>
-                    <MdEditor
-                        v-model="text"
-                        style="width: 100%; height: 100%"
-                        editor-id="ServerInfo"
-                        :inputBoxWidth="inputBoxWidth"
-                        noMermaid
-                    />
+                        <MdEditor
+                            v-model="text"
+                            style="width: 100%; height: 100%"
+                            editor-id="ServerInfo"
+                            :inputBoxWidth="inputBoxWidth"
+                            noMermaid
+                        />
                     </ClientOnly>
                 </main>
             </div>
