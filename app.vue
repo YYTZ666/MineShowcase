@@ -1,21 +1,25 @@
 <script setup lang="ts">
 useHead({
-  title: 'MineShowcase',
-  meta: [
-    { name: 'description', content: 'MineShowcase 是一个以 MSCPO/ServerAPI 作为后端的MSCPO页面' }
-  ],
-  bodyAttrs: {
-    class: 'test'
-  },
-  script: [{ innerHTML: 'console.log(\'Hello world\')' }]
+    title: 'MineShowcase',
+    meta: [
+        {
+            name: 'description',
+            content:
+                'MineShowcase 是一个以 MSCPO/ServerAPI 作为后端的MSCPO页面',
+        },
+    ],
+    bodyAttrs: {
+        class: 'test',
+    },
+    script: [{ innerHTML: "console.log('Hello world')" }],
 })
 </script>
 
 <template>
-  <naive-config>
-    <div>
-      <NuxtRouteAnnouncer />
-    </div>
-    <NuxtPage />
-  </naive-config>
+    <naive-config>
+        <div>
+            <NuxtRouteAnnouncer />
+        </div>
+        <NuxtPage />
+    </naive-config>
 </template>

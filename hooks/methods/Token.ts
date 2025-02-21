@@ -1,6 +1,6 @@
-import { createAlova } from "alova";
-import VueHook from "alova/vue";
-import adapterFetch from "alova/fetch";
+import { createAlova } from 'alova'
+import VueHook from 'alova/vue'
+import adapterFetch from 'alova/fetch'
 
 function getToken() {
     let temp_Token = ''
@@ -22,7 +22,7 @@ function getToken() {
 export const GetToken = getToken()
 
 export const ServerAPI_Token = createAlova({
-    baseURL: "https://mscpoapi.tblstudio.cn/",
+    baseURL: 'https://mscpoapi.tblstudio.cn/',
     statesHook: VueHook,
     requestAdapter: adapterFetch(),
     // 全局请求拦截器
@@ -32,4 +32,4 @@ export const ServerAPI_Token = createAlova({
         config.headers['Content-Type'] = 'application/json; charset=utf-8'
     },
     responded: (response) => response.json(),
-});
+})

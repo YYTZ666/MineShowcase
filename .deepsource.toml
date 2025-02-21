@@ -3,13 +3,9 @@ version = 1
 [[analyzers]]
 name = "javascript"
 
-  [analyzers.meta]
-  plugins = ["vue"]
-  environment = [
-    "nodejs",
-    "browser",
-    "vitest"
-  ]
+[analyzers.meta]
+plugins = ["vue"]
+environment = ["nodejs", "browser", "vitest"]
 
 [[transformers]]
 name = "prettier"
