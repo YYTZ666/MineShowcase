@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { NNotificationProvider, NPagination, NButton } from 'naive-ui'
 import ServerCard from './ServerCard.vue'
 import { ServerAPI } from '../../hooks/api'
 import { usePagination } from 'alova/client'

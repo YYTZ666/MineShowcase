@@ -4,7 +4,6 @@ import Logo from '../assets/logo.webp'
 import { ref, onMounted } from 'vue'
 import { ServerAPI_Token } from '../hooks/api'
 import { useRequest } from 'alova/client'
-import { NAvatar } from 'naive-ui'
 
 interface User {
     username: string

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { lightTheme, NForm, NFormItem, NButton, NInput, NRow, NCol, NConfigProvider } from 'naive-ui'
+import { lightTheme } from 'naive-ui'
 import { ServerAPI } from '../../hooks/api'
 import { useRequest } from 'alova/client'
 import reCaptchaButton from '../../components/Recaptcha/ReCaptchaV3.vue'
