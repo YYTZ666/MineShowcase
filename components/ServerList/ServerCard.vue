@@ -5,35 +5,7 @@ import { ref } from 'vue'
 import { ServerAPI } from '../../hooks/api'
 import { useRequest } from 'alova/client'
 import { invalidateCache } from 'alova'
-
-interface Status {
-    id: number
-    name: string
-    ip: string | null
-    type: 'JAVA' | 'BEDROCK'
-    version: string
-    desc: string
-    link: string
-    is_member: boolean
-    is_hide: boolean
-    auth_mode: 'OFFLINE' | 'OFFICIAL' | 'YGGDRASIL'
-    tags: Array<string>
-    status: {
-        players: {
-            online: number
-            max: number
-        }
-        delay: number
-        version: string
-        motd: {
-            plain: string
-            html: string
-            minecraft: string
-            ansi: string
-        }
-        icon: string | null
-    } | null
-}
+import type { Status } from '../../hooks/type_models'
 
 const info = defineProps<{
     name: string

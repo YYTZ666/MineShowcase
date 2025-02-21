@@ -4,18 +4,7 @@ import Logo from '../assets/logo.webp'
 import { ref, onMounted } from 'vue'
 import { ServerAPI_Token } from '../hooks/api'
 import { useRequest } from 'alova/client'
-
-interface User {
-    username: string
-    email: string
-    display_name: string
-    avatar_url: string
-    role: string
-    is_active: boolean
-    id: number
-    created_at: string
-    last_login: string
-}
+import type { User } from '../hooks/type_models'
 
 const { data, onSuccess } = useRequest(ServerAPI_Token.Get<User>('/v1/me'))
 

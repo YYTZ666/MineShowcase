@@ -4,6 +4,7 @@ import { lightTheme } from 'naive-ui'
 import { ServerAPI } from '../../hooks/api'
 import { useRequest } from 'alova/client'
 import reCaptchaButton from '../../components/Recaptcha/ReCaptchaV3.vue'
+import type { SiteKey, Login } from '../../hooks/type_models'
 
 const form = ref({
     account: '',
@@ -25,15 +26,6 @@ const rules = {
             trigger: 'blur',
         },
     ],
-}
-
-interface SiteKey {
-    recapcha_sitekey: string
-}
-
-interface Login {
-    access_token: string
-    token_type: string
 }
 
 const isLoaded = ref(false)
