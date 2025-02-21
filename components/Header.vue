@@ -17,13 +17,16 @@ interface User {
   last_login: string
 }
 
+
 const { data, onSuccess } = useRequest(ServerAPI_Token.Get<User>('/v1/me'))
 
 const avatar = ref(Logo)
+const token_status = ref(false)
 onMounted(() => {
   const token = localStorage.getItem('token')
   onSuccess(() => {
     if (token) {
+      token_status.value = true
       avatar.value = data.value.avatar_url
     }
   })
@@ -41,7 +44,7 @@ onMounted(() => {
       <NuxtLink
         class="login"
         to="/user"
-        v-if="data"
+        v-if="token_status"
         v-text="data.username"
       ></NuxtLink>
       <NuxtLink class="login" to="/login" v-else>登录</NuxtLink>
