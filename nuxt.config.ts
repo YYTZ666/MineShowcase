@@ -18,8 +18,11 @@ export default defineNuxtConfig({
       content()
     ],
   },
+  features: {
+    inlineStyles: true,
+  },
   // build: {
-  //   analyze: true
+  //   analyze: true,
   // },
   app: {
     head: {
@@ -28,19 +31,6 @@ export default defineNuxtConfig({
         { rel: 'icon', href: '/logo.webp', sizes: 'any' }
       ],
     },
-  },
-  webpack: {
-    optimization: {
-      splitChunks: {
-        chunks: 'all',
-        minSize: 20000,
-        minChunks: 2,
-        automaticNameDelimiter: '-',
-        maxSize: 51200,
-        maxAsyncRequests:6,
-        maxInitialRequests: 6
-      }
-    }
   },
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
