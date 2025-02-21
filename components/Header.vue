@@ -1,5 +1,34 @@
 <script setup lang="ts">
 import lang from '../languages/index'
+import Logo from '../assets/logo.webp'
+import { ref, onMounted } from 'vue'
+import { ServerAPI_Token } from '../hooks/api'
+import { useRequest } from 'alova/client'
+import { NAvatar } from 'naive-ui'
+
+interface User {
+    username: string
+    email: string
+    display_name: string
+    avatar_url: string
+    role: string
+    is_active: boolean
+    id: number
+    created_at: string
+    last_login: string
+}
+
+const { data, onSuccess, } = useRequest(ServerAPI_Token.Get<User>('/v1/me'))
+
+const avatar = ref(Logo)
+onMounted(() => {
+    const token = localStorage.getItem('token')
+    onSuccess(() => {
+        if (token) {
+            avatar.value = data.value.avatar_url
+        }
+    })
+})
 </script>
 
 <template>
@@ -9,8 +38,9 @@ import lang from '../languages/index'
             <h2>{{ lang.NavBar.title }}</h2>
         </div>
         <div class="account">
-            <img src="/logo.webp" />
-            <NuxtLink class="login" to="/login">登录</NuxtLink>
+            <n-avatar size="medium" :src="avatar" />
+            <NuxtLink class="login" to="/user" v-if="data" v-text="data.username"></NuxtLink>
+            <NuxtLink class="login" to="/login" v-else>登录</NuxtLink>
         </div>
     </div>
 </template>
@@ -28,18 +58,22 @@ import lang from '../languages/index'
         gap: 1rem;
         align-items: center;
         height: 2rem;
+
         img {
             height: 100%;
         }
     }
+
     .account {
         display: flex;
         gap: 1rem;
         align-items: center;
         height: 2rem;
+
         img {
             height: 100%;
         }
+
         .login {
             font-size: 1rem;
         }
