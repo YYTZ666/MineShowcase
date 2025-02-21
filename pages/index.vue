@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import NavBar from "../components/NavBar.vue"
-import Header from "../components/Header.vue"
+import NavBar from '../components/NavBar.vue'
+import Header from '../components/Header.vue'
 import { lightTheme } from 'naive-ui'
-import ServerList from "../components/ServerList/ServerList.vue"
-import "../assets/css/index.less"
+import ServerList from '../components/ServerList/ServerList.vue'
+import '../assets/css/index.less'
 </script>
 
 <template>
@@ -81,6 +81,7 @@ import "../assets/css/index.less"
       padding: @padding-size;
       padding-top: 0;
       transition: 0.3s all;
+
       @media screen and (max-width: 1200px) {
         margin-left: 0;
       }
