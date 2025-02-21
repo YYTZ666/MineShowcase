@@ -20,7 +20,7 @@ const props = defineProps({
     modelValue: String
 })
 
-const emits = defineEmits(['update:modelValue', 'loaded', 'execute'])
+const emits = defineEmits(['update:modelValue', 'execute'])
 
 // 组件状态
 const isLoaded = ref(false)
@@ -67,7 +67,6 @@ initializeReCaptcha()
         isLoaded.value = true
         instance.value = wrapper
         // 发出 loaded 事件，标记 reCAPTCHA 已加载完成
-        emits('loaded', true)
         updateToken()
     })
     .catch((error) => {

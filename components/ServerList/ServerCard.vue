@@ -2,7 +2,7 @@
 import IMG_noicon from '../../assets/noicon.svg'
 import IMG_noimage from '../../assets/noimage.svg'
 import { ref } from 'vue'
-import { NTag, NInput, NSpace, NInputGroup, useNotification, NTooltip, NCarousel } from 'naive-ui'
+import { NTag, NInput, NSpace, NInputGroup, useNotification, NTooltip, NCarousel, NSkeleton } from 'naive-ui'
 import { ServerAPI } from '../../hooks/api'
 import { useRequest } from 'alova/client'
 import { invalidateCache } from 'alova'
@@ -55,8 +55,8 @@ const info = defineProps<{
 const getStatus = () => ServerAPI.Get<Status>(`/v1/servers/info/${info.id}`)
 
 const { data, onSuccess, onError } = useRequest(getStatus())
-const statusText = ref<string>("查询中...")
-const statusIcon = ref<string>(IMG_noicon)
+const statusText = ref<string | null>(null)
+const statusIcon = ref<string | null>(null)
 const statusColor = ref<{ color: string; textColor: string }>({ color: '#00C5CD', textColor: '#dfe6e9' })
 
 onSuccess(() => {
@@ -127,7 +127,8 @@ const copyToClipboard = (event: MouseEvent) => {
         </div>
         <div class="card-split">
             <div class="card-icon">
-                <img :src="statusIcon" />
+                <img v-if="statusIcon" :src="statusIcon" />
+                <n-skeleton v-else height="100%" width="100%" />
             </div>
             <div class="card-info">
                 <div class="title-box">
@@ -135,11 +136,12 @@ const copyToClipboard = (event: MouseEvent) => {
                     <span class="t_player_num" v-if="data && data.status !== null">
                         ({{ formatNumber(data.status.players.online) }} / {{ formatNumber(data.status.players.max) }})
                     </span>
-
+                    <n-skeleton class="t_player_num" v-else-if="statusText != '离线'" width="2.5rem" />
                 </div>
                 <div>
                     <n-input-group>
-                        <NTag size="small" :color="statusColor" v-text="statusText"></NTag>
+                        <n-tag size="small" v-if="statusText" :color="statusColor" v-text="statusText"></n-tag>
+                        <n-skeleton v-else height="22px" style="width: 2rem" />
                         <n-input placeholder="Error！QAQ" :value="info.ip" readonly="true" size="tiny"
                             @click="copyToClipboard"
                             style="width: auto; min-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />

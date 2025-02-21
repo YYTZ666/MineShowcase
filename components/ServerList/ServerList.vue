@@ -34,6 +34,7 @@ const { loading, data, page, pageCount, error } = usePagination(
                 limit: 12
             }
         }), {
+    initialData: [],
     initialPage: 1, // 初始页码，默认为1
     initialPageSize: 12,
     data: response => response.server_list,

@@ -47,17 +47,18 @@ const token = ref("")
 
 const handleSubmit = () => {
     // 发送请求到后端验证reCaptcha、用户名和密码
-    const { data } = useRequest(login({
+    const { data, onSuccess } = useRequest(login({
         username: form.value.account,
         password: form.value.password,
         captcha_response: token.value
     }))
-
-    // 登录成功，保存token
-    if (data.value.access_token) {
-        localStorage.setItem('token', data.value.access_token)
-        location.href = '/'
-    }
+    onSuccess(() => {
+        // 登录成功，保存token
+        if (data.value.access_token) {
+            localStorage.setItem('token', data.value.access_token)
+            location.href = '/'
+        }
+    })
 }
 </script>
 
@@ -84,9 +85,9 @@ const handleSubmit = () => {
                     <n-row :gutter="[0, 24]">
                         <n-col :span="24">
                             <div style="display: flex; justify-content: flex-end">
-                                <reCaptchaButton v-if="data" v-model="token" @loaded="isLoaded" :siteKey="data.recapcha_sitekey"
-                                    action="submit">
-                                    <n-button type="primary" :loading="isLoaded" @click="handleSubmit()">
+                                <reCaptchaButton v-if="data" v-model="token" @loaded="isLoaded"
+                                    :siteKey="data.recapcha_sitekey" action="submit">
+                                    <n-button type="primary" :loading="token == ''" @click="handleSubmit()">
                                         登录
                                     </n-button>
                                 </reCaptchaButton>
