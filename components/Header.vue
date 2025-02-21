@@ -17,7 +17,6 @@ interface User {
   last_login: string
 }
 
-
 const { data, onSuccess } = useRequest(ServerAPI_Token.Get<User>('/v1/me'))
 
 const avatar = ref(Logo)
