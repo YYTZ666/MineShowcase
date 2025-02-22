@@ -5,7 +5,7 @@
  *
  */
 
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router' // 导入 useRoute 函数
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
@@ -14,9 +14,10 @@ import Header from '../../components/Header.vue'
 import { lightTheme, NConfigProvider } from 'naive-ui'
 import '../assets/css/index.less'
 import { useRequest } from 'alova/client'
-import { ServerAPI } from '../../hooks/api'
-import type { Status } from '../../hooks/type_models'
+import { ServerAPI, fetch_status } from '../../hooks/api'
+import type { Status, Fetch_Status } from '../../hooks/type_models'
 import Img404 from '../../assets/error.jpg'
+import { debounce } from 'lodash'
 
 // 获取当前路由信息
 const route = useRoute()
@@ -29,17 +30,15 @@ const { data, onSuccess } = useRequest(
 
 const info = ref({
     code: 200,
-    title: '获取中...',
     text: '获取中...',
     name: '获取中...',
-    ip: '获取中...'
+    ip: '获取中...',
 })
 
 onSuccess(() => {
     console.log(data.value)
     // 文本内容赋值
     if (data.value.code == 200) {
-        info.value.title = data.value.name
         info.value.text = data.value.desc
         info.value.name = data.value.name
         if (data.value.ip) {
@@ -50,7 +49,7 @@ onSuccess(() => {
     } else {
         info.value.code = data.value.code
         if (data.value.detail != undefined) {
-            info.value.title = data.value.detail
+            info.value.name = data.value.detail
             info.value.text = data.value.detail
             console.error(
                 `请求失败: Code ${data.value.code} ${data.value.detail}`,
@@ -81,6 +80,28 @@ onMounted(() => {
 onUnmounted(() => {
     window.removeEventListener('resize', initInputBoxWidth)
 })
+
+const ServerOnline = ref<undefined | string>(undefined)
+
+// 获取服务器状态
+const debouncedCallback = debounce(() => {
+    const { data, onSuccess } = useRequest(
+        fetch_status.Get<Fetch_Status>(`?ip=${info.value.ip}`),
+    )
+    onSuccess(() => {
+        if (data.value.online) {
+            ServerOnline.value = 'warning'
+        } else {
+            ServerOnline.value = 'error'
+        }
+        if (info.value.ip === '') {
+            ServerOnline.value = undefined
+        }
+    })
+}, 1000) // 防抖时间为500毫秒，可以根据需求调整
+
+// 监听 IP 变化，获取服务器状态以检查服务器 IP 可用性
+watch(() => info.value.ip, debouncedCallback)
 </script>
 
 <template>
@@ -98,9 +119,21 @@ onUnmounted(() => {
                     <ClientOnly>
                         <h1>服务器信息</h1>
                         <div v-if="info.code == 200">
-                            <p>名称：{{ info.name }}</p>
-                            <p>IP：{{ info.ip }}</p>
-                            <h2>编辑：{{ info.title }}</h2>
+                            <h2>编辑：{{ info.name }}</h2>
+                            服务器名称：
+                            <n-input
+                                v-model:value="info.name"
+                                type="text"
+                                placeholder="服务器名称"
+                            />
+                            服务器地址：
+                            <n-input
+                                v-model:value="info.ip"
+                                type="text"
+                                placeholder="服务器地址"
+                                :status="ServerOnline"
+                            />
+                            {{ ServerOnline }}
                             <MdEditor
                                 v-model="info.text"
                                 style="width: 100%"
@@ -110,10 +143,17 @@ onUnmounted(() => {
                             />
                         </div>
                         <div v-else>
-                            <p v-if="info.code == 404">服务器不存在QAQ (Code: {{ info.code }})</p>
-                            <p v-else="info.code == 422">请求参数出错QAQ (Code: {{ info.code }})</p>
-                            <h2>什么？这不是 {{ info.code }} ，这是服务器回老家过年了</h2>
-                            <img :src="Img404">
+                            <p v-if="info.code == 404">
+                                服务器不存在QAQ (Code: {{ info.code }})
+                            </p>
+                            <p v-else="info.code == 422">
+                                请求参数出错QAQ (Code: {{ info.code }})
+                            </p>
+                            <h2>
+                                什么？这不是
+                                {{ info.code }} ，这是服务器回老家过年了
+                            </h2>
+                            <img :src="Img404" />
                         </div>
                     </ClientOnly>
                 </main>

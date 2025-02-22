@@ -47,6 +47,23 @@ export interface Status {
     detail?: string
 }
 
+export interface Fetch_Status {
+    online: boolean
+    players: {
+        online: number
+        max: number
+    }
+    delay: number
+    version: string
+    motd: {
+        plain: string
+        html: string
+        minecraft: string
+        ansi: string
+    }
+    icon: string | null
+}
+
 export interface ListItem {
     name: string
     id: number
