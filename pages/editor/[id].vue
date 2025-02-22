@@ -16,6 +16,7 @@ import '../assets/css/index.less'
 import { useRequest } from 'alova/client'
 import { ServerAPI } from '../../hooks/api'
 import type { Status } from '../../hooks/type_models'
+import Img404 from '../../assets/error.jpg'
 
 // 获取当前路由信息
 const route = useRoute()
@@ -26,13 +27,36 @@ const { data, onSuccess } = useRequest(
     ServerAPI.Get<Status>(`/v1/servers/info/${ServerID}`),
 )
 
-// 初始化文本内容
-const text = ref('待添加')
+const info = ref({
+    code: 200,
+    title: '获取中...',
+    text: '获取中...',
+    name: '获取中...',
+    ip: '获取中...'
+})
 
 onSuccess(() => {
+    console.log(data.value)
     // 文本内容赋值
-    text.value = data.value.desc
-    console.log(data.value.desc)
+    if (data.value.code == 200) {
+        info.value.title = data.value.name
+        info.value.text = data.value.desc
+        info.value.name = data.value.name
+        if (data.value.ip) {
+            info.value.ip = data.value.ip
+        } else {
+            info.value.ip = '待填写'
+        }
+    } else {
+        info.value.code = data.value.code
+        if (data.value.detail != undefined) {
+            info.value.title = data.value.detail
+            info.value.text = data.value.detail
+            console.error(
+                `请求失败: Code ${data.value.code} ${data.value.detail}`,
+            )
+        }
+    }
 })
 
 // 初始化输入框宽度
@@ -72,13 +96,25 @@ onUnmounted(() => {
                 <main class="main-content">
                     <br />
                     <ClientOnly>
-                        <MdEditor
-                            v-model="text"
-                            style="width: 100%; height: 100%"
-                            editor-id="ServerInfo"
-                            :inputBoxWidth="inputBoxWidth"
-                            noMermaid
-                        />
+                        <h1>服务器信息</h1>
+                        <div v-if="info.code == 200">
+                            <p>名称：{{ info.name }}</p>
+                            <p>IP：{{ info.ip }}</p>
+                            <h2>编辑：{{ info.title }}</h2>
+                            <MdEditor
+                                v-model="info.text"
+                                style="width: 100%"
+                                editor-id="ServerInfo"
+                                :inputBoxWidth="inputBoxWidth"
+                                noMermaid
+                            />
+                        </div>
+                        <div v-else>
+                            <p v-if="info.code == 404">服务器不存在QAQ (Code: {{ info.code }})</p>
+                            <p v-else="info.code == 422">请求参数出错QAQ (Code: {{ info.code }})</p>
+                            <h2>什么？这不是 {{ info.code }} ，这是服务器回老家过年了</h2>
+                            <img :src="Img404">
+                        </div>
                     </ClientOnly>
                 </main>
             </div>

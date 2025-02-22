@@ -5,21 +5,9 @@ import { ref } from 'vue'
 import { ServerAPI } from '../../hooks/api'
 import { useRequest } from 'alova/client'
 import { invalidateCache } from 'alova'
-import type { Status } from '../../hooks/type_models'
+import type { Status, ListItem } from '../../hooks/type_models'
 
-const info = defineProps<{
-    name: string
-    id: number
-    type: 'JAVA' | 'BEDROCK'
-    version: string
-    desc: string
-    link: string
-    ip: string | null
-    is_member: boolean
-    is_hide: boolean
-    auth_mode: 'OFFLINE' | 'OFFICIAL' | 'YGGDRASIL'
-    tags: Array<string>
-}>()
+const info = defineProps<ListItem>()
 
 const getStatus = () => ServerAPI.Get<Status>(`/v1/servers/info/${info.id}`)
 

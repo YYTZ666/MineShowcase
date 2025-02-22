@@ -6,5 +6,8 @@ export const ServerAPI = createAlova({
     baseURL: 'https://mscpoapi.tblstudio.cn/',
     statesHook: VueHook,
     requestAdapter: adapterFetch(),
-    responded: (response) => response.json(),
+    responded: async (response) => ({
+        ...(await response.json()),
+        code: response.status,
+    }),
 })

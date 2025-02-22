@@ -43,6 +43,22 @@ export interface Status {
         }
         icon: string | null
     } | null
+    code: number
+    detail?: string
+}
+
+export interface ListItem {
+    name: string
+    id: number
+    type: 'JAVA' | 'BEDROCK'
+    version: string
+    desc: string
+    link: string
+    ip: string | null
+    is_member: boolean
+    is_hide: boolean
+    auth_mode: 'OFFLINE' | 'OFFICIAL' | 'YGGDRASIL'
+    tags: Array<string>
 }
 
 export interface SiteKey {
