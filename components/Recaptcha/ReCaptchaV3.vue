@@ -51,7 +51,7 @@ async function updateToken() {
     try {
         // 执行 reCAPTCHA 验证
         const token = await executeRecaptcha(props.action)
-        console.log('reCAPTCHA  token:', token)
+        // console.log('reCAPTCHA  token:', token)
         // 发出 update:modelValue 事件，更新绑定的 Token
         emits('update:modelValue', token)
     } catch (error) {

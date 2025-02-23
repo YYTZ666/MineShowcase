@@ -11,7 +11,7 @@ const info = defineProps<ListItem>()
 
 const getStatus = () => ServerAPI.Get<Status>(`/v1/servers/info/${info.id}`)
 const { data, onSuccess, onError } = useRetriableRequest(getStatus(), {
-    retry: 3
+    retry: 3,
 })
 
 const statusText = ref<string | undefined>(undefined)
@@ -123,7 +123,12 @@ const copyToClipboard = (event: MouseEvent) => {
             </div>
             <div class="card-info">
                 <div class="title-box">
-                    <n-skeleton v-if="Loading" text height="1.8rem" width="8rem" />
+                    <n-skeleton
+                        v-if="Loading"
+                        text
+                        height="1.8rem"
+                        width="8rem"
+                    />
                     <h1 v-else class="title">{{ info.name }}</h1>
                     <n-skeleton
                         v-if="Loading"

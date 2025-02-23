@@ -4,6 +4,11 @@ import Register from '../../components/Authorization/Register.vue'
 import { ref } from 'vue'
 
 const Switch = ref(false)
+
+const RegToken = useRoute().query.token
+if (RegToken) {
+    Switch.value = true
+}
 </script>
 
 <template>
@@ -21,8 +26,10 @@ const Switch = ref(false)
                 <template #checked>登录</template>
                 <template #unchecked>注册</template>
             </n-switch>
-            <Register v-if="Switch" />
-            <Login v-else />
+            <n-notification-provider>
+                <Register :token="RegToken" v-if="Switch" />
+                <Login v-else />
+            </n-notification-provider>
         </div>
     </div>
 </template>

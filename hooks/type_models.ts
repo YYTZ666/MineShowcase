@@ -111,5 +111,5 @@ export interface Register {
         display_name: string
         token: string
     }
-    avatar: File
+    avatar: File | undefined
 }
