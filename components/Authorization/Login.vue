@@ -14,7 +14,7 @@ const rules = {
     account: [
         {
             required: true,
-            message: '请输入账户',
+            message: '请输入账户/邮箱',
             trigger: 'blur',
         },
     ],

@@ -23,29 +23,24 @@ const isLoaded = ref(false)
 
 const getSiteKey = () => ServerAPI.Get<SiteKey>('/v1/reCAPTCHA_site_key')
 const { data } = useRequest(getSiteKey())
-const login = (data: {
-    username: string
-    password: string
+const verifyemail = (data: {
+    email: string
     captcha_response: string
-}) => ServerAPI.Post<Login>('/v1/login', data)
+}) => ServerAPI.Post<Login>('/v1/verifyemail', data)
 
 const token = ref('')
 
 const handleSubmit = () => {
     // 发送请求到后端验证reCaptcha、用户名和密码
-    const { data, onSuccess } = useRequest(
-        login({
-            username: form.value.account,
-            password: form.value.password,
+    const { onSuccess } = useRequest(
+        verifyemail({
+            email: form.value.email,
             captcha_response: token.value,
         }),
     )
     onSuccess(() => {
-        // 登录成功，保存token
-        if (data.value.access_token) {
-            localStorage.setItem('token', data.value.access_token)
-            location.href = '/'
-        }
+        // 注册请求发送成功，保存token
+        console.log("发送成功！")
     })
 }
 </script>
@@ -71,7 +66,7 @@ const handleSubmit = () => {
                             :loading="token == ''"
                             @click="handleSubmit()"
                         >
-                            验证
+                            验证并继续
                         </n-button>
                     </reCaptcha>
                     <n-button v-else type="primary" :loading="true">

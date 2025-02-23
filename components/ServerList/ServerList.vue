@@ -2,23 +2,13 @@
 import ServerCard from './ServerCard.vue'
 import { ServerAPI } from '../../hooks/api'
 import { usePagination } from 'alova/client'
-import { ref, watch, onUnmounted } from 'vue'
-import type { Status } from '../../hooks/type_models'
+import { ref, watch } from 'vue'
+import type { List } from '../../hooks/type_models'
 
-interface Info {
-    server_list: List[]
-    total_member: number
-    total: number
-}
-
-interface List {
-    id: number
-    name: string
-}
-
+// 请求分页数据
 const { loading, data, page, pageCount, error } = usePagination(
     (page, pageSize) =>
-        ServerAPI.Get<Info>('/v1/servers', {
+        ServerAPI.Get<List>('/v1/servers', {
             params: {
                 offset: (page - 1) * pageSize,
                 limit: 12,
@@ -26,79 +16,36 @@ const { loading, data, page, pageCount, error } = usePagination(
         }),
     {
         initialData: [],
-        initialPage: 1,
+        initialPage: 1, // 初始页码，默认为1
         initialPageSize: 12,
-        data: (response) =>
-            (response.server_list || []).map((server) => server.id),
+        data: (response) => response.server_list,
         total: (response) => response.total,
         debounce: 200,
     },
 )
 
-const serverDetails = ref<Status[]>([])
-const isFetchingDetails = ref(false)
-const cache = new Map<number, Status>()
-let abortController: AbortController | null = null
-
-onUnmounted(() => {
-    abortController?.abort()
-})
-
-const fetchServerDetails = async () => {
-    abortController?.abort()
-    abortController = new AbortController()
-
-    const ids = data.value || []
-    serverDetails.value = [] // 立即清空旧数据
-
-    if (!ids.length) return
-
-    isFetchingDetails.value = true
-    try {
-        const detailsPromises = ids.map((id) => {
-            // 强制跳过缓存，每次重新请求
-            return ServerAPI.Get<Status>(`/v1/servers/info/${id}`, {
-                signal: abortController!.signal,
-            }).then((res) => {
-                cache.set(id, res) // 更新缓存
-                return res
-            })
-        })
-
-        const details = await Promise.all(detailsPromises)
-        serverDetails.value = details
-    } catch (error) {
-        console.error('获取服务器详情失败', error)
-    } finally {
-        isFetchingDetails.value = false
+// 洗牌算法随机
+const random = () => {
+    for (let i = data.value.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[data.value[i], data.value[j]] = [data.value[j], data.value[i]]
     }
 }
 
-const random = () => {
-    serverDetails.value = [
-        ...serverDetails.value.sort(() => Math.random() - 0.5),
-    ]
-}
-
+// 监听页码变化
 const isChangingPage = ref(false)
-watch(
-    data,
-    async () => {
-        isChangingPage.value = true
-        try {
-            await fetchServerDetails()
-        } finally {
-            isChangingPage.value = false
-        }
-    },
-    { immediate: true },
-)
+
+watch(page, () => {
+    isChangingPage.value = true
+    setTimeout(() => {
+        isChangingPage.value = false
+    }, 300)
+})
 </script>
 
 <template>
     <h1>ServerList</h1>
-
-    <div v-if="loading">加载中...</div>
+    <div v-if="loading">Loading...</div>
     <div v-else-if="error">加载失败QAQ (code: {{ error.message }})</div>
     <div v-else>
         <div class="page">
@@ -106,45 +53,22 @@ watch(
             <n-pagination v-model:page="page" :page-count="pageCount" simple />
         </div>
         <br />
-
         <NNotificationProvider placement="bottom-right">
             <Transition name="page-change" mode="out-in">
-                <div :key="page">
-                    <div v-if="isFetchingDetails" class="loading-text">
-                        服务器详情加载中...
-                    </div>
-                    <TransitionGroup
-                        v-else
-                        tag="div"
-                        name="fade"
-                        class="grid-list"
-                    >
+                <div :key="page" v-if="!isChangingPage">
+                    <TransitionGroup tag="div" name="fade" class="grid-list">
                         <ServerCard
-                            v-for="server in serverDetails"
+                            v-for="server in data"
                             :key="server.id"
                             :id="server.id"
                             :name="server.name"
-                            :type="server.type"
-                            :version="server.version"
-                            :desc="server.desc"
-                            :link="server.link"
-                            :ip="server.ip"
-                            :is_member="server.is_member"
-                            :is_hide="server.is_hide"
-                            :auth_mode="server.auth_mode"
-                            :tags="server.tags"
-                            :status="server.status"
                         />
                     </TransitionGroup>
                 </div>
             </Transition>
         </NNotificationProvider>
         <br />
-        <n-pagination
-            v-if="!isFetchingDetails"
-            v-model:page="page"
-            :page-count="pageCount"
-        />
+        <n-pagination v-model:page="page" :page-count="pageCount" />
     </div>
 </template>
 
@@ -175,10 +99,5 @@ watch(
 .page-change-leave-to {
     opacity: 0;
     transform: translateY(20px);
-}
-.loading-text {
-    text-align: center;
-    padding: 20px;
-    color: #666;
 }
 </style>

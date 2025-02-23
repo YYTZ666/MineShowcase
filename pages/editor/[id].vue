@@ -40,11 +40,7 @@ onSuccess(() => {
     if (data.value.code == 200) {
         info.value.text = data.value.desc
         info.value.name = data.value.name
-        if (data.value.ip) {
-            info.value.ip = data.value.ip
-        } else {
-            info.value.ip = '待填写'
-        }
+        info.value.ip = data.value.ip
     } else {
         info.value.code = data.value.code
         if (data.value.detail != undefined) {

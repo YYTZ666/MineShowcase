@@ -1,9 +1,11 @@
-/**
- * 数据模型
- * 此文件，定义了数据的类型以便于类型重用
- */
+//
+// 数据模型
+// 此文件，定义了数据的类型以便于类型重用
+//
 
-// 用户（ServerAPI）
+/**
+ * 用户（ServerAPI）
+ */
 export interface User {
     username: string
     email: string
@@ -16,7 +18,9 @@ export interface User {
     last_login: string
 }
 
-// 服务器列表数据模型（ServerAPI）
+/**
+ * 服务器列表数据模型（ServerAPI）
+ */
 export interface List {
     server_list: ListItem[]
     total_member: number
@@ -28,7 +32,9 @@ export interface ListItem {
     name: string
 }
 
-// 服务器详细信息获取数据模型（ServerAPI）
+/**
+ * 服务器详细信息获取数据模型（ServerAPI）
+ */
 export interface Status {
     id: number
     name: string
@@ -56,9 +62,13 @@ export interface Status {
         }
         icon: string | null
     } | null
+    code: number
+    detail: string | undefined
 }
 
-// 服务器状态获取数据模型（MineStatus API）
+/**
+ * 服务器状态获取数据模型（MineStatus API）
+ */
 export interface Fetch_Status {
     online: boolean
     players: {
@@ -76,11 +86,30 @@ export interface Fetch_Status {
     icon: string | null
 }
 
+/**
+ * ReCapcha_sitekey 数据模型
+ */
 export interface SiteKey {
     recapcha_sitekey: string
 }
 
+/**
+ * 登录数据模型
+ */
 export interface Login {
     access_token: string
     token_type: string
+}
+
+/**
+ * 注册数据模型
+ */
+export interface Register {
+    request: {
+        captcha_response: string
+        password: string
+        display_name: string
+        token: string
+    }
+    avatar: File
 }

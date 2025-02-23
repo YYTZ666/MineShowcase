@@ -1,27 +1,71 @@
 <script setup lang="ts">
 import IMG_noicon from '../../assets/noicon.svg'
 import IMG_noimage from '../../assets/noimage.svg'
-import { ref } from 'vue'
-import type { Status } from '../../hooks/type_models'
+import { ref, defineProps } from 'vue'
+import { ServerAPI } from '../../hooks/api'
+import { useRetriableRequest } from 'alova/client'
+import type { Status, ListItem } from '../../hooks/type_models'
+import { useNotification } from 'naive-ui'
 
-const info = defineProps<Status>()
+const info = defineProps<ListItem>()
 
-const statusText = ref<string | null>(null)
-const statusIcon = ref<string | null>(null)
+const getStatus = () => ServerAPI.Get<Status>(`/v1/servers/info/${info.id}`)
+const { data, onSuccess, onError } = useRetriableRequest(getStatus(), {
+    retry: 3
+})
+
+const statusText = ref<string | undefined>(undefined)
+const statusIcon = ref<string | undefined>(IMG_noicon)
 const statusColor = ref<{ color: string; textColor: string }>({
     color: '#00C5CD',
     textColor: '#dfe6e9',
 })
 
-if (info.status) {
-    statusText.value = '在线'
-    statusColor.value = { color: '#E3F3EB', textColor: '#18A058' }
-    statusIcon.value = info.status.icon ?? IMG_noicon
-} else {
-    statusText.value = '离线'
-    statusColor.value = { color: '#747d8c', textColor: '#f1f2f6' }
+const StatusInfo = ref<Status>({
+    id: info.id,
+    name: info.name,
+    ip: null,
+    type: 'BEDROCK',
+    version: '',
+    desc: '',
+    link: '',
+    is_member: true,
+    is_hide: true,
+    auth_mode: 'OFFICIAL',
+    tags: [],
+    status: null,
+    code: 200,
+    detail: undefined,
+})
+
+const Loading = ref(true)
+
+onSuccess(() => {
+    Loading.value = false
+    StatusInfo.value = data.value
+    if (data.value.code === 200) {
+        if (data.value.status) {
+            statusText.value = '在线'
+            statusColor.value = { color: '#E3F3EB', textColor: '#18A058' }
+            statusIcon.value = data.value.status.icon ?? IMG_noicon
+        } else {
+            statusText.value = '离线'
+            statusColor.value = { color: '#747d8c', textColor: '#f1f2f6' }
+            statusIcon.value = IMG_noicon
+        }
+    } else {
+        statusText.value = '未知'
+        statusColor.value = { color: '#C9C9C9', textColor: '#808080' }
+        statusIcon.value = IMG_noicon
+    }
+})
+
+onError(() => {
+    Loading.value = false
+    statusText.value = '错误'
+    statusColor.value = { color: '#E9967A', textColor: '#CD5555' }
     statusIcon.value = IMG_noicon
-}
+})
 
 const formatNumber = (num: number): string => {
     if (num >= 100000000) {
@@ -35,7 +79,6 @@ const formatNumber = (num: number): string => {
 }
 
 const notification = useNotification()
-
 const copyToClipboard = (event: MouseEvent) => {
     const input = event.target as HTMLInputElement
     const text = input.value
@@ -62,48 +105,48 @@ const copyToClipboard = (event: MouseEvent) => {
 <template>
     <div class="card">
         <div class="card-cover">
-            <img :src="IMG_noimage" />
+            <n-skeleton v-if="Loading" height="100%" width="100%" />
+            <img v-else :src="IMG_noimage" />
             <!-- TODO: Add carousel -->
             <!-- <n-carousel effect="card" show-arrow style="width: 100%; height: 100%;" draggable>
-                <n-carousel-item v-for="(item, index) in data.value.status.motd.html.split('§r')" :key="index">
+                <n-carousel-item v-for="(item, index) in data.value.status.motd.html.split('§r')"  :key="index">
                     <img class="carousel-img" :src="item" />
                 </n-carousel-item>
             </n-carousel> -->
-            <div class="card-type" v-text="info.type"></div>
+            <n-skeleton v-if="Loading" height="1.5rem" width="10rem" />
+            <div v-else class="card-type" v-text="StatusInfo.type"></div>
         </div>
         <div class="card-split">
             <div class="card-icon">
-                <img v-if="statusIcon" :src="statusIcon" />
-                <n-skeleton v-else height="100%" width="100%" />
+                <n-skeleton v-if="Loading" height="100%" width="100%" />
+                <img v-else :src="statusIcon" />
             </div>
             <div class="card-info">
                 <div class="title-box">
-                    <h1 class="title">{{ info.name }}</h1>
-                    <span
-                        class="t_player_num"
-                        v-if="info && info.status !== null"
-                    >
-                        ({{ formatNumber(info.status.players.online) }} /
-                        {{ formatNumber(info.status.players.max) }})
-                    </span>
+                    <n-skeleton v-if="Loading" text height="1.8rem" width="8rem" />
+                    <h1 v-else class="title">{{ info.name }}</h1>
                     <n-skeleton
-                        class="t_player_num"
-                        v-else-if="statusText != '离线'"
-                        width="2.5rem"
+                        v-if="Loading"
+                        text
+                        height="0.8rem"
+                        width="3rem"
                     />
+                    <span v-else-if="data.status" class="t_player_num">
+                        ({{ formatNumber(data.status.players.online) }} /
+                        {{ formatNumber(data.status.players.max) }})
+                    </span>
                 </div>
                 <div>
-                    <n-input-group>
+                    <n-skeleton v-if="Loading" text style="height: 1rem" />
+                    <n-input-group v-else>
                         <n-tag
                             size="small"
-                            v-if="statusText"
                             :color="statusColor"
                             v-text="statusText"
                         ></n-tag>
-                        <n-skeleton v-else height="22px" style="width: 2rem" />
                         <n-input
-                            placeholder="Error！QAQ"
-                            :value="info.ip"
+                            placeholder="加载中..."
+                            :value="StatusInfo.ip"
                             readonly="true"
                             size="tiny"
                             @click="copyToClipboard"
@@ -120,29 +163,30 @@ const copyToClipboard = (event: MouseEvent) => {
             </div>
         </div>
         <div class="card-tags">
-            <n-space size="small" class="tags-wrapper">
+            <n-skeleton v-if="!data" text style="height: 22px; width: 100%" />
+            <n-space v-else size="small" class="tags-wrapper">
                 <n-tag
                     size="small"
                     :bordered="false"
                     :type="
-                        info.auth_mode === 'OFFLINE'
+                        StatusInfo.auth_mode == 'OFFLINE'
                             ? 'error'
-                            : info.auth_mode === 'OFFICIAL'
+                            : StatusInfo.auth_mode == 'OFFICIAL'
                               ? 'success'
                               : 'info'
                     "
                     v-text="
-                        info.auth_mode === 'OFFLINE'
+                        StatusInfo.auth_mode == 'OFFLINE'
                             ? '离线服'
-                            : info.auth_mode === 'OFFICIAL'
+                            : StatusInfo.auth_mode == 'OFFICIAL'
                               ? '正版服'
-                              : info.auth_mode === 'YGGDRASIL'
+                              : StatusInfo.auth_mode == 'YGGDRASIL'
                                 ? '外置登录'
                                 : '未知'
                     "
                 ></n-tag>
                 <n-tooltip
-                    v-if="info.is_member == true"
+                    v-if="StatusInfo.is_member == true"
                     trigger="hover"
                     placement="top-start"
                 >
@@ -158,23 +202,13 @@ const copyToClipboard = (event: MouseEvent) => {
                     </span>
                 </n-tooltip>
                 <n-tag
-                    v-for="(tag, index) in info.tags.slice(0, 4)"
+                    v-for="(tag, index) in StatusInfo.tags.slice(0, 4)"
                     :key="index"
                     size="small"
                     :bordered="false"
                     :title="tag"
                     v-text="tag"
                 />
-                <n-tooltip
-                    v-if="info.tags.length > 4"
-                    trigger="hover"
-                    placement="top-start"
-                >
-                    <template #trigger>
-                        <span>...</span>
-                    </template>
-                    {{ info.tags.slice(4).join(' | ') }}
-                </n-tooltip>
             </n-space>
         </div>
     </div>
