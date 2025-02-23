@@ -15,7 +15,7 @@ import '../assets/css/index.less'
 import { useRequest } from 'alova/client'
 import { ServerAPI, fetch_status } from '../../hooks/api'
 import type { Status, Fetch_Status } from '../../hooks/type_models'
-import Img404 from '../../assets/error.jpg'
+import Img404 from '../../assets/error.webp'
 import { debounce } from 'lodash'
 
 // 获取当前路由信息
