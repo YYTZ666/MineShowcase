@@ -2,15 +2,9 @@
 import IMG_noicon from '../../assets/noicon.svg'
 import IMG_noimage from '../../assets/noimage.svg'
 import { ref } from 'vue'
-import { ServerAPI } from '../../hooks/api'
-import { useRequest } from 'alova/client'
-import { invalidateCache } from 'alova'
-import type { Status, ListItem } from '../../hooks/type_models'
+import type { Status } from '../../hooks/type_models'
 
-const info = defineProps<ListItem>()
-
-const getStatus = () => ServerAPI.Get<Status>(`/v1/servers/info/${info.id}`)
-const { data, onSuccess, onError } = useRequest(getStatus())
+const info = defineProps<Status>()
 
 const statusText = ref<string | null>(null)
 const statusIcon = ref<string | null>(null)
@@ -19,36 +13,15 @@ const statusColor = ref<{ color: string; textColor: string }>({
     textColor: '#dfe6e9',
 })
 
-const StatusInfo = ref<Status>({
-    id: info.id,
-    name: info.name,
-    ip: null,
-    type: 'BEDROCK',
-    version: '',
-    desc: '',
-    link: '',
-    is_member: true,
-    is_hide: true,
-    auth_mode: 'OFFICIAL',
-    tags: [],
-    status: null,
-    code: 200,
-    detail: undefined,
-})
-
-onSuccess(() => {
-    StatusInfo.value = data.value
-    if (data.value.status) {
-        statusText.value = '在线'
-        statusColor.value = { color: '#E3F3EB', textColor: '#18A058' }
-        statusIcon.value = data.value.status.icon ?? IMG_noicon
-    } else {
-        statusText.value = '离线'
-        statusColor.value = { color: '#747d8c', textColor: '#f1f2f6' }
-        statusIcon.value = IMG_noicon
-        invalidateCache(getStatus())
-    }
-})
+if (info.status) {
+    statusText.value = '在线'
+    statusColor.value = { color: '#E3F3EB', textColor: '#18A058' }
+    statusIcon.value = info.status.icon ?? IMG_noicon
+} else {
+    statusText.value = '离线'
+    statusColor.value = { color: '#747d8c', textColor: '#f1f2f6' }
+    statusIcon.value = IMG_noicon
+}
 
 const formatNumber = (num: number): string => {
     if (num >= 100000000) {
@@ -60,12 +33,6 @@ const formatNumber = (num: number): string => {
     }
     return num.toString()
 }
-
-onError(() => {
-    statusText.value = '错误'
-    statusColor.value = { color: '#E9967A', textColor: '#CD5555' }
-    statusIcon.value = IMG_noicon
-})
 
 const notification = useNotification()
 
@@ -102,7 +69,7 @@ const copyToClipboard = (event: MouseEvent) => {
                     <img class="carousel-img" :src="item" />
                 </n-carousel-item>
             </n-carousel> -->
-            <div class="card-type" v-text="StatusInfo.type"></div>
+            <div class="card-type" v-text="info.type"></div>
         </div>
         <div class="card-split">
             <div class="card-icon">
@@ -114,10 +81,10 @@ const copyToClipboard = (event: MouseEvent) => {
                     <h1 class="title">{{ info.name }}</h1>
                     <span
                         class="t_player_num"
-                        v-if="data && data.status !== null"
+                        v-if="info && info.status !== null"
                     >
-                        ({{ formatNumber(data.status.players.online) }} /
-                        {{ formatNumber(data.status.players.max) }})
+                        ({{ formatNumber(info.status.players.online) }} /
+                        {{ formatNumber(info.status.players.max) }})
                     </span>
                     <n-skeleton
                         class="t_player_num"
@@ -136,7 +103,7 @@ const copyToClipboard = (event: MouseEvent) => {
                         <n-skeleton v-else height="22px" style="width: 2rem" />
                         <n-input
                             placeholder="Error！QAQ"
-                            :value="StatusInfo.ip"
+                            :value="info.ip"
                             readonly="true"
                             size="tiny"
                             @click="copyToClipboard"
@@ -158,24 +125,24 @@ const copyToClipboard = (event: MouseEvent) => {
                     size="small"
                     :bordered="false"
                     :type="
-                        StatusInfo.auth_mode === 'OFFLINE'
+                        info.auth_mode === 'OFFLINE'
                             ? 'error'
-                            : StatusInfo.auth_mode === 'OFFICIAL'
+                            : info.auth_mode === 'OFFICIAL'
                               ? 'success'
                               : 'info'
                     "
                     v-text="
-                        StatusInfo.auth_mode === 'OFFLINE'
+                        info.auth_mode === 'OFFLINE'
                             ? '离线服'
-                            : StatusInfo.auth_mode === 'OFFICIAL'
+                            : info.auth_mode === 'OFFICIAL'
                               ? '正版服'
-                              : StatusInfo.auth_mode === 'YGGDRASIL'
+                              : info.auth_mode === 'YGGDRASIL'
                                 ? '外置登录'
                                 : '未知'
                     "
                 ></n-tag>
                 <n-tooltip
-                    v-if="StatusInfo.is_member == true"
+                    v-if="info.is_member == true"
                     trigger="hover"
                     placement="top-start"
                 >
@@ -191,7 +158,7 @@ const copyToClipboard = (event: MouseEvent) => {
                     </span>
                 </n-tooltip>
                 <n-tag
-                    v-for="(tag, index) in StatusInfo.tags.slice(0, 4)"
+                    v-for="(tag, index) in info.tags.slice(0, 4)"
                     :key="index"
                     size="small"
                     :bordered="false"
@@ -199,14 +166,14 @@ const copyToClipboard = (event: MouseEvent) => {
                     v-text="tag"
                 />
                 <n-tooltip
-                    v-if="StatusInfo.tags.length > 4"
+                    v-if="info.tags.length > 4"
                     trigger="hover"
                     placement="top-start"
                 >
                     <template #trigger>
                         <span>...</span>
                     </template>
-                    {{ StatusInfo.tags.slice(4).join(' | ') }}
+                    {{ info.tags.slice(4).join(' | ') }}
                 </n-tooltip>
             </n-space>
         </div>

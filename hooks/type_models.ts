@@ -56,8 +56,6 @@ export interface Status {
         }
         icon: string | null
     } | null
-    code: number
-    detail?: string
 }
 
 // 服务器状态获取数据模型（MineStatus API）
