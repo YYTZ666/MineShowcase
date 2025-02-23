@@ -39,7 +39,7 @@ onMounted(() => {
                 v-if="token_status"
                 v-text="username"
             ></NuxtLink>
-            <NuxtLink class="login" to="/login" v-else>登录</NuxtLink>
+            <NuxtLink class="login" to="/auth" v-else>登录</NuxtLink>
         </div>
     </div>
 </template>
