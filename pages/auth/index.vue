@@ -1,0 +1,109 @@
+<script setup lang="ts">
+import Login from '../../components/Authorization/Login.vue'
+import Register from '../../components/Authorization/Register.vue'
+import { ref } from 'vue'
+
+const Switch = ref(false)
+</script>
+
+<template>
+    <div class="layout">
+        <div class="l_body">
+            <transition name="fade-in">
+                <h1>MineShowcase</h1>
+            </transition>
+            <transition name="fade-in">
+                <h2>管理实用程序</h2>
+            </transition>
+        </div>
+        <div class="r_body">
+            <n-switch :round="false" v-model:value="Switch">
+                <template #checked>登录</template>
+                <template #unchecked>注册</template>
+            </n-switch>
+            <Register v-if="Switch" />
+            <Login v-else />
+        </div>
+    </div>
+</template>
+
+<style scoped lang="less">
+.layout {
+    box-sizing: border-box;
+    height: 100vh;
+    background-image: url('../../assets/bg.webp');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+
+    .l_body {
+        box-sizing: border-box;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        h1 {
+            text-align: center;
+            font-size: 50px;
+            font-weight: bold;
+            color: transparent;
+            background: linear-gradient(to right, #32defd, #f74598);
+            -webkit-background-clip: text;
+            background-clip: text;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 25px;
+            color: white;
+            opacity: 0;
+            animation: fadeIn 1.5s forwards;
+        }
+    }
+
+    .r_body {
+        box-sizing: border-box;
+        width: 400px;
+        padding: 2rem;
+        background-color: rgba(255, 255, 255, 0.6);
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-right: 8rem;
+        opacity: 0;
+        animation: fadeIn 2s forwards;
+    }
+
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        flex-direction: column;
+        padding: 20px;
+
+        .l_body {
+            padding-bottom: 20px;
+        }
+
+        .r_body {
+            width: 100%;
+            margin-right: 0;
+        }
+    }
+}
+</style>

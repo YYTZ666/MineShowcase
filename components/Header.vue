@@ -9,6 +9,7 @@ import type { User } from '../hooks/type_models'
 const { data, onSuccess } = useRequest(ServerAPI_Token.Get<User>('/v1/me'))
 
 const avatar = ref(Logo)
+const username = ref('')
 const token_status = ref(false)
 onMounted(() => {
     const token = localStorage.getItem('token')
@@ -16,6 +17,7 @@ onMounted(() => {
         if (token) {
             token_status.value = true
             avatar.value = data.value.avatar_url
+            username.value = data.value.username
         }
     })
 })
@@ -35,7 +37,7 @@ onMounted(() => {
                 class="login"
                 to="/user"
                 v-if="token_status"
-                v-text="data.username"
+                v-text="username"
             ></NuxtLink>
             <NuxtLink class="login" to="/login" v-else>登录</NuxtLink>
         </div>

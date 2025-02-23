@@ -3,7 +3,7 @@
  * 此文件，定义了数据的类型以便于类型重用
  */
 
-// 用户
+// 用户（ServerAPI）
 export interface User {
     username: string
     email: string
@@ -16,6 +16,19 @@ export interface User {
     last_login: string
 }
 
+// 服务器列表数据模型（ServerAPI）
+export interface List {
+    server_list: ListItem[]
+    total_member: number
+    total: number
+}
+
+export interface ListItem {
+    id: number
+    name: string
+}
+
+// 服务器详细信息获取数据模型（ServerAPI）
 export interface Status {
     id: number
     name: string
@@ -47,6 +60,7 @@ export interface Status {
     detail?: string
 }
 
+// 服务器状态获取数据模型（MineStatus API）
 export interface Fetch_Status {
     online: boolean
     players: {
@@ -62,20 +76,6 @@ export interface Fetch_Status {
         ansi: string
     }
     icon: string | null
-}
-
-export interface ListItem {
-    name: string
-    id: number
-    type: 'JAVA' | 'BEDROCK'
-    version: string
-    desc: string
-    link: string
-    ip: string | null
-    is_member: boolean
-    is_hide: boolean
-    auth_mode: 'OFFLINE' | 'OFFICIAL' | 'YGGDRASIL'
-    tags: Array<string>
 }
 
 export interface SiteKey {

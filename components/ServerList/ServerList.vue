@@ -3,31 +3,12 @@ import ServerCard from './ServerCard.vue'
 import { ServerAPI } from '../../hooks/api'
 import { usePagination } from 'alova/client'
 import { ref, watch } from 'vue'
-
-interface Info {
-    server_list: List[]
-    total_member: number
-    total: number
-}
-
-interface List {
-    id: number
-    name: string
-    type: 'JAVA' | 'BEDROCK'
-    version: string
-    desc: string
-    link: string
-    ip: string | null
-    is_member: boolean
-    is_hide: boolean
-    auth_mode: 'OFFLINE' | 'OFFICIAL' | 'YGGDRASIL'
-    tags: Array<string>
-}
+import type { List } from '../../hooks/type_models'
 
 // 请求分页数据
 const { loading, data, page, pageCount, error } = usePagination(
     (page, pageSize) =>
-        ServerAPI.Get<Info>('/v1/servers', {
+        ServerAPI.Get<List>('/v1/servers', {
             params: {
                 offset: (page - 1) * pageSize,
                 limit: 12,
@@ -80,15 +61,6 @@ watch(page, () => {
                             :key="server.id"
                             :id="server.id"
                             :name="server.name"
-                            :type="server.type"
-                            :version="server.version"
-                            :desc="server.desc"
-                            :link="server.link"
-                            :ip="server.ip"
-                            :is_member="server.is_member"
-                            :is_hide="server.is_hide"
-                            :auth_mode="server.auth_mode"
-                            :tags="server.tags"
                         />
                     </TransitionGroup>
                 </div>

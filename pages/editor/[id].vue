@@ -11,7 +11,6 @@ import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import NavBar from '../../components/NavBar.vue'
 import Header from '../../components/Header.vue'
-import { lightTheme, NConfigProvider } from 'naive-ui'
 import '../assets/css/index.less'
 import { useRequest } from 'alova/client'
 import { ServerAPI, fetch_status } from '../../hooks/api'
@@ -105,61 +104,59 @@ watch(() => info.value.ip, debouncedCallback)
 </script>
 
 <template>
-    <n-config-provider :theme="lightTheme">
-        <div class="layout">
-            <header class="header">
-                <Header />
-            </header>
-            <div class="content">
-                <aside class="sidebar">
-                    <NavBar />
-                </aside>
-                <main class="main-content">
-                    <br />
-                    <ClientOnly>
-                        <h1>服务器信息</h1>
-                        <div v-if="info.code == 200">
-                            <h2>编辑：{{ info.name }}</h2>
-                            服务器名称：
-                            <n-input
-                                v-model:value="info.name"
-                                type="text"
-                                placeholder="服务器名称"
-                            />
-                            服务器地址：
-                            <n-input
-                                v-model:value="info.ip"
-                                type="text"
-                                placeholder="服务器地址"
-                                :status="ServerOnline"
-                            />
-                            {{ ServerOnline }}
-                            <MdEditor
-                                v-model="info.text"
-                                style="width: 100%"
-                                editor-id="ServerInfo"
-                                :inputBoxWidth="inputBoxWidth"
-                                noMermaid
-                            />
-                        </div>
-                        <div v-else>
-                            <p v-if="info.code == 404">
-                                服务器不存在QAQ (Code: {{ info.code }})
-                            </p>
-                            <p v-else="info.code == 422">
-                                请求参数出错QAQ (Code: {{ info.code }})
-                            </p>
-                            <h2>
-                                什么？这不是
-                                {{ info.code }} ，这是服务器回老家过年了
-                            </h2>
-                            <img :src="Img404" />
-                        </div>
-                    </ClientOnly>
-                </main>
-            </div>
+    <div class="layout">
+        <header class="header">
+            <Header />
+        </header>
+        <div class="content">
+            <aside class="sidebar">
+                <NavBar />
+            </aside>
+            <main class="main-content">
+                <br />
+                <ClientOnly>
+                    <h1>服务器信息</h1>
+                    <div v-if="info.code == 200">
+                        <h2>编辑：{{ info.name }}</h2>
+                        服务器名称：
+                        <n-input
+                            v-model:value="info.name"
+                            type="text"
+                            placeholder="服务器名称"
+                        />
+                        服务器地址：
+                        <n-input
+                            v-model:value="info.ip"
+                            type="text"
+                            placeholder="服务器地址"
+                            :status="ServerOnline"
+                        />
+                        {{ ServerOnline }}
+                        <MdEditor
+                            v-model="info.text"
+                            style="width: 100%"
+                            editor-id="ServerInfo"
+                            :inputBoxWidth="inputBoxWidth"
+                            noMermaid
+                        />
+                    </div>
+                    <div v-else>
+                        <p v-if="info.code == 404">
+                            服务器不存在QAQ (Code: {{ info.code }})
+                        </p>
+                        <p v-else="info.code == 422">
+                            请求参数出错QAQ (Code: {{ info.code }})
+                        </p>
+                        <h2>
+                            什么？这不是
+                            {{ info.code }} ，这是服务器回老家过年了
+                        </h2>
+                        <img :src="Img404" />
+                    </div>
+                </ClientOnly>
+            </main>
         </div>
-    </n-config-provider>
+    </div>
 </template>
 
 <style scoped lang="less">

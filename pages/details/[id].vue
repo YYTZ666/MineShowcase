@@ -2,26 +2,23 @@
 import NavBar from '../../components/NavBar.vue'
 import Header from '../../components/Header.vue'
 import UserPanel from '../../components/UserPanel/UserPanel.vue'
-import { lightTheme } from 'naive-ui'
 import '../assets/css/index.less'
 </script>
 
 <template>
-    <n-config-provider :theme="lightTheme">
-        <div class="layout">
-            <header class="header">
-                <Header />
-            </header>
-            <div class="content">
-                <aside class="sidebar">
-                    <NavBar />
-                </aside>
-                <main class="main-content">
-                    <UserPanel />
-                </main>
-            </div>
+    <div class="layout">
+        <header class="header">
+            <Header />
+        </header>
+        <div class="content">
+            <aside class="sidebar">
+                <NavBar />
+            </aside>
+            <main class="main-content">
+                <UserPanel />
+            </main>
         </div>
-    </n-config-provider>
+    </div>
 </template>
 
 <style scoped lang="less">

@@ -1,27 +1,24 @@
 <script setup lang="ts">
 import NavBar from '../components/NavBar.vue'
 import Header from '../components/Header.vue'
-import { lightTheme } from 'naive-ui'
 import ServerList from '../components/ServerList/ServerList.vue'
 import '../assets/css/index.less'
 </script>
 
 <template>
-    <n-config-provider :theme="lightTheme">
-        <div class="layout">
-            <header class="header">
-                <Header />
-            </header>
-            <div class="content">
-                <aside class="sidebar">
-                    <NavBar />
-                </aside>
-                <main class="main-content">
-                    <ServerList />
-                </main>
-            </div>
+    <div class="layout">
+        <header class="header">
+            <Header />
+        </header>
+        <div class="content">
+            <aside class="sidebar">
+                <NavBar />
+            </aside>
+            <main class="main-content">
+                <ServerList />
+            </main>
         </div>
-    </n-config-provider>
+    </div>
 </template>
 
 <style scoped lang="less">

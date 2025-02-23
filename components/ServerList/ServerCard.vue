@@ -10,8 +10,8 @@ import type { Status, ListItem } from '../../hooks/type_models'
 const info = defineProps<ListItem>()
 
 const getStatus = () => ServerAPI.Get<Status>(`/v1/servers/info/${info.id}`)
-
 const { data, onSuccess, onError } = useRequest(getStatus())
+
 const statusText = ref<string | null>(null)
 const statusIcon = ref<string | null>(null)
 const statusColor = ref<{ color: string; textColor: string }>({
@@ -19,7 +19,25 @@ const statusColor = ref<{ color: string; textColor: string }>({
     textColor: '#dfe6e9',
 })
 
+const StatusInfo = ref<Status>({
+    id: info.id,
+    name: info.name,
+    ip: null,
+    type: 'BEDROCK',
+    version: '',
+    desc: '',
+    link: '',
+    is_member: true,
+    is_hide: true,
+    auth_mode: 'OFFICIAL',
+    tags: [],
+    status: null,
+    code: 200,
+    detail: undefined,
+})
+
 onSuccess(() => {
+    StatusInfo.value = data.value
     if (data.value.status) {
         statusText.value = '在线'
         statusColor.value = { color: '#E3F3EB', textColor: '#18A058' }
@@ -84,7 +102,7 @@ const copyToClipboard = (event: MouseEvent) => {
                     <img class="carousel-img" :src="item" />
                 </n-carousel-item>
             </n-carousel> -->
-            <div class="card-type" v-text="info.type"></div>
+            <div class="card-type" v-text="StatusInfo.type"></div>
         </div>
         <div class="card-split">
             <div class="card-icon">
@@ -118,7 +136,7 @@ const copyToClipboard = (event: MouseEvent) => {
                         <n-skeleton v-else height="22px" style="width: 2rem" />
                         <n-input
                             placeholder="Error！QAQ"
-                            :value="info.ip"
+                            :value="StatusInfo.ip"
                             readonly="true"
                             size="tiny"
                             @click="copyToClipboard"
@@ -140,24 +158,24 @@ const copyToClipboard = (event: MouseEvent) => {
                     size="small"
                     :bordered="false"
                     :type="
-                        info.auth_mode === 'OFFLINE'
+                        StatusInfo.auth_mode === 'OFFLINE'
                             ? 'error'
-                            : info.auth_mode === 'OFFICIAL'
+                            : StatusInfo.auth_mode === 'OFFICIAL'
                               ? 'success'
                               : 'info'
                     "
                     v-text="
-                        info.auth_mode === 'OFFLINE'
+                        StatusInfo.auth_mode === 'OFFLINE'
                             ? '离线服'
-                            : info.auth_mode === 'OFFICIAL'
+                            : StatusInfo.auth_mode === 'OFFICIAL'
                               ? '正版服'
-                              : info.auth_mode === 'YGGDRASIL'
+                              : StatusInfo.auth_mode === 'YGGDRASIL'
                                 ? '外置登录'
                                 : '未知'
                     "
                 ></n-tag>
                 <n-tooltip
-                    v-if="info.is_member == true"
+                    v-if="StatusInfo.is_member == true"
                     trigger="hover"
                     placement="top-start"
                 >
@@ -173,7 +191,7 @@ const copyToClipboard = (event: MouseEvent) => {
                     </span>
                 </n-tooltip>
                 <n-tag
-                    v-for="(tag, index) in info.tags.slice(0, 4)"
+                    v-for="(tag, index) in StatusInfo.tags.slice(0, 4)"
                     :key="index"
                     size="small"
                     :bordered="false"
@@ -181,14 +199,14 @@ const copyToClipboard = (event: MouseEvent) => {
                     v-text="tag"
                 />
                 <n-tooltip
-                    v-if="info.tags.length > 4"
+                    v-if="StatusInfo.tags.length > 4"
                     trigger="hover"
                     placement="top-start"
                 >
                     <template #trigger>
                         <span>...</span>
                     </template>
-                    {{ info.tags.slice(4).join(' | ') }}
+                    {{ StatusInfo.tags.slice(4).join(' | ') }}
                 </n-tooltip>
             </n-space>
         </div>

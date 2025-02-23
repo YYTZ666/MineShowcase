@@ -1,4 +1,5 @@
 import { createAlova } from 'alova'
+import { createServerTokenAuthentication } from 'alova/client'
 import VueHook from 'alova/vue'
 import adapterFetch from 'alova/fetch'
 
@@ -20,6 +21,24 @@ function getToken() {
 }
 
 export const GetToken = getToken()
+
+const accessToken = ref('');
+const refreshToken = ref('');
+const { onAuthRequired, onResponseRefreshToken } =
+    createServerTokenAuthentication({
+        async login(response) {
+            const data = await response.clone().json()
+            accessToken.value = data.accessToken
+            refreshToken.value = data.refreshToken
+        },
+        logout() {
+            accessToken.value = ''
+            refreshToken.value = ''
+        },
+        assignToken(method) {
+            method.config.headers.Authorization = accessToken.value
+        },
+    })
 
 export const ServerAPI_Token = createAlova({
     baseURL: 'https://mscpoapi.tblstudio.cn/',
