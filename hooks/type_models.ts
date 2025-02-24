@@ -99,6 +99,7 @@ export interface SiteKey {
  * 登录数据模型
  */
 export interface Login {
+    detail: string | undefined
     code: number
     access_token: string
     token_type: string

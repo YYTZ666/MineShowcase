@@ -22,7 +22,6 @@ import type { FormInst } from 'naive-ui'
 
 // 在组件逻辑中添加
 const regFormRef = ref<FormInst | null>(null)
-const isFormValid = ref(false)
 const uploadRef = ref<UploadInst | null>(null)
 const previewUrl = ref('')
 const showCropper = ref(false)
@@ -74,7 +73,7 @@ const confirmCrop = () => {
             // 保留原始文件扩展名和类型
             const ext = uploadFile.value?.name.split('.').pop() || 'png'
             const newFile = new File([blob], `avatar.${ext}`, {
-                type: blob.type // 保持原始MIME类型
+                type: blob.type, // 保持原始MIME类型
             })
             previewUrl.value = URL.createObjectURL(newFile)
             RegForm.value.avatar = newFile
@@ -253,24 +252,54 @@ const handleRegSubmit = async () => {
     formData.append('avatar', RegForm.value.avatar)
     formData.append('request', JSON.stringify(requestData))
 
-    try {
-        const response = await registerUser(formData)
-        if (response.code === 200) {
-            Notify({
-                type: 'success',
-                content: '已成功注册！',
-                meta: '请用新的账户密码登录网站',
-                duration: 2000,
-            })
-        }
-    } catch (error) {
+    const response = await registerUser(formData)
+    if (response.code === 200) {
         Notify({
-            type: 'error',
-            content: '注册失败',
-            meta: '',
+            type: 'success',
+            content: '已成功注册！',
+            meta: '请用新的账户密码登录网站',
             duration: 2000,
         })
     }
+    if (response.code === 400) {
+        Notify({
+            type: 'error',
+            content: '请求参数错误',
+            meta: response.detail,
+            duration: 2000,
+        })
+    } else if (response.code === 422) {
+        Notify({
+            type: 'error',
+            content: 'reCAPTCHA 验证失败',
+            meta: response.detail,
+            duration: 2000,
+        })
+        captchaKey.value += 1
+    } else if (response.code === 404) {
+        Notify({
+            type: 'error',
+            content: 'Token 未找到或已过期',
+            meta: response.detail,
+            duration: 2000,
+        })
+    } else if (response.code === 409) {
+        Notify({
+            type: 'error',
+            content: 'Token 未验证',
+            meta: response.detail,
+            duration: 2000,
+        })
+    } else if (response.code === 500) {
+        Notify({
+            type: 'error',
+            content: '服务器内部错误',
+            meta: response.detail,
+            duration: 2000,
+        })
+    }
+    captchaKey.value++
+    site_key.value = ''
 }
 
 // 邮箱验证请求处理
@@ -282,31 +311,36 @@ const { send: verifyEmail } = useRequest(
         }),
     { immediate: false },
 )
+const captchaKey = ref(0)
 
 // 修改 handleMailSubmit 函数
 const handleMailSubmit = async () => {
-    try {
-        // 发送请求
-        const response = await verifyEmail()
-
-        // 处理成功逻辑
-        if (response.code === 200) {
-            Notify({
-                type: 'success',
-                content: '验证邮件已发送',
-                meta: '请及时检查邮箱是否收到验证邮件',
-                duration: 2000,
-            })
-        }
-    } catch (error) {
-        // 处理错误逻辑
+    const response = await verifyEmail()
+    if (response.code === 200) {
+        Notify({
+            type: 'success',
+            content: '验证邮件已发送',
+            meta: '请查收您的邮箱',
+            duration: 2000,
+        })
+    } else if (response.code === 400 && response.detail) {
         Notify({
             type: 'error',
-            content: '请求失败',
-            meta: '',
+            content: response.detail,
+            meta: '请重试',
+            duration: 2000,
+        })
+        captchaKey.value += 1
+    } else if (response.code === 409) {
+        Notify({
+            type: 'error',
+            content: '邮箱已存在',
+            meta: '请使用其他邮箱',
             duration: 2000,
         })
     }
+    captchaKey.value++
+    site_key.value = ''
 }
 </script>
 
@@ -320,7 +354,7 @@ const handleMailSubmit = async () => {
     >
         <p :style="VerifyEmail.style">{{ VerifyEmail.detail }}</p>
 
-        <n-form-item path="display_name" label="昵称">
+        <n-form-item path="display_name" label="昵称 (显示的名字) ">
             <n-input
                 v-model:value="RegForm.display_name"
                 @keydown.enter.prevent
@@ -358,6 +392,7 @@ const handleMailSubmit = async () => {
                         @loaded="isLoaded"
                         :siteKey="SiteKey.recapcha_sitekey"
                         action="submit"
+                        :key="captchaKey"
                     >
                         <n-button
                             type="primary"
@@ -386,6 +421,7 @@ const handleMailSubmit = async () => {
                         @loaded="isLoaded"
                         :siteKey="SiteKey.recapcha_sitekey"
                         action="submit"
+                        :key="captchaKey"
                     >
                         <n-button
                             type="primary"

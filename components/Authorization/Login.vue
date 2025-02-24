@@ -4,6 +4,7 @@ import { ServerAPI } from '../../hooks/api'
 import { useRequest } from 'alova/client'
 import reCaptcha from '../../components/Recaptcha/ReCaptchaV3.vue'
 import type { SiteKey, Login } from '../../hooks/type_models'
+import type { NotificationType } from 'naive-ui/es/notification'
 
 const form = ref({
     account: '',
@@ -26,41 +27,80 @@ const rules = {
         },
     ],
 }
+const notification = useNotification()
+
+const Notify = (info: {
+    type: NotificationType
+    content: string
+    meta: string
+    duration: number
+}) =>
+    notification[info.type]({
+        content: info.content,
+        meta: info.meta,
+        duration: info.duration,
+        keepAliveOnHover: true,
+    })
 
 const isLoaded = ref(false)
+const captchaKey = ref(0) // 用于强制刷新reCaptcha组件
 
 const getSiteKey = () => ServerAPI.Get<SiteKey>('/v1/reCAPTCHA_site_key')
 const { data } = useRequest(getSiteKey())
-const login = (data: {
-    username_or_email: string
-    password: string
-    captcha_response: string
-}) => ServerAPI.Post<Login>('/v1/login', data)
+
+const { send: login } = useRequest(
+    (username_or_email: string, password: string, captcha_response: string) =>
+        ServerAPI.Post<Login>('/v1/login', {
+            username_or_email,
+            password,
+            captcha_response,
+        }),
+    { immediate: false },
+)
 
 const token = ref('')
 
-const handleSubmit = () => {
-    // 发送请求到后端验证reCaptcha、用户名和密码
-    const { data, onSuccess } = useRequest(
-        login({
-            username_or_email: form.value.account,
-            password: form.value.password,
-            captcha_response: token.value,
-        }),
+const handleSubmit = async () => {
+    const response = await login(
+        form.value.account,
+        form.value.password,
+        token.value,
     )
-    onSuccess(() => {
-        // 登录成功，保存token
-        if (data.value.access_token) {
-            localStorage.setItem('token', data.value.access_token)
-            location.href = '/'
-        }
-    })
+
+    if (response.code === 200) {
+        Notify({
+            type: 'success',
+            content: '登录成功',
+            meta: '欢迎回来',
+            duration: 3000,
+        })
+        localStorage.setItem('token', response.access_token)
+        localStorage.setItem('token_type', response.token_type)
+        window.location.href = '/'
+    } else if (response.code === 400) {
+        Notify({
+            type: 'error',
+            content: 'reCAPTCHA 验证失败',
+            meta: '请重试',
+            duration: 3000,
+        })
+        captchaKey.value += 1
+    } else if (response.code === 401) {
+        Notify({
+            type: 'error',
+            content: '登录失败',
+            meta: '用户名或密码错误',
+            duration: 3000,
+        })
+    }
+    captchaKey.value++
+    token.value = ''
 }
 </script>
 
 <template>
     <h2>登录</h2>
-    <n-form :model="form" :rules="rules">
+    <n-form :model="form" :rules="rules" @submit.prevent="handleSubmit">
         <n-form-item path="account" label="邮箱">
             <n-input v-model:value="form.account" @keydown.enter.prevent />
         </n-form-item>
@@ -80,10 +120,11 @@ const handleSubmit = () => {
                         @loaded="isLoaded"
                         :siteKey="data.recapcha_sitekey"
                         action="submit"
+                        :key="captchaKey"
                     >
                         <n-button
                             type="primary"
-                            :loading="token == ''"
+                            :loading="token === ''"
                             @click="handleSubmit()"
                         >
                             登录
