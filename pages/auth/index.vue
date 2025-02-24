@@ -5,7 +5,7 @@ import { ref } from 'vue'
 
 const Switch = ref(false)
 
-const RegToken = useRoute().query.token
+const RegToken = useRoute().query.token as string
 if (RegToken) {
     Switch.value = true
 }
@@ -26,7 +26,7 @@ if (RegToken) {
                 <template #checked>登录</template>
                 <template #unchecked>注册</template>
             </n-switch>
-            <n-notification-provider>
+            <n-notification-provider v-bind="$attrs">
                 <Register :token="RegToken" v-if="Switch" />
                 <Login v-else />
             </n-notification-provider>

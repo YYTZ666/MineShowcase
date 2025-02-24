@@ -7,6 +7,8 @@
  * 用户（ServerAPI）
  */
 export interface User {
+    code: number
+    username_or_email: string
     username: string
     email: string
     display_name: string
@@ -97,6 +99,7 @@ export interface SiteKey {
  * 登录数据模型
  */
 export interface Login {
+    code: number
     access_token: string
     token_type: string
 }
@@ -112,4 +115,31 @@ export interface Register {
         token: string
     }
     avatar: File | undefined
+}
+
+/**
+ * ReturnResponse
+ */
+export interface ReturnResponse {
+    /**
+     * 消息, 状态返回消息
+     */
+    detail: string
+    code: number
+    success: boolean
+}
+
+/**
+ * ReturnResponse_Register
+ */
+export interface ReturnResponse_Register {
+    code: number
+    /**
+     * 消息，状态返回消息
+     */
+    detail: string
+    /**
+     * 用户ID，用户ID
+     */
+    user_id: number
 }

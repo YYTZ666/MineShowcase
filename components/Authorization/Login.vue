@@ -32,7 +32,7 @@ const isLoaded = ref(false)
 const getSiteKey = () => ServerAPI.Get<SiteKey>('/v1/reCAPTCHA_site_key')
 const { data } = useRequest(getSiteKey())
 const login = (data: {
-    username: string
+    username_or_email: string
     password: string
     captcha_response: string
 }) => ServerAPI.Post<Login>('/v1/login', data)
@@ -43,7 +43,7 @@ const handleSubmit = () => {
     // 发送请求到后端验证reCaptcha、用户名和密码
     const { data, onSuccess } = useRequest(
         login({
-            username: form.value.account,
+            username_or_email: form.value.account,
             password: form.value.password,
             captcha_response: token.value,
         }),
@@ -61,7 +61,7 @@ const handleSubmit = () => {
 <template>
     <h2>登录</h2>
     <n-form :model="form" :rules="rules">
-        <n-form-item path="account" label="账户">
+        <n-form-item path="account" label="邮箱">
             <n-input v-model:value="form.account" @keydown.enter.prevent />
         </n-form-item>
         <n-form-item path="password" label="密码">

@@ -22,8 +22,8 @@ function getToken() {
 
 export const GetToken = getToken()
 
-const accessToken = ref('');
-const refreshToken = ref('');
+const accessToken = ref('')
+const refreshToken = ref('')
 const { onAuthRequired, onResponseRefreshToken } =
     createServerTokenAuthentication({
         async login(response) {
@@ -50,5 +50,8 @@ export const ServerAPI_Token = createAlova({
         config.headers.Authorization = `Bearer ${GetToken.get()}`
         config.headers['Content-Type'] = 'application/json; charset=utf-8'
     },
-    responded: (response) => response.json(),
+    responded: async (response) => ({
+        ...(await response.json()),
+        code: response.status,
+    }),
 })

@@ -102,7 +102,9 @@ watch(() => info.value.ip, debouncedCallback)
 <template>
     <div class="layout">
         <header class="header">
-            <Header />
+            <n-notification-provider>
+                <Header />
+            </n-notification-provider>
         </header>
         <div class="content">
             <aside class="sidebar">

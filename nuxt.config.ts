@@ -3,7 +3,7 @@ import content from '@originjs/vite-plugin-content'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     devServer: {
-        host: '0.0.0.0',
+        host: '127.0.0.1',
         port: 3000,
     },
     nitro: {
