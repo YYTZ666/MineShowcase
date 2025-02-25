@@ -68,6 +68,14 @@ export interface Status {
     detail: string | undefined
 }
 
+
+/**
+ * 向服务器所有者发送的服务器状态数据模型（ServerAPI）
+ */
+export interface StatusWithUser extends Status {
+    ip: string
+}
+
 /**
  * 服务器状态获取数据模型（MineStatus API）
  */

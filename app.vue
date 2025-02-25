@@ -16,10 +16,12 @@ useHead({
 </script>
 
 <template>
-    <naive-config>
-        <div>
-            <NuxtRouteAnnouncer />
-        </div>
-        <NuxtPage />
-    </naive-config>
+    <n-notification-provider>
+        <naive-config>
+            <div>
+                <NuxtRouteAnnouncer />
+            </div>
+            <NuxtPage />
+        </naive-config>
+    </n-notification-provider>
 </template>

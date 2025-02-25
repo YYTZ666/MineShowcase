@@ -1,159 +1,197 @@
 <script setup lang="ts">
-/**
- *
- * 开发中，暂未完成，等待手机端完成
- *
- */
-
-import { ref, onMounted, onUnmounted, watch } from 'vue'
-import { useRoute } from 'vue-router' // 导入 useRoute 函数
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
+import { NNotificationProvider, useNotification } from 'naive-ui'
+import {
+    MenuOutline as MenuIcon,
+    CloudOffline,
+    CloudDownloadOutline,
+    CloudDone,
+} from '@vicons/ionicons5'
 import NavBar from '../../components/NavBar.vue'
 import Header from '../../components/Header.vue'
-import '../assets/css/index.less'
 import { useRequest } from 'alova/client'
 import { ServerAPI, fetch_status } from '../../hooks/api'
-import type { Status, Fetch_Status } from '../../hooks/type_models'
+import type { Fetch_Status, StatusWithUser } from '../../hooks/type_models'
 import Img404 from '../../assets/error.webp'
-import { debounce } from 'lodash'
+import { useDebounceFn } from '@vueuse/core'
 
-// 获取当前路由信息
+// 路由和通知
 const route = useRoute()
+const notification = useNotification()
 const ServerID = route.params.id
 
-// 获取服务器信息，并使用 useRequest 进行 API 调用
-const { data, onSuccess } = useRequest(
-    ServerAPI.Get<Status>(`/v1/servers/info/${ServerID}`),
+// 服务器信息状态
+const serverInfo = reactive({
+    name: '',
+    ip: '',
+    desc: '加载中...',
+    loading: true,
+    error: null as Error | null,
+})
+
+// 服务器状态检测
+const serverStatus = reactive({
+    type: 'warning' as 'success' | 'error' | 'warning',
+    icon: CloudDownloadOutline,
+    text: '检测中...',
+    loading: false,
+})
+
+// 获取服务器信息
+const {
+    send: refreshServerInfo, // Alova 使用 send 方法重新请求
+    onSuccess,
+} = useRequest(
+    () => ServerAPI.Get<StatusWithUser>(`/v1/servers/info/${ServerID}`),
+    {
+        immediate: false, // 禁用自动请求
+        initialData: {},
+        retry: 3,
+    },
+)
+onSuccess(({ data }) => {
+    Object.assign(serverInfo, {
+        name: data.name,
+        ip: data.ip,
+        desc: data.desc,
+        loading: false,
+    })
+    checkServerStatus(data.ip)
+})
+
+const { send: statusResponse } = useRequest(
+    (ip) => fetch_status.Get<Fetch_Status>(`?ip=${ip}`),
+    { immediate: false },
 )
 
-const info = ref({
-    code: 200,
-    text: '获取中...',
-    name: '获取中...',
-    ip: '获取中...',
-})
+const checkServerStatus = useDebounceFn(async (ip: string) => {
+    if (!ip) return
 
-onSuccess(() => {
-    console.log(data.value)
-    // 文本内容赋值
-    if (data.value.code == 200) {
-        info.value.text = data.value.desc
-        info.value.name = data.value.name
-        info.value.ip = data.value.ip
-    } else {
-        info.value.code = data.value.code
-        if (data.value.detail != undefined) {
-            info.value.name = data.value.detail
-            info.value.text = data.value.detail
-            console.error(
-                `请求失败: Code ${data.value.code} ${data.value.detail}`,
-            )
-        }
+    serverStatus.loading = true
+    try {
+        serverStatus.type = 'warning'
+        serverStatus.icon = CloudDownloadOutline
+        serverStatus.text = '检测中...'
+        updateServerStatus(await statusResponse(serverInfo.ip))
+    } catch (err) {
+        serverStatus.type = 'error'
+        serverStatus.text = '检测失败'
+    } finally {
+        serverStatus.loading = false
     }
-})
+}, 1000)
 
-// 初始化输入框宽度
-const inputBoxWidth = ref('50%')
-
-// 初始化输入框宽度
-const initInputBoxWidth = () => {
-    if (window.innerWidth <= 768) {
-        inputBoxWidth.value = '100%'
+const updateServerStatus = (data: Fetch_Status) => {
+    if (data.online) {
+        serverStatus.type = 'success'
+        serverStatus.icon = CloudDone
+        serverStatus.text = `在线 - ${data.players.online}/${data.players.max} 玩家`
     } else {
-        inputBoxWidth.value = '50%'
+        serverStatus.type = 'error'
+        serverStatus.icon = CloudOffline
+        serverStatus.text = '离线'
     }
 }
 
-// 组件挂载时初始化输入框宽度并添加窗口大小监听事件
+const autoSave = useDebounceFn(async () => {
+    try {
+        notification.success({ content: '修改已自动保存', duration: 1000 })
+    } catch (err) {
+        notification.error({ content: '保存失败', duration: 1000 })
+    }
+}, 3000)
+
+watch([() => serverInfo.name, () => serverInfo.desc], autoSave)
+
+watch(
+    () => serverInfo.ip,
+    useDebounceFn((newIp) => {
+        checkServerStatus(newIp)
+    }, 1000),
+)
+
 onMounted(() => {
-    initInputBoxWidth()
-    window.addEventListener('resize', initInputBoxWidth)
+    refreshServerInfo()
 })
-
-// 组件卸载时移除窗口大小监听事件
-onUnmounted(() => {
-    window.removeEventListener('resize', initInputBoxWidth)
-})
-
-const ServerOnline = ref<undefined | string>(undefined)
-
-// 获取服务器状态
-const debouncedCallback = debounce(() => {
-    const { data, onSuccess } = useRequest(
-        fetch_status.Get<Fetch_Status>(`?ip=${info.value.ip}`),
-    )
-    onSuccess(() => {
-        if (data.value.online) {
-            ServerOnline.value = 'warning'
-        } else {
-            ServerOnline.value = 'error'
-        }
-        if (info.value.ip === '') {
-            ServerOnline.value = undefined
-        }
-    })
-}, 1000) // 防抖时间为500毫秒，可以根据需求调整
-
-// 监听 IP 变化，获取服务器状态以检查服务器 IP 可用性
-watch(() => info.value.ip, debouncedCallback)
 </script>
 
 <template>
     <div class="layout">
         <header class="header">
             <n-notification-provider>
-                <Header />
+                <Header title="服务器管理" />
             </n-notification-provider>
         </header>
-        <div class="content">
+        <main class="main-content">
             <aside class="sidebar">
                 <NavBar />
             </aside>
-            <main class="main-content">
-                <br />
-                <ClientOnly>
-                    <h1>服务器信息</h1>
-                    <div v-if="info.code == 200">
-                        <h2>编辑：{{ info.name }}</h2>
-                        服务器名称：
-                        <n-input
-                            v-model:value="info.name"
-                            type="text"
-                            placeholder="服务器名称"
-                        />
-                        服务器地址：
-                        <n-input
-                            v-model:value="info.ip"
-                            type="text"
-                            placeholder="服务器地址"
-                            :status="ServerOnline"
-                        />
-                        {{ ServerOnline }}
-                        <MdEditor
-                            v-model="info.text"
-                            style="width: 100%"
-                            editor-id="ServerInfo"
-                            :inputBoxWidth="inputBoxWidth"
-                            noMermaid
-                        />
+            <n-spin :show="serverInfo.loading">
+                <div class="content-container">
+                    <div v-if="serverInfo.error" class="error-container">
+                        <n-result
+                            status="500"
+                            title="加载失败"
+                            :description="serverInfo.error.message"
+                        >
+                            <template #footer>
+                                <n-button @click="refreshServerInfo">
+                                    重试
+                                </n-button>
+                            </template>
+                        </n-result>
                     </div>
-                    <div v-else>
-                        <p v-if="info.code == 404">
-                            服务器不存在QAQ (Code: {{ info.code }})
-                        </p>
-                        <p v-else="info.code == 422">
-                            请求参数出错QAQ (Code: {{ info.code }})
-                        </p>
-                        <h2>
-                            什么？这不是
-                            {{ info.code }} ，这是服务器回老家过年了
-                        </h2>
-                        <img :src="Img404" />
+
+                    <div v-else class="form-section">
+                        <h1 class="page-title">服务器配置</h1>
+
+                        <div class="status-indicator">
+                            <n-tag :type="serverStatus.type" :bordered="false">
+                                <template #icon>
+                                    <n-icon :component="serverStatus.icon" />
+                                </template>
+                                {{ serverStatus.text }}
+                            </n-tag>
+                        </div>
+
+                        <div class="form-item">
+                            <label>服务器名称</label>
+                            <n-input
+                                v-model:value="serverInfo.name"
+                                placeholder="输入服务器名称"
+                                :maxlength="32"
+                                clearable
+                            />
+                        </div>
+
+                        <div class="form-item">
+                            <label>服务器地址</label>
+                            <n-input
+                                v-model:value="serverInfo.ip"
+                                placeholder="输入IP地址和端口"
+                                :status="serverStatus.type"
+                                clearable
+                            />
+                        </div>
+
+                        <div class="form-item">
+                            <label>服务器描述</label>
+                            <MdEditor
+                                v-model="serverInfo.desc"
+                                editor-id="serverDesc"
+                                :preview="true"
+                                noKatex
+                                noMermaid
+                                class="md-editor"
+                            />
+                        </div>
                     </div>
-                </ClientOnly>
-            </main>
-        </div>
+                </div>
+            </n-spin>
+        </main>
     </div>
 </template>
 
@@ -167,7 +205,8 @@ watch(() => info.value.ip, debouncedCallback)
 .layout {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
+    background-color: @primary-color;
 
     .header {
         position: fixed;
@@ -182,40 +221,77 @@ watch(() => info.value.ip, debouncedCallback)
         z-index: 100;
     }
 
-    .content {
-        display: flex;
-        flex-grow: 1;
-        background-color: @primary-color;
-        margin-top: @header-height;
+    .sidebar {
+        position: fixed;
+        left: 0;
+        box-sizing: border-box;
+        width: @sidebar-width;
+        padding: @padding-size;
+        padding-top: 0;
+        padding-right: 0;
+        height: calc(100vh - @header-height);
+        border-right: 1px solid @border-color;
+        z-index: 100;
+        transition: 0.3s all;
 
-        .sidebar {
-            position: fixed;
-            left: 0;
-            box-sizing: border-box;
-            width: @sidebar-width;
-            padding: @padding-size;
-            padding-top: 0;
-            padding-right: 0;
-            height: calc(100vh - @header-height);
-            border-right: 1px solid @border-color;
-            z-index: 100;
-            transition: 0.3s all;
+        @media screen and (max-width: 1200px) {
+            transform: translateX(-@sidebar-width);
+        }
+    }
+    .main-content {
+        margin-left: @sidebar-width;
+        padding: 24px;
+        padding-top: calc(@header-height + 24px);
+        transition: margin 0.3s ease;
 
-            @media screen and (max-width: 1200px) {
-                transform: translateX(-@sidebar-width);
+        @media screen and (max-width: 1200px) {
+            margin-left: 0;
+        }
+
+        .content-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title {
+            margin-bottom: 24px;
+            font-size: 1.5rem;
+            color: #1f2937;
+        }
+
+        .status-indicator {
+            margin-bottom: 24px;
+            text-align: center;
+
+            .n-tag {
+                font-size: 0.95rem;
+                padding: 8px 16px;
+                border-radius: 20px;
             }
         }
 
-        .main-content {
-            margin-left: @sidebar-width;
-            width: 100%;
-            box-sizing: border-box;
-            max-height: 100%;
-            padding: @padding-size;
-            padding-top: 0;
-            transition: 0.3s all;
-            @media screen and (max-width: 1200px) {
-                margin-left: 0;
+        .form-item {
+            margin-bottom: 24px;
+
+            label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 500;
+                color: #374151;
+            }
+
+            .md-editor {
+                border-radius: 8px;
+                border: 1px solid #e5e7eb;
+                overflow: hidden;
+
+                &:hover {
+                    border-color: #d1d5db;
+                }
             }
         }
     }
