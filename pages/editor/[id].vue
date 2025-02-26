@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, onMounted } from 'vue'
+import { reactive, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
@@ -12,23 +12,26 @@ import {
 import NavBar from '../../components/NavBar.vue'
 import Header from '../../components/Header.vue'
 import { useRequest } from 'alova/client'
-import { ServerAPI, fetch_status } from '../../hooks/api'
+import { ServerAPI_Token, fetch_status } from '../../hooks/api'
 import type { Fetch_Status, StatusWithUser } from '../../hooks/type_models'
 import Img404 from '../../assets/error.webp'
 import { useDebounceFn } from '@vueuse/core'
-
+import { useMessage } from 'naive-ui'
 // 路由和通知
 const route = useRoute()
 const notification = useNotification()
 const ServerID = route.params.id
-
+const message = useMessage()
+const hasDraft = ref(false) // 新增草稿状态标记
+const hasPermission = ref(false) // 新增权限状态
 // 服务器信息状态
 const serverInfo = reactive({
     name: '',
     ip: '',
     desc: '加载中...',
+    tags: [] as string[],
     loading: true,
-    error: null as Error | null,
+    error: undefined as string | undefined,
     code: 200,
 })
 
@@ -39,14 +42,115 @@ const serverStatus = reactive({
     text: '检测中...',
     loading: false,
 })
+const loadDraft = async () => {
+    const key = `draft-${ServerID}`
+    const draft = localStorage.getItem(key)
+    if (draft) {
+        try {
+            const parsed = JSON.parse(draft)
+            // 先验证权限
+            const response = await refreshServerInfo()
 
-// 获取服务器信息
+            if (response.code === 200) {
+                // 有权限时才加载草稿
+                serverInfo.name = parsed.name || serverInfo.name
+                serverInfo.ip = parsed.ip || serverInfo.ip
+                serverInfo.desc = parsed.desc || serverInfo.desc
+                serverInfo.tags = parsed.tags || serverInfo.tags
+                hasDraft.value = true
+                hasPermission.value = true
+            } else {
+                // 没有权限时清除草稿
+                localStorage.removeItem(key)
+                hasDraft.value = false
+                hasPermission.value = false
+            }
+        } catch (e) {
+            console.error('加载草稿失败:', e)
+            localStorage.removeItem(key)
+        }
+    }
+}
+
+const clearDraft = async () => {
+    const response = await refreshServerInfo()
+    try {
+        if (response.code === 200) {
+            localStorage.removeItem(`draft-${ServerID}`)
+            hasDraft.value = false
+            serverInfo.name = response.name
+            serverInfo.ip = response.ip
+            serverInfo.desc = response.desc
+            serverInfo.tags = response.tags
+            message.success('草稿已清除，恢复最新数据')
+        } else {
+            message.error('清除草稿失败：权限验证未通过')
+        }
+    } catch (error) {
+        message.error('清除草稿失败')
+    }
+}
+
+const { send: PutServerInfo } = useRequest(
+    ({
+        name,
+        ip,
+        desc,
+        tags,
+    }: {
+        name: string
+        ip: string
+        desc: string
+        tags: string[]
+    }) =>
+        ServerAPI_Token.Put<StatusWithUser>(`/v1/servers/${ServerID}`, {
+            name,
+            ip,
+            desc,
+            tags,
+        }),
+    {
+        immediate: false, // 禁用自动请求
+        initialData: {},
+        retry: 3,
+    },
+)
+
+// 保存服务器信息
+const saveServerInfo = async () => {
+    serverInfo.loading = true
+    try {
+        const response = await PutServerInfo({
+            name: serverInfo.name,
+            ip: serverInfo.ip,
+            desc: serverInfo.desc,
+            tags: serverInfo.tags,
+        })
+        if (response.code === 200) {
+            await clearDraft()
+            notification.success({
+                title: '保存成功',
+                content: '服务器信息已保存',
+            })
+        } else {
+            message.error('保存失败：' + response.detail)
+        }
+    } catch (error) {
+        message.error('保存失败：' + error)
+    } finally {
+        serverInfo.loading = false
+    }
+}
+
 const {
     send: refreshServerInfo,
     onSuccess,
     onError,
 } = useRequest(
-    () => ServerAPI.Get<StatusWithUser>(`/v1/servers/info/${ServerID}`),
+    () =>
+        ServerAPI_Token.Get<StatusWithUser>(`/v1/servers/${ServerID}/editor`, {
+            cacheFor: null,
+        }),
     {
         immediate: false, // 禁用自动请求
         initialData: {},
@@ -54,17 +158,21 @@ const {
     },
 )
 onSuccess(({ data }) => {
-    Object.assign(serverInfo, {
-        name: data.name,
-        ip: data.ip,
-        desc: data.desc,
-        loading: false,
-    })
-    checkServerStatus(data.ip)
-})
+    // 更新表单为服务器最新数据
+    serverInfo.name = data.name
+    serverInfo.ip = data.ip
+    serverInfo.desc = data.desc
+    serverInfo.tags = data.tags
+    serverInfo.loading = false
 
-onError((err) => {
-    serverInfo.error = new Error('后端炸啦！' + err)
+    // 清除草稿缓存
+    localStorage.removeItem(`draft-${ServerID}`)
+    hasDraft.value = false
+    checkServerStatus(serverInfo.ip)
+})
+onError(() => {
+    serverInfo.error = '网站的妈妈叫后端吃饭去了...请稍后再试'
+    serverInfo.code = 502
     serverInfo.loading = false
 })
 
@@ -102,29 +210,72 @@ const updateServerStatus = (data: Fetch_Status) => {
     }
 }
 
-const autoSave = useDebounceFn(async () => {
-    try {
-        notification.success({ content: '修改已自动保存', duration: 1000 })
-    } catch (err) {
-        notification.error({ content: '保存失败', duration: 1000 })
+const autoSave = useDebounceFn(() => {
+    const draftData = {
+        name: serverInfo.name,
+        ip: serverInfo.ip,
+        desc: serverInfo.desc,
+        tags: serverInfo.tags,
     }
+    localStorage.setItem(`draft-${ServerID}`, JSON.stringify(draftData))
+    message.success('草稿已自动保存', { duration: 1000 })
+    hasDraft.value = true
 }, 3000)
 
-watch([() => serverInfo.name, () => serverInfo.desc], autoSave)
-
-watch(
-    () => serverInfo.ip,
-    useDebounceFn((newIp) => {
-        checkServerStatus(newIp)
-    }, 1000),
-)
+const manualSave = async () => {
+    const draftData = {
+        name: serverInfo.name,
+        ip: serverInfo.ip,
+        desc: serverInfo.desc,
+        tags: serverInfo.tags,
+    }
+    localStorage.setItem(`draft-${ServerID}`, JSON.stringify(draftData))
+    message.success('草稿已保存', { duration: 1000 })
+}
 
 onMounted(async () => {
-    const response = await refreshServerInfo()
-    if (response.code == 404) {
-        serverInfo.error = new Error('服务器不存在QAQ')
+    let response: any = null
+
+    // 加载草稿
+    await loadDraft()
+
+    if (hasDraft.value) {
+        // 有草稿时直接使用本地数据
         serverInfo.loading = false
-        serverInfo.code = 404
+        checkServerStatus(serverInfo.ip)
+    } else {
+        // 没有草稿时获取服务器数据
+        response = await refreshServerInfo()
+        if (response.code === 200) {
+            hasPermission.value = true
+        }
+    }
+
+    // 处理错误状态
+    if (response && response.code === 401) {
+        serverInfo.error = response.detail
+        serverInfo.loading = false
+        serverInfo.code = 401
+    }
+
+    // 如果有权限，监听表单变化
+    if (hasPermission.value) {
+        watch(
+            [
+                () => serverInfo.name,
+                () => serverInfo.desc,
+                () => serverInfo.ip,
+                () => serverInfo.tags,
+            ],
+            autoSave,
+        )
+
+        watch(
+            () => serverInfo.ip,
+            useDebounceFn((newIp) => {
+                checkServerStatus(newIp)
+            }, 1000),
+        )
     }
 })
 </script>
@@ -143,17 +294,15 @@ onMounted(async () => {
             <n-spin :show="serverInfo.loading">
                 <div class="content-container">
                     <div v-if="serverInfo.error" class="error-container">
-                        <h2 style="margin: 10px auto">
-                            什么？这不是
-                            {{ serverInfo.code }}
-                            ，这是服务器回老家过年了
-                        </h2>
-                        <n-result
-                            status="404"
-                            :description="serverInfo.error.message"
-                        >
+                        <n-result status="404" :description="serverInfo.error">
                             <template #footer>
-                                <n-button @click="refreshServerInfo">
+                                <n-button
+                                    @click="$router.back()"
+                                    v-if="serverInfo.code == 401"
+                                >
+                                    返回
+                                </n-button>
+                                <n-button @click="refreshServerInfo" v-else>
                                     重试
                                 </n-button>
                             </template>
@@ -204,10 +353,34 @@ onMounted(async () => {
                                 v-model="serverInfo.desc"
                                 editor-id="serverDesc"
                                 :preview="true"
+                                @on-save="manualSave"
                                 noKatex
                                 noMermaid
+                                noUploadImg
                                 class="md-editor"
                             />
+                        </div>
+                        <!-- 标签 -->
+                        <div class="form-item">
+                            <label>标签</label>
+                            <n-dynamic-tags v-model:value="serverInfo.tags" />
+                        </div>
+                        <!-- 保存按钮 -->
+                        <div class="form-item" style="text-align: right">
+                            <n-button
+                                type="primary"
+                                @click="saveServerInfo"
+                                :loading="serverInfo.loading"
+                            >
+                                保存
+                            </n-button>
+                            <n-button
+                                @click="clearDraft"
+                                style="margin-left: 10px"
+                                :disabled="!hasDraft"
+                            >
+                                清除草稿
+                            </n-button>
                         </div>
                     </div>
                 </div>
