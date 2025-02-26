@@ -102,13 +102,14 @@ const handleSubmit = async () => {
     <h2>登录</h2>
     <n-form :model="form" :rules="rules" @submit.prevent="handleSubmit">
         <n-form-item path="account" label="邮箱">
-            <n-input v-model:value="form.account" @keydown.enter.prevent />
+            <n-input v-model:value="form.account" @keydown.enter.prevent placeholder="输入尊贵的邮箱" />
         </n-form-item>
-        <n-form-item path="password" label="密码">
+        <n-form-item path="password" label="密码" >
             <n-input
                 type="password"
                 v-model:value="form.password"
                 @keydown.enter.prevent
+                placeholder="输入绚丽的密码"
             />
         </n-form-item>
         <n-row :gutter="[0, 24]">
@@ -126,7 +127,8 @@ const handleSubmit = async () => {
                             type="primary"
                             :loading="token === ''"
                             @click="handleSubmit()"
-                        >
+
+                            >
                             登录
                         </n-button>
                     </reCaptcha>

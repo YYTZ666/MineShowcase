@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { reactive, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { NNotificationProvider, useNotification } from 'naive-ui'
 import {
-    MenuOutline as MenuIcon,
     CloudOffline,
     CloudDownloadOutline,
     CloudDone,
@@ -30,6 +29,7 @@ const serverInfo = reactive({
     desc: '加载中...',
     loading: true,
     error: null as Error | null,
+    code: 200,
 })
 
 // 服务器状态检测
@@ -42,8 +42,9 @@ const serverStatus = reactive({
 
 // 获取服务器信息
 const {
-    send: refreshServerInfo, // Alova 使用 send 方法重新请求
+    send: refreshServerInfo,
     onSuccess,
+    onError,
 } = useRequest(
     () => ServerAPI.Get<StatusWithUser>(`/v1/servers/info/${ServerID}`),
     {
@@ -60,6 +61,11 @@ onSuccess(({ data }) => {
         loading: false,
     })
     checkServerStatus(data.ip)
+})
+
+onError((err) => {
+    serverInfo.error = new Error('后端炸啦！' + err)
+    serverInfo.loading = false
 })
 
 const { send: statusResponse } = useRequest(
@@ -113,8 +119,13 @@ watch(
     }, 1000),
 )
 
-onMounted(() => {
-    refreshServerInfo()
+onMounted(async () => {
+    const response = await refreshServerInfo()
+    if (response.code == 404) {
+        serverInfo.error = new Error('服务器不存在QAQ')
+        serverInfo.loading = false
+        serverInfo.code = 404
+    }
 })
 </script>
 
@@ -132,9 +143,13 @@ onMounted(() => {
             <n-spin :show="serverInfo.loading">
                 <div class="content-container">
                     <div v-if="serverInfo.error" class="error-container">
+                        <h2 style="margin: 10px auto">
+                            什么？这不是
+                            {{ serverInfo.code }}
+                            ，这是服务器回老家过年了
+                        </h2>
                         <n-result
-                            status="500"
-                            title="加载失败"
+                            status="404"
                             :description="serverInfo.error.message"
                         >
                             <template #footer>
@@ -142,11 +157,17 @@ onMounted(() => {
                                     重试
                                 </n-button>
                             </template>
+                            <template #icon>
+                                <img
+                                    :src="Img404"
+                                    style="width: 50%; height: 50%"
+                                />
+                            </template>
                         </n-result>
                     </div>
 
                     <div v-else class="form-section">
-                        <h1 class="page-title">服务器配置</h1>
+                        <h1 class="page-title">服务器信息</h1>
 
                         <div class="status-indicator">
                             <n-tag :type="serverStatus.type" :bordered="false">

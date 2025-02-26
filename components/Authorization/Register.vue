@@ -19,7 +19,20 @@ import { VueCropper } from 'vue-cropper'
 import 'vue-cropper/dist/index.css'
 import type { UploadInst } from 'naive-ui'
 import type { FormInst } from 'naive-ui'
+import { reactive, computed } from 'vue'
 
+const value = reactive({
+    email: '',
+})
+
+const options = computed(() => {
+    const prefix = form.value.email.split('@')[0]
+    const suffixes = ['@gmail.com', '@163.com', '@qq.com']
+    return suffixes.map((suffix) => ({
+        label: prefix + suffix,
+        value: prefix + suffix,
+    }))
+})
 // 在组件逻辑中添加
 const regFormRef = ref<FormInst | null>(null)
 const uploadRef = ref<UploadInst | null>(null)
@@ -354,19 +367,28 @@ const handleMailSubmit = async () => {
     >
         <p :style="VerifyEmail.style">{{ VerifyEmail.detail }}</p>
 
-        <n-form-item path="display_name" label="昵称 (显示的名字) ">
+        <n-form-item path="display_name" label="昵称">
             <n-input
                 v-model:value="RegForm.display_name"
                 @keydown.enter.prevent
+                placeholder="你の名字"
             />
         </n-form-item>
 
         <n-form-item path="f_password" label="密码">
-            <n-input type="password" v-model:value="RegForm.f_password" />
+            <n-input
+                type="password"
+                v-model:value="RegForm.f_password"
+                placeholder="输入绚丽的密码"
+            />
         </n-form-item>
 
         <n-form-item path="s_password" label="确认密码">
-            <n-input type="password" v-model:value="RegForm.s_password" />
+            <n-input
+                type="password"
+                v-model:value="RegForm.s_password"
+                placeholder="再输入一次绚丽的密码"
+            />
         </n-form-item>
 
         <n-form-item path="avatar" label="头像">
@@ -409,7 +431,15 @@ const handleMailSubmit = async () => {
 
     <n-form :model="form" :rules="rules" v-else>
         <n-form-item path="email" label="邮箱">
-            <n-input v-model:value="form.email" />
+            <n-auto-complete
+                v-model:value="form.email"
+                placeholder="输入尊贵的邮箱"
+                :input-props="{
+                    autocomplete: 'disabled',
+                }"
+                :options="options"
+                clearable
+            />
         </n-form-item>
 
         <n-row :gutter="[0, 24]">
