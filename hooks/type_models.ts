@@ -8,7 +8,6 @@
  */
 export interface User {
     code: number
-    username_or_email: string
     username: string
     email: string
     display_name: string

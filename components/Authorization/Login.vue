@@ -5,6 +5,7 @@ import { useRequest } from 'alova/client'
 import reCaptcha from '../../components/Recaptcha/ReCaptchaV3.vue'
 import type { SiteKey, Login } from '../../hooks/type_models'
 import type { NotificationType } from 'naive-ui/es/notification'
+import { createDiscreteApi } from 'naive-ui'
 
 const form = ref({
     account: '',
@@ -15,7 +16,7 @@ const rules = {
     account: [
         {
             required: true,
-            message: '请输入账户/邮箱',
+            message: '请输入登录账号/邮箱',
             trigger: 'blur',
         },
     ],
@@ -27,7 +28,7 @@ const rules = {
         },
     ],
 }
-const notification = useNotification()
+const { notification: notification } = createDiscreteApi(['notification'])
 
 const Notify = (info: {
     type: NotificationType
@@ -72,8 +73,9 @@ const handleSubmit = async () => {
             type: 'success',
             content: '登录成功',
             meta: '欢迎回来',
-            duration: 3000,
+            duration: 2000,
         })
+        await new Promise((resolve) => setTimeout(resolve, 1000))
         localStorage.setItem('token', response.access_token)
         localStorage.setItem('token_type', response.token_type)
         window.location.href = '/'
@@ -101,10 +103,14 @@ const handleSubmit = async () => {
 <template>
     <h2>登录</h2>
     <n-form :model="form" :rules="rules" @submit.prevent="handleSubmit">
-        <n-form-item path="account" label="邮箱">
-            <n-input v-model:value="form.account" @keydown.enter.prevent placeholder="输入尊贵的邮箱" />
+        <n-form-item path="account" label="账号/邮箱">
+            <n-input
+                v-model:value="form.account"
+                @keydown.enter.prevent
+                placeholder="输入尊贵的邮箱 或 sexy的用户名"
+            />
         </n-form-item>
-        <n-form-item path="password" label="密码" >
+        <n-form-item path="password" label="密码">
             <n-input
                 type="password"
                 v-model:value="form.password"
@@ -127,8 +133,7 @@ const handleSubmit = async () => {
                             type="primary"
                             :loading="token === ''"
                             @click="handleSubmit()"
-
-                            >
+                        >
                             登录
                         </n-button>
                     </reCaptcha>

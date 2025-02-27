@@ -14,17 +14,14 @@ import type {
     NotificationType,
     UploadCustomRequestOptions,
 } from 'naive-ui'
-import { useNotification } from 'naive-ui'
+import { createDiscreteApi } from 'naive-ui'
 import { VueCropper } from 'vue-cropper'
 import 'vue-cropper/dist/index.css'
 import type { UploadInst } from 'naive-ui'
 import type { FormInst } from 'naive-ui'
-import { reactive, computed } from 'vue'
+import { computed } from 'vue'
 
-const value = reactive({
-    email: '',
-})
-
+const { notification: notification } = createDiscreteApi(['notification'])
 const options = computed(() => {
     const prefix = form.value.email.split('@')[0]
     const suffixes = ['@gmail.com', '@163.com', '@qq.com']
@@ -99,7 +96,6 @@ const clearUploadList = () => {
     uploadRef.value?.clear()
 }
 
-const notification = useNotification()
 const Notify = (info: {
     type: NotificationType
     content: string

@@ -7,7 +7,9 @@ function getToken() {
     let temp_Token = ''
     return {
         get() {
-            if (temp_Token) return temp_Token
+            if (temp_Token) {
+              return temp_Token
+            }
             const token = localStorage.getItem('token')
             if (token) {
                 temp_Token = token

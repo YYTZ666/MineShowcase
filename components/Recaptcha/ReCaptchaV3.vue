@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, defineProps, defineEmits } from 'vue'
-import { IReCaptchaLoaderOptions } from 'recaptcha-v3/dist/ReCaptchaLoader'
+import type { IReCaptchaLoaderOptions } from 'recaptcha-v3/dist/ReCaptchaLoader'
 import { load as loadReCaptcha, ReCaptchaInstance } from 'recaptcha-v3'
 
 // 定义组件 props

@@ -8,9 +8,7 @@ import '../assets/css/index.less'
 <template>
     <div class="layout">
         <header class="header">
-            <n-notification-provider>
-                <Header />
-            </n-notification-provider>
+            <Header />
         </header>
         <div class="content">
             <aside class="sidebar">
@@ -34,6 +32,8 @@ import '../assets/css/index.less'
     display: flex;
     flex-direction: column;
     height: 100vh;
+    overflow: hidden;
+    width: 100vw;
 
     .header {
         position: fixed;
@@ -53,6 +53,8 @@ import '../assets/css/index.less'
         flex-grow: 1;
         background-color: @primary-color;
         margin-top: @header-height;
+        height: calc(100vh - @header-height);
+        overflow: hidden;
 
         .sidebar {
             position: fixed;
@@ -66,6 +68,7 @@ import '../assets/css/index.less'
             border-right: 1px solid @border-color;
             z-index: 100;
             transition: 0.3s all;
+            overflow-y: auto;
 
             @media screen and (max-width: 1200px) {
                 transform: translateX(-@sidebar-width);
@@ -76,10 +79,11 @@ import '../assets/css/index.less'
             margin-left: @sidebar-width;
             width: 100%;
             box-sizing: border-box;
-            max-height: 100%;
+            height: calc(100vh - @header-height);
             padding: @padding-size;
             padding-top: 0;
             transition: 0.3s all;
+            overflow-y: auto;
 
             @media screen and (max-width: 1200px) {
                 margin-left: 0;

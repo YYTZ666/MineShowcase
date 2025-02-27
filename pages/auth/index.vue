@@ -26,10 +26,8 @@ if (RegToken) {
                 <template #checked>登录</template>
                 <template #unchecked>注册</template>
             </n-switch>
-            <n-notification-provider v-bind="$attrs">
                 <Register :token="RegToken" v-if="Switch" />
                 <Login v-else />
-            </n-notification-provider>
         </div>
     </div>
 </template>

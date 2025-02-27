@@ -1,7 +1,276 @@
 <script setup lang="ts">
-import lang from '../languages/index'
+import {
+    NAvatar,
+    NCard,
+    NSpace,
+    NSpin,
+    NText,
+    NButton,
+    NResult,
+} from 'naive-ui'
+import { useRequest } from 'alova/client'
+import { ServerAPI_Token } from '../../hooks/api'
+import type { User } from '~/hooks/type_models'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const showAdvanced = ref(false)
+const toggleAdvanced = () => (showAdvanced.value = !showAdvanced.value)
+const token_status = ref(false)
+
+const isUnauthorized = ref(false)
+
+const { error, data, onSuccess, send, loading } = useRequest(
+    ServerAPI_Token.Get<User>('/v1/me'),
+    {
+        immediate: true,
+    },
+)
+
+onMounted(() => {
+    onSuccess(async () => {
+        if (data.value.code == 401) {
+            isUnauthorized.value = true
+        }
+        if (data.value.code == 200) {
+            token_status.value = true
+        }
+        if (data.value.code == 404) {
+            isUnauthorized.value = true
+        }
+    })
+})
+
+const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    })
+}
+
+const goBack = () => router.go(-1)
+const gotoLogin = () => router.push('/auth') // 新增登录跳转方法
 </script>
 
-<template></template>
+<template>
+    <div class="user-panel">
+        <n-spin :show="loading">
+            <n-result
+                v-if="isUnauthorized"
+                status="403"
+                title="未登录"
+                description="需要登录才能查看个人信息"
+                size="large"
+            >
+                <template #footer>
+                    <n-space justify="center">
+                        <n-button type="primary" @click="gotoLogin">
+                            立即登录
+                        </n-button>
+                        <n-button @click="goBack">返回上一页</n-button>
+                    </n-space>
+                </template>
+            </n-result>
+            <n-result
+                v-else-if="error"
+                status="error"
+                title="加载失败"
+                description="无法获取用户信息，请检查网络连接"
+                size="large"
+            >
+                <template #footer>
+                    <n-space justify="center">
+                        <n-button type="primary" @click="send">重试</n-button>
+                        <n-button @click="goBack">返回上一页</n-button>
+                    </n-space>
+                </template>
+            </n-result>
 
-<style scoped lang="less"></style>
+            <n-card v-else-if="token_status" hoverable>
+                <div class="profile-header">
+                    <n-avatar
+                        round
+                        :size="160"
+                        :src="data.avatar_url"
+                        class="main-avatar"
+                    />
+                    <div class="header-info">
+                        <h1 class="display-name">
+                            {{ data.display_name || data.username }}
+                        </h1>
+                        <n-space align="center">
+                            <!-- 计划个性签名，或者创新的给自己贴标签 -->
+                        </n-space>
+                    </div>
+                </div>
+
+                <n-divider />
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label><n-text depth="3">用户ID</n-text></label>
+                        <n-text strong>{{ data.id }}</n-text>
+                    </div>
+
+                    <div class="info-item">
+                        <label><n-text depth="3">注册邮箱</n-text></label>
+                        <n-text>{{ data.email }}</n-text>
+                    </div>
+
+                    <div class="info-item">
+                        <label><n-text depth="3">创建时间</n-text></label>
+                        <n-text>
+                            {{ formatDate(data.created_at) }}
+                        </n-text>
+                    </div>
+
+                    <div class="info-item">
+                        <label><n-text depth="3">最后登录</n-text></label>
+                        <n-text>
+                            {{ formatDate(data.last_login) }}
+                        </n-text>
+                    </div>
+                </div>
+
+                <n-collapse-transition :show="showAdvanced">
+                    <div class="advanced-info">
+                        <n-divider dashed>高级信息</n-divider>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>
+                                    <n-text depth="3">登录账号</n-text>
+                                </label>
+                                <n-text>{{ data.username }}</n-text>
+                            </div>
+                            <div class="info-item">
+                                <label>
+                                    <n-text depth="3">账户类型</n-text>
+                                </label>
+                                <n-text>
+                                    {{
+                                        data.role === 'admin'
+                                            ? '管理员账户'
+                                            : '普通账户'
+                                    }}
+                                </n-text>
+                            </div>
+                        </div>
+                    </div>
+                </n-collapse-transition>
+
+                <div class="action-bar">
+                    <n-button type="primary" dashed @click="toggleAdvanced">
+                        {{ showAdvanced ? '收起详情' : '展开详情' }}
+                    </n-button>
+                    <n-button
+                        tag="a"
+                        href="/settings"
+                        type="primary"
+                        class="edit-btn"
+                    >
+                        编辑资料
+                    </n-button>
+                </div>
+            </n-card>
+        </n-spin>
+    </div>
+</template>
+
+<style scoped lang="less">
+.user-panel {
+    margin: 20px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        padding: 20px 0;
+
+        .main-avatar {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-info {
+            flex: 1;
+
+            .display-name {
+                margin: 0 0 12px;
+                font-size: 2.2rem;
+                color: #1f2937;
+            }
+        }
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+        padding: 16px 0;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        transition: all 0.3s;
+
+        &:hover {
+            background: #f1f3f5;
+            transform: translateY(-2px);
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+    }
+
+    .action-bar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid #e5e7eb;
+
+        .edit-btn {
+            min-width: 120px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 20px;
+
+            .header-info .display-name {
+                font-size: 1.8rem;
+            }
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .action-bar {
+            flex-direction: column;
+        }
+    }
+}
+.error-message {
+    text-align: center;
+    padding: 40px 20px;
+
+    .n-space {
+        justify-content: center;
+        gap: 16px;
+    }
+}
+</style>

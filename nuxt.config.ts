@@ -27,6 +27,10 @@ export default defineNuxtConfig({
             viewport: 'width=device-width,initial-scale=1',
             link: [{ rel: 'icon', href: '/logo.webp', sizes: 'any' }],
         },
+        pageTransition: {
+            name: 'page', // 过渡名称
+            mode: 'in-out', // 过渡模式
+        },
     },
     compatibilityDate: '2024-11-01',
     devtools: { enabled: true },

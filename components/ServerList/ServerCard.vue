@@ -224,7 +224,6 @@ const copyToClipboard = (event: MouseEvent) => {
 
 .card {
     overflow: hidden;
-    width: 100%;
     height: 20rem;
     box-sizing: border-box;
     border: 2px solid @border-color;

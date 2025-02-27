@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { reactive, onMounted, ref, watch } from 'vue'
+import { reactive, onMounted, ref, watch, markRaw } from 'vue'
 import { useRoute } from 'vue-router'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
-import { NNotificationProvider, useNotification } from 'naive-ui'
+import {
+    createDiscreteApi,
+    NNotificationProvider,
+    useNotification,
+} from 'naive-ui'
 import {
     CloudOffline,
     CloudDownloadOutline,
@@ -19,9 +23,7 @@ import { useDebounceFn } from '@vueuse/core'
 import { useMessage } from 'naive-ui'
 // 路由和通知
 const route = useRoute()
-const notification = useNotification()
 const ServerID = route.params.id
-const message = useMessage()
 const hasDraft = ref(false) // 新增草稿状态标记
 const hasPermission = ref(false) // 新增权限状态
 // 服务器信息状态
@@ -34,14 +36,18 @@ const serverInfo = reactive({
     error: undefined as string | undefined,
     code: 200,
 })
-
+const { notification: notification, message: message } = createDiscreteApi([
+    'notification',
+    'message',
+])
 // 服务器状态检测
 const serverStatus = reactive({
     type: 'warning' as 'success' | 'error' | 'warning',
-    icon: CloudDownloadOutline,
+    icon: markRaw(CloudDownloadOutline), // 初始化时标记
     text: '检测中...',
     loading: false,
 })
+
 const loadDraft = async () => {
     const key = `draft-${ServerID}`
     const draft = localStorage.getItem(key)
@@ -187,7 +193,7 @@ const checkServerStatus = useDebounceFn(async (ip: string) => {
     serverStatus.loading = true
     try {
         serverStatus.type = 'warning'
-        serverStatus.icon = CloudDownloadOutline
+        serverStatus.icon = markRaw(CloudDownloadOutline) // 动态赋值时标记
         serverStatus.text = '检测中...'
         updateServerStatus(await statusResponse(serverInfo.ip))
     } catch (err) {
@@ -201,11 +207,11 @@ const checkServerStatus = useDebounceFn(async (ip: string) => {
 const updateServerStatus = (data: Fetch_Status) => {
     if (data.online) {
         serverStatus.type = 'success'
-        serverStatus.icon = CloudDone
+        serverStatus.icon = markRaw(CloudDone) // 动态赋值时标记
         serverStatus.text = `在线 - ${data.players.online}/${data.players.max} 玩家`
     } else {
         serverStatus.type = 'error'
-        serverStatus.icon = CloudOffline
+        serverStatus.icon = markRaw(CloudOffline) // 动态赋值时标记
         serverStatus.text = '离线'
     }
 }
