@@ -8,7 +8,7 @@ import {
     NGrid,
     NGi,
 } from 'naive-ui'
-import { ServerAPI } from '../../hooks/api'
+import { ServerAPI_Token } from '../../hooks/api'
 import { useRoute } from 'vue-router'
 import {
     CheckmarkCircleOutline,
@@ -21,14 +21,12 @@ import IMG_noicon from '../../assets/noicon.svg'
 
 const route = useRoute()
 const serverId = route.params.id
-const {
-    data: server,
-    loading,
-    error,
-    send,
-} = useRequest(() => ServerAPI.Get<Status>(`/v1/servers/info/${serverId}`), {
-    immediate: true,
-})
+const { data: server, loading } = useRequest(
+    () => ServerAPI_Token.Get<Status>(`/v1/servers/info/${serverId}`),
+    {
+        immediate: true,
+    },
+)
 type ResultStatus = {
     type:
         | 'error'
@@ -97,12 +95,7 @@ const formatDelay = (delay?: number) => {
 <template>
     <div class="detail">
         <n-spin :show="loading">
-            <div v-if="error" class="error-container">
-                <h2>加载失败</h2>
-                <n-button @click="send">重试</n-button>
-            </div>
-
-            <div v-else-if="server" class="server-detail">
+            <div v-if="server" class="server-detail">
                 <template v-if="server.code === 200">
                     <!-- 头部信息 -->
                     <div class="server-header">
@@ -113,20 +106,31 @@ const formatDelay = (delay?: number) => {
                             :src="server.status?.icon ?? IMG_noicon"
                         />
                         <div class="header-info">
-                            <h1 class="server-name">
-                                {{ server.name }}
-                            </h1>
-                            <n-space align="center">
-                                <n-tag :bordered="false" :type="statusColor">
-                                    <template #icon>
-                                        <n-icon :component="statusIcon" />
-                                    </template>
-                                    {{ server.status ? '在线' : '离线' }}
-                                </n-tag>
-                                <span class="server-ip">
-                                    {{ server.ip || 'IP 未公开' }}
-                                </span>
-                            </n-space>
+                            <div class="header-left">
+                                <h1 class="server-name">
+                                    {{ server.name }}
+                                </h1>
+                                <n-space align="center">
+                                    <n-tag
+                                        :bordered="false"
+                                        :type="statusColor"
+                                    >
+                                        <template #icon>
+                                            <n-icon :component="statusIcon" />
+                                        </template>
+                                        {{ server.status ? '在线' : '离线' }}
+                                    </n-tag>
+                                    <span class="server-ip">
+                                        {{ server.ip || 'IP 未公开' }}
+                                    </span>
+                                </n-space>
+                            </div>
+                            <NuxtLink
+                                v-if="server.permission !== 'guest'"
+                                :to="`/editor/${serverId}`"
+                            >
+                                <n-button type="primary">编辑服务器</n-button>
+                            </NuxtLink>
                         </div>
                     </div>
 
@@ -192,7 +196,9 @@ const formatDelay = (delay?: number) => {
                     :description="resultStatus.description"
                 >
                     <template #footer>
-                        <n-button @click="$router.push('/')">返回首页</n-button>
+                        <NuxtLink :to="`/`">
+                            <n-button type="primary">返回首页</n-button>
+                        </NuxtLink>
                     </template>
                 </n-result>
             </div>
@@ -230,17 +236,29 @@ const formatDelay = (delay?: number) => {
             }
 
             .header-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
                 flex: 1;
+                gap: 20px;
 
-                .server-name {
-                    margin: 0 0 12px;
-                    font-size: 2.4rem;
-                    color: #1f2937;
+                .header-left {
+                    flex: 1;
+
+                    .server-name {
+                        margin: 0 0 12px;
+                        font-size: 2.4rem;
+                        color: #1f2937;
+                    }
+
+                    .server-ip {
+                        color: #6b7280;
+                        font-family: monospace;
+                    }
                 }
 
-                .server-ip {
-                    color: #6b7280;
-                    font-family: monospace;
+                .n-button {
+                    flex-shrink: 0;
                 }
             }
         }
@@ -290,6 +308,20 @@ const formatDelay = (delay?: number) => {
         .server-header {
             flex-direction: column;
             text-align: center;
+
+            .header-info {
+                flex-direction: column;
+                align-items: center;
+
+                .header-left {
+                    text-align: center;
+                }
+
+                .n-button {
+                    width: 100%;
+                    margin-top: 12px;
+                }
+            }
 
             .server-name {
                 font-size: 1.8rem;

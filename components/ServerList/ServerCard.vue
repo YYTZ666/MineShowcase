@@ -37,6 +37,7 @@ const StatusInfo = ref<Status>({
     status: null,
     code: 200,
     detail: undefined,
+    permission: undefined,
 })
 
 const Loading = ref(true)

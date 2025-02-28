@@ -8,7 +8,7 @@ function getToken() {
     return {
         get() {
             if (temp_Token) {
-              return temp_Token
+                return temp_Token
             }
             const token = localStorage.getItem('token')
             if (token) {
@@ -41,15 +41,16 @@ const { onAuthRequired, onResponseRefreshToken } =
             method.config.headers.Authorization = accessToken.value
         },
     })
-
 export const ServerAPI_Token = createAlova({
     baseURL: 'https://mscpoapi.tblstudio.cn/',
     statesHook: VueHook,
     requestAdapter: adapterFetch(),
     // 全局请求拦截器
     beforeRequest({ config }) {
-        // 添加 Token 到请求头
-        config.headers.Authorization = `Bearer ${GetToken.get()}`
+        const token = GetToken.get()
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`
+        }
         config.headers['Content-Type'] = 'application/json; charset=utf-8'
     },
     responded: async (response) => ({

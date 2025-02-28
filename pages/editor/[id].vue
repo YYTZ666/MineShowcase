@@ -461,12 +461,10 @@ onMounted(async () => {
 
         .status-indicator {
             margin-bottom: 24px;
-            text-align: center;
 
             .n-tag {
                 font-size: 0.95rem;
                 padding: 8px 16px;
-                border-radius: 20px;
             }
         }
 

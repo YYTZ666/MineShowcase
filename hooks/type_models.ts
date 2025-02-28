@@ -63,10 +63,10 @@ export interface Status {
         }
         icon: string | null
     } | null
+    permission: 'owner' | 'admin' | 'guest' | undefined
     code: number
     detail: string | undefined
 }
-
 
 /**
  * 向服务器所有者发送的服务器状态数据模型（ServerAPI）
