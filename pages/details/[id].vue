@@ -1,23 +1,21 @@
 <script setup lang="ts">
 import NavBar from '../../components/NavBar.vue'
 import Header from '../../components/Header.vue'
-import UserPanel from '../../components/UserPanel/UserPanel.vue'
+import Details from '../../components/ServerList/Details.vue'
 import '../assets/css/index.less'
 </script>
 
 <template>
     <div class="layout">
         <header class="header">
-            <n-notification-provider>
-                <Header />
-            </n-notification-provider>
+            <Header />
         </header>
         <div class="content">
             <aside class="sidebar">
                 <NavBar />
             </aside>
             <main class="main-content">
-                <UserPanel />
+                <Details />
             </main>
         </div>
     </div>
@@ -57,6 +55,7 @@ import '../assets/css/index.less'
         .sidebar {
             position: fixed;
             left: 0;
+            top: @header-height;
             box-sizing: border-box;
             width: @sidebar-width;
             padding: @padding-size;

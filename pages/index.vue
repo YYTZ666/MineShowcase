@@ -59,6 +59,7 @@ import '../assets/css/index.less'
         .sidebar {
             position: fixed;
             left: 0;
+            top: @header-height;
             box-sizing: border-box;
             width: @sidebar-width;
             padding: @padding-size;
@@ -68,7 +69,6 @@ import '../assets/css/index.less'
             border-right: 1px solid @border-color;
             z-index: 100;
             transition: 0.3s all;
-            overflow-y: auto;
 
             @media screen and (max-width: 1200px) {
                 transform: translateX(-@sidebar-width);

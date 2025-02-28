@@ -6,7 +6,8 @@ import { ServerAPI } from '../../hooks/api'
 import { useRetriableRequest } from 'alova/client'
 import type { Status, ListItem } from '../../hooks/type_models'
 import { useNotification } from 'naive-ui'
-
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const info = defineProps<ListItem>()
 
 const getStatus = () => ServerAPI.Get<Status>(`/v1/servers/info/${info.id}`)
@@ -39,7 +40,9 @@ const StatusInfo = ref<Status>({
 })
 
 const Loading = ref(true)
-
+const handleCardClick = () => {
+    router.push(`/details/${info.id}`)
+}
 onSuccess(() => {
     Loading.value = false
     StatusInfo.value = data.value
@@ -103,7 +106,7 @@ const copyToClipboard = (event: MouseEvent) => {
 </script>
 
 <template>
-    <div class="card">
+    <div class="card" @click="handleCardClick">
         <div class="card-cover">
             <n-skeleton v-if="Loading" height="100%" width="100%" />
             <img v-else :src="IMG_noimage" />
@@ -150,11 +153,11 @@ const copyToClipboard = (event: MouseEvent) => {
                             v-text="statusText"
                         ></n-tag>
                         <n-input
+                            @click.stop="copyToClipboard"
                             placeholder="加载中..."
                             :value="StatusInfo.ip"
                             readonly="true"
                             size="tiny"
-                            @click="copyToClipboard"
                             style="
                                 width: auto;
                                 min-width: 120px;

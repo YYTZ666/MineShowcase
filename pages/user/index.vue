@@ -8,9 +8,7 @@ import '../assets/css/index.less'
 <template>
     <div class="layout">
         <header class="header">
-            <n-notification-provider>
-                <Header />
-            </n-notification-provider>
+            <Header />
         </header>
         <div class="content">
             <aside class="sidebar">
@@ -57,6 +55,7 @@ import '../assets/css/index.less'
         .sidebar {
             position: fixed;
             left: 0;
+            top: @header-height;
             box-sizing: border-box;
             width: @sidebar-width;
             padding: @padding-size;

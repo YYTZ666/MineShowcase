@@ -3,11 +3,7 @@ import { reactive, onMounted, ref, watch, markRaw } from 'vue'
 import { useRoute } from 'vue-router'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
-import {
-    createDiscreteApi,
-    NNotificationProvider,
-    useNotification,
-} from 'naive-ui'
+import { createDiscreteApi, NNotificationProvider } from 'naive-ui'
 import {
     CloudOffline,
     CloudDownloadOutline,
@@ -20,7 +16,6 @@ import { ServerAPI_Token, fetch_status } from '../../hooks/api'
 import type { Fetch_Status, StatusWithUser } from '../../hooks/type_models'
 import Img404 from '../../assets/error.webp'
 import { useDebounceFn } from '@vueuse/core'
-import { useMessage } from 'naive-ui'
 // 路由和通知
 const route = useRoute()
 const ServerID = route.params.id
@@ -321,9 +316,8 @@ onMounted(async () => {
                         </n-result>
                     </div>
 
-                    <div v-else class="form-section">
+                    <div v-else>
                         <h1 class="page-title">服务器信息</h1>
-
                         <div class="status-indicator">
                             <n-tag :type="serverStatus.type" :bordered="false">
                                 <template #icon>
@@ -424,6 +418,7 @@ onMounted(async () => {
     .sidebar {
         position: fixed;
         left: 0;
+        top: @header-height;
         box-sizing: border-box;
         width: @sidebar-width;
         padding: @padding-size;
@@ -438,18 +433,19 @@ onMounted(async () => {
             transform: translateX(-@sidebar-width);
         }
     }
+
     .main-content {
         margin-left: @sidebar-width;
-        padding: 24px;
+        padding: @padding-size;
         padding-top: calc(@header-height + 24px);
-        transition: margin 0.3s ease;
+        transition: 0.3s all;
+        margin-left: @sidebar-width;
 
         @media screen and (max-width: 1200px) {
             margin-left: 0;
         }
 
         .content-container {
-            max-width: 800px;
             margin: 0 auto;
             background: white;
             border-radius: 12px;

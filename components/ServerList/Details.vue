@@ -1,0 +1,300 @@
+<script setup lang="ts">
+import {
+    NAvatar,
+    NTag,
+    NSpace,
+    NButton,
+    NStatistic,
+    NGrid,
+    NGi,
+} from 'naive-ui'
+import { ServerAPI } from '../../hooks/api'
+import { useRoute } from 'vue-router'
+import {
+    CheckmarkCircleOutline,
+    WarningOutline,
+    CloudOfflineOutline,
+} from '@vicons/ionicons5'
+import { useRequest } from 'alova/client'
+import type { Status } from '~/hooks/type_models'
+import IMG_noicon from '../../assets/noicon.svg'
+
+const route = useRoute()
+const serverId = route.params.id
+const {
+    data: server,
+    loading,
+    error,
+    send,
+} = useRequest(() => ServerAPI.Get<Status>(`/v1/servers/info/${serverId}`), {
+    immediate: true,
+})
+type ResultStatus = {
+    type:
+        | 'error'
+        | '404'
+        | '403'
+        | '500'
+        | 'success'
+        | 'warning'
+        | 'info'
+        | '418'
+    title: string
+    description: string
+}
+const resultStatus = computed<ResultStatus>(() => {
+    if (!server.value) return { type: '404', title: '', description: '' }
+
+    switch (server.value.code) {
+        case 404:
+            return {
+                type: '404',
+                title: '服务器未找到',
+                description: '请检查服务器ID是否正确',
+            }
+        case 403:
+            return {
+                type: '403',
+                title: '无访问权限',
+                description: '该服务器设置了访问限制',
+            }
+        case 500:
+            return {
+                type: '500',
+                title: '服务器错误',
+                description: '服务端发生未知错误',
+            }
+        default:
+            return {
+                type: 'error',
+                title: '发生错误',
+                description: server.value.detail || '未知错误',
+            }
+    }
+})
+// 状态图标
+const statusIcon = computed(() => {
+    if (!server.value?.status) return CloudOfflineOutline
+    return server.value.status.delay < 100
+        ? CheckmarkCircleOutline
+        : WarningOutline
+})
+
+// 状态颜色
+const statusColor = computed(() => {
+    if (!server.value?.status) return 'error'
+    return server.value.status.delay < 100 ? 'success' : 'warning'
+})
+
+// 格式化延迟显示
+const formatDelay = (delay?: number) => {
+    if (!delay) return 'N/A'
+    if (delay < 1) return '<1ms'
+    return `${delay.toFixed(2)}ms`
+}
+</script>
+
+<template>
+    <div class="detail">
+        <n-spin :show="loading">
+            <div v-if="error" class="error-container">
+                <h2>加载失败</h2>
+                <n-button @click="send">重试</n-button>
+            </div>
+
+            <div v-else-if="server" class="server-detail">
+                <template v-if="server.code === 200">
+                    <!-- 头部信息 -->
+                    <div class="server-header">
+                        <n-avatar
+                            class="n-img"
+                            round
+                            :size="120"
+                            :src="server.status?.icon ?? IMG_noicon"
+                        />
+                        <div class="header-info">
+                            <h1 class="server-name">
+                                {{ server.name }}
+                            </h1>
+                            <n-space align="center">
+                                <n-tag :bordered="false" :type="statusColor">
+                                    <template #icon>
+                                        <n-icon :component="statusIcon" />
+                                    </template>
+                                    {{ server.status ? '在线' : '离线' }}
+                                </n-tag>
+                                <span class="server-ip">
+                                    {{ server.ip || 'IP 未公开' }}
+                                </span>
+                            </n-space>
+                        </div>
+                    </div>
+
+                    <!-- 关键指标 -->
+                    <n-grid x-gap="24" y-gap="24" cols="2 s:3 m:4">
+                        <n-gi>
+                            <n-statistic label="在线玩家">
+                                {{ server.status?.players.online ?? '-' }}/{{
+                                    server.status?.players.max ?? '-'
+                                }}
+                            </n-statistic>
+                        </n-gi>
+                        <n-gi>
+                            <n-statistic label="延迟">
+                                {{ formatDelay(server.status?.delay) }}
+                            </n-statistic>
+                        </n-gi>
+                        <n-gi>
+                            <n-statistic label="版本">
+                                {{ server.status?.version || server.version }}
+                            </n-statistic>
+                        </n-gi>
+                        <n-gi>
+                            <n-statistic label="认证模式">
+                                {{ server.auth_mode }}
+                            </n-statistic>
+                        </n-gi>
+                    </n-grid>
+
+                    <!-- 标签 -->
+                    <div class="tag-section">
+                        <n-tag
+                            v-for="tag in server.tags"
+                            :key="tag"
+                            bordered
+                            round
+                        >
+                            {{ tag }}
+                        </n-tag>
+                    </div>
+
+                    <!-- 描述和MOTD -->
+                    <n-card title="服务器描述" class="description-card">
+                        <div class="description-content">
+                            {{ server.desc }}
+                        </div>
+
+                        <template v-if="server.status?.motd" #footer>
+                            <div class="motd-section">
+                                <h3>MOTD</h3>
+                                <pre class="motd-text">{{
+                                    server.status.motd.plain
+                                }}</pre>
+                            </div>
+                        </template>
+                    </n-card>
+                </template>
+                <n-result
+                    v-else
+                    class="status-result"
+                    :status="resultStatus.type"
+                    :title="resultStatus.title"
+                    :description="resultStatus.description"
+                >
+                    <template #footer>
+                        <n-button @click="$router.push('/')">返回首页</n-button>
+                    </template>
+                </n-result>
+            </div>
+        </n-spin>
+    </div>
+</template>
+
+<style scoped lang="less">
+.detail {
+    margin: 20px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+
+    .status-result {
+        margin-top: 20vh;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .server-detail {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+
+        .server-header {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            margin-bottom: 40px;
+
+            .n-img {
+                background-color: #e6e6e6;
+            }
+
+            .header-info {
+                flex: 1;
+
+                .server-name {
+                    margin: 0 0 12px;
+                    font-size: 2.4rem;
+                    color: #1f2937;
+                }
+
+                .server-ip {
+                    color: #6b7280;
+                    font-family: monospace;
+                }
+            }
+        }
+
+        .tag-section {
+            margin: 24px 0;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .description-card {
+            margin-top: 24px;
+
+            .description-content {
+                line-height: 1.8;
+                color: #4b5563;
+                white-space: pre-wrap;
+            }
+
+            .motd-section {
+                margin-top: 24px;
+                padding-top: 24px;
+                border-top: 1px solid #e5e7eb;
+
+                h3 {
+                    margin: 0 0 12px;
+                    color: #374151;
+                }
+
+                .motd-text {
+                    font-family: monospace;
+                    background: #f8f9fa;
+                    padding: 12px;
+                    border-radius: 6px;
+                    white-space: pre-wrap;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .server-detail {
+        padding: 16px;
+
+        .server-header {
+            flex-direction: column;
+            text-align: center;
+
+            .server-name {
+                font-size: 1.8rem;
+            }
+        }
+    }
+}
+</style>
