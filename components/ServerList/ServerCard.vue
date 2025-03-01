@@ -232,7 +232,6 @@ const copyToClipboard = (event: MouseEvent) => {
     box-sizing: border-box;
     border: 2px solid @border-color;
     border-radius: 8px;
-    background: #fffefa;
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
     transition:
         transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
