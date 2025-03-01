@@ -17,6 +17,7 @@ export interface User {
     id: number
     created_at: string
     last_login: string
+    servers: Array<Array<number | string>>
 }
 
 /**

@@ -12,7 +12,7 @@ import { useRequest } from 'alova/client'
 import { ServerAPI_Token } from '../../hooks/api'
 import type { User } from '~/hooks/type_models'
 import { useRouter } from 'vue-router'
-
+import ServerCard from './ServerCard.vue'
 const router = useRouter()
 const showAdvanced = ref(false)
 const toggleAdvanced = () => (showAdvanced.value = !showAdvanced.value)
@@ -50,7 +50,7 @@ const formatDate = (dateString: string) => {
 }
 
 const goBack = () => router.go(-1)
-const gotoLogin = () => router.push('/auth') // 新增登录跳转方法
+const gotoLogin = () => router.push('/auth')
 </script>
 
 <template>
@@ -173,6 +173,32 @@ const gotoLogin = () => router.push('/auth') // 新增登录跳转方法
                     </n-button>
                 </div>
             </n-card>
+            <h2 style="margin: 24px 0 16px">我的服务器</h2>
+            <div class="server-list">
+                <n-empty
+                    v-if="data?.servers?.length === 0"
+                    description="您还没有任何服务器"
+                    style="margin: 32px 0"
+                >
+                    <template #extra>
+                        <n-button size="small" @click="router.push('/create')">
+                            创建新服务器
+                        </n-button>
+                    </template>
+                </n-empty>
+
+                <n-grid cols="1 600:2 960:3" x-gap="16" y-gap="16">
+                    <n-gi
+                        v-for="[role, serverId] in data?.servers || []"
+                        :key="serverId"
+                    >
+                        <ServerCard
+                            :server-id="Number(serverId)"
+                            :role="role"
+                        />
+                    </n-gi>
+                </n-grid>
+            </div>
         </n-spin>
     </div>
 </template>
@@ -261,6 +287,23 @@ const gotoLogin = () => router.push('/auth') // 新增登录跳转方法
 
         .action-bar {
             flex-direction: column;
+        }
+    }
+}
+.server-list {
+    margin-top: 24px;
+
+    .n-grid {
+        margin-bottom: 24px;
+    }
+
+    .n-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        &-footer {
+            margin-top: auto;
         }
     }
 }
