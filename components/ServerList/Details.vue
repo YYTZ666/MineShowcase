@@ -150,7 +150,7 @@ const formatDelay = (delay?: number) => {
                         </n-gi>
                         <n-gi>
                             <n-statistic label="版本">
-                                {{ server.status?.version || server.version }}
+                                {{ server.version }}
                             </n-statistic>
                         </n-gi>
                         <n-gi>

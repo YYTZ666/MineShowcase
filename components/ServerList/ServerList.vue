@@ -103,7 +103,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <h1>ServerList</h1>
+    <h1>服务器列表</h1>
     <div v-if="loading">Loading...</div>
     <div v-else-if="error">加载失败QAQ (code: {{ error.message }})</div>
     <div v-else>
