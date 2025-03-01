@@ -163,14 +163,14 @@ const gotoLogin = () => router.push('/auth')
                     <n-button type="primary" dashed @click="toggleAdvanced">
                         {{ showAdvanced ? '收起详情' : '展开详情' }}
                     </n-button>
-                    <n-button
+                    <!-- <n-button
                         tag="a"
                         href="/settings"
                         type="primary"
                         class="edit-btn"
                     >
                         编辑资料
-                    </n-button>
+                    </n-button> -->
                 </div>
             </n-card>
             <h2 style="margin: 24px 0 16px">我的服务器</h2>

@@ -100,15 +100,15 @@ const dropdownOptions = [
             style: { cursor: 'pointer' },
         },
     },
-    {
-        label: '账户设置',
-        key: 'settings',
-        icon: renderIcon(markRaw(SettingsOutline)),
-        props: {
-            onClick: createNuxtLinkHandler('/settings'),
-            style: { cursor: 'pointer' },
-        },
-    },
+    // {
+    //     label: '账户设置',
+    //     key: 'settings',
+    //     icon: renderIcon(markRaw(SettingsOutline)),
+    //     props: {
+    //         onClick: createNuxtLinkHandler('/settings'),
+    //         style: { cursor: 'pointer' },
+    //     },
+    // },
     {
         label: '退出登录',
         key: 'logout',
@@ -122,7 +122,7 @@ const dropdownOptions = [
 
 onMounted(() => {
     if (token_status.value) {
-    fetchNotifications()
+        fetchNotifications()
         setInterval(fetchNotifications, 60000)
     }
 })
