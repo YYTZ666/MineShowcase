@@ -1,45 +1,61 @@
 <script setup lang="ts">
 import ServerCard from './ServerCard.vue'
 import { ServerAPI } from '../../hooks/api'
-import { usePagination } from 'alova/client'
-import { ref, watch } from 'vue'
-import type { List } from '../../hooks/type_models'
+import { ref, watch, onMounted } from 'vue'
+import type { List, ListItem } from '../../hooks/type_models'
 
-// 请求分页数据
-const { loading, data, page, pageCount, error } = usePagination(
-    (page, pageSize) =>
-        ServerAPI.Get<List>('/v1/servers', {
-            params: {
-                offset: (page - 1) * pageSize,
-                limit: 12,
-            },
-        }),
-    {
-        initialData: [],
-        initialPage: 1, // 初始页码，默认为1
-        initialPageSize: 12,
-        data: (response) => response.server_list,
-        total: (response) => response.total,
-        debounce: 200,
-    },
-)
+const allData = ref<ListItem[]>([])
+const currentPageData = ref<ListItem[]>([])
+const loading = ref(true)
+const error = ref<Error | null>(null)
+const page = ref(1)
+const pageSize = 12
+const pageCount = ref(0)
+const isVisible = ref(true) // 新增：控制显示的状态
 
-// 洗牌算法随机
-const random = () => {
-    for (let i = data.value.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[data.value[i], data.value[j]] = [data.value[j], data.value[i]]
+const fetchAllData = async () => {
+    try {
+        loading.value = true
+        const response = await ServerAPI.Get<List>('/v1/servers', {})
+        allData.value = response.server_list
+        pageCount.value = Math.ceil(allData.value.length / pageSize)
+        random()
+    } catch (err) {
+        error.value = err as Error
+    } finally {
+        loading.value = false
     }
 }
 
-// 监听页码变化
-const isChangingPage = ref(false)
+// 洗牌算法随机打乱所有数据
+const random = async () => {
+    for (let i = allData.value.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[allData.value[i], allData.value[j]] = [
+            allData.value[j],
+            allData.value[i],
+        ]
+    }
+    updatePageData() // 更新当前页数据
+}
 
+// 更新当前页数据
+const updatePageData = async () => {
+    isVisible.value = false // 先隐藏数据
+    await new Promise((resolve) => setTimeout(resolve, 310)) // 等待动画结束
+    const start = (page.value - 1) * pageSize
+    const end = start + pageSize
+    currentPageData.value = allData.value.slice(start, end)
+    isVisible.value = true // 显示新数据
+}
+
+// 监听页码变化
 watch(page, () => {
-    isChangingPage.value = true
-    setTimeout(() => {
-        isChangingPage.value = false
-    }, 300)
+    updatePageData()
+})
+
+onMounted(() => {
+    fetchAllData()
 })
 </script>
 
@@ -54,21 +70,22 @@ watch(page, () => {
         </div>
         <br />
         <NNotificationProvider placement="bottom-right">
-            <Transition name="page-change" mode="out-in">
-                <div :key="page" v-if="!isChangingPage">
-                    <TransitionGroup tag="div" name="fade" class="grid-list">
-                        <ServerCard
-                            v-for="server in data"
-                            :key="server.id"
-                            :id="server.id"
-                            :name="server.name"
-                        />
-                    </TransitionGroup>
-                </div>
-            </Transition>
+            <TransitionGroup tag="div" name="fade" class="grid-list">
+                <ServerCard
+                    v-for="server in currentPageData"
+                    v-if="isVisible"
+                    :key="server.id"
+                    :id="server.id"
+                    :name="server.name"
+                />
+            </TransitionGroup>
         </NNotificationProvider>
         <br />
-        <n-pagination v-model:page="page" :page-count="pageCount" />
+        <n-pagination
+            v-model:page="page"
+            :page-count="pageCount"
+            v-if="isVisible"
+        />
     </div>
 </template>
 
@@ -90,14 +107,12 @@ watch(page, () => {
 }
 
 // 翻页动画样式
-.page-change-enter-active,
-.page-change-leave-active {
-    transition: all 0.4s ease;
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
 }
-
-.page-change-enter-from,
-.page-change-leave-to {
+.fade-enter-from,
+.fade-leave-to {
     opacity: 0;
-    transform: translateY(20px);
 }
 </style>
