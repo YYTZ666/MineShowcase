@@ -179,13 +179,12 @@ const gotoLogin = () => router.push('/auth')
                     v-if="data?.servers?.length === 0"
                     description="您还没有任何服务器"
                     style="margin: 32px 0"
-                >
-                    <template #extra>
-                        <n-button size="small" @click="router.push('/create')">
-                            创建新服务器
-                        </n-button>
-                    </template>
-                </n-empty>
+                ></n-empty>
+                <!-- <template #extra>
+                <n-button size="small" @click="router.push('/create')">
+                    创建新服务器
+                </n-button>
+            </template> -->
 
                 <n-grid cols="1 600:2 960:3" x-gap="16" y-gap="16">
                     <n-gi
