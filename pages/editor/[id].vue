@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, onMounted, ref, watch, markRaw } from 'vue'
+import { reactive, onMounted, ref, watch, markRaw, version } from 'vue'
 import { useRoute } from 'vue-router'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
@@ -27,6 +27,8 @@ const serverInfo = reactive({
     ip: '',
     desc: '加载中...',
     tags: [] as string[],
+    version: '',
+    link: '',
     loading: true,
     error: undefined as string | undefined,
     code: 200,
@@ -58,6 +60,8 @@ const loadDraft = async () => {
                 serverInfo.ip = parsed.ip || serverInfo.ip
                 serverInfo.desc = parsed.desc || serverInfo.desc
                 serverInfo.tags = parsed.tags || serverInfo.tags
+                serverInfo.version = parsed.version || serverInfo.version
+                serverInfo.link = parsed.link || serverInfo.link
                 hasDraft.value = true
                 hasPermission.value = true
             } else {
@@ -83,6 +87,9 @@ const clearDraft = async () => {
             serverInfo.ip = response.ip
             serverInfo.desc = response.desc
             serverInfo.tags = response.tags
+            serverInfo.version = response.version
+            serverInfo.link = response.link
+
             message.success('草稿已清除，恢复最新数据')
         } else {
             message.error('清除草稿失败：权限验证未通过')
@@ -98,17 +105,23 @@ const { send: PutServerInfo } = useRequest(
         ip,
         desc,
         tags,
+        version,
+        link,
     }: {
         name: string
         ip: string
         desc: string
         tags: string[]
+        version: string
+        link: string
     }) =>
         ServerAPI_Token.Put<StatusWithUser>(`/v1/servers/${ServerID}`, {
             name,
             ip,
             desc,
             tags,
+            version,
+            link,
         }),
     {
         immediate: false, // 禁用自动请求
@@ -126,6 +139,8 @@ const saveServerInfo = async () => {
             ip: serverInfo.ip,
             desc: serverInfo.desc,
             tags: serverInfo.tags,
+            version: serverInfo.version,
+            link: serverInfo.link,
         })
         if (response.code === 200) {
             await clearDraft()
@@ -165,7 +180,8 @@ onSuccess(({ data }) => {
     serverInfo.desc = data.desc
     serverInfo.tags = data.tags
     serverInfo.loading = false
-
+    serverInfo.version = data.version
+    serverInfo.link = data.link
     // 清除草稿缓存
     localStorage.removeItem(`draft-${ServerID}`)
     hasDraft.value = false
@@ -217,6 +233,8 @@ const autoSave = useDebounceFn(() => {
         ip: serverInfo.ip,
         desc: serverInfo.desc,
         tags: serverInfo.tags,
+        version: serverInfo.version,
+        link: serverInfo.link,
     }
     localStorage.setItem(`draft-${ServerID}`, JSON.stringify(draftData))
     message.success('草稿已自动保存', { duration: 1000 })
@@ -229,6 +247,8 @@ const manualSave = async () => {
         ip: serverInfo.ip,
         desc: serverInfo.desc,
         tags: serverInfo.tags,
+        version: serverInfo.version,
+        link: serverInfo.link,
     }
     localStorage.setItem(`draft-${ServerID}`, JSON.stringify(draftData))
     message.success('草稿已保存', { duration: 1000 })
@@ -267,6 +287,8 @@ onMounted(async () => {
                 () => serverInfo.desc,
                 () => serverInfo.ip,
                 () => serverInfo.tags,
+                () => serverInfo.version,
+                () => serverInfo.link,
             ],
             autoSave,
         )
@@ -336,7 +358,15 @@ onMounted(async () => {
                                 clearable
                             />
                         </div>
-
+                        <div class="form-item">
+                            <label>网站链接（可留空）</label>
+                            <n-input
+                                v-model:value="serverInfo.link"
+                                placeholder="可留空"
+                                :maxlength="25"
+                                clearable
+                            />
+                        </div>
                         <div class="form-item">
                             <label>服务器地址</label>
                             <n-input
@@ -346,7 +376,15 @@ onMounted(async () => {
                                 clearable
                             />
                         </div>
-
+                        <div class="form-item">
+                            <label>服务器版本</label>
+                            <n-input
+                                v-model:value="serverInfo.version"
+                                placeholder="输入服务器版本（如 1.20.1）"
+                                :maxlength="32"
+                                clearable
+                            />
+                        </div>
                         <div class="form-item">
                             <label>服务器描述</label>
                             <MdEditor

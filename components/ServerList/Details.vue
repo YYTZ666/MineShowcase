@@ -187,6 +187,15 @@ const formatDelay = (delay?: number) => {
                             </div>
                         </template>
                     </n-card>
+                    <n-card
+                        v-if="server.link"
+                        title="相关链接"
+                        class="link-card"
+                    >
+                        <a :href="server.link" target="_blank" class="link-url">
+                            {{ server.link }}
+                        </a>
+                    </n-card>
                 </template>
                 <n-result
                     v-else
@@ -295,6 +304,21 @@ const formatDelay = (delay?: number) => {
                     padding: 12px;
                     border-radius: 6px;
                     white-space: pre-wrap;
+                }
+            }
+        }
+        .link-card {
+            margin-top: 16px;
+
+            .link-url {
+                word-break: break-all;
+                color: #2080f0;
+                text-decoration: none;
+                display: inline-block;
+                padding: 4px 0;
+
+                &:hover {
+                    text-decoration: underline;
                 }
             }
         }
