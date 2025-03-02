@@ -20,7 +20,7 @@ export interface ListItem {
 /**
  * 服务器详细信息获取数据模型（ServerAPI）
  */
-export interface Status {
+export interface Server {
     id: number
     name: string
     ip: string | null
@@ -32,6 +32,9 @@ export interface Status {
     is_hide: boolean
     auth_mode: 'OFFLINE' | 'OFFICIAL' | 'YGGDRASIL'
     tags: Array<string>
+}
+
+export interface Status extends Server {
     status: {
         players: {
             online: number

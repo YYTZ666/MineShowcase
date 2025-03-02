@@ -13,6 +13,8 @@ import { ServerAPI_Token } from '../../hooks/api'
 import type { User } from '~/hooks/type_models'
 import { useRouter } from 'vue-router'
 import ServerCard from './ServerCard.vue'
+import IMG_noicon from '../../assets/noicon.svg'
+
 const router = useRouter()
 const showAdvanced = ref(false)
 const toggleAdvanced = () => (showAdvanced.value = !showAdvanced.value)
@@ -92,7 +94,7 @@ const gotoLogin = () => router.push('/auth')
                     <n-avatar
                         round
                         :size="160"
-                        :src="data.avatar_url"
+                        :src="data.avatar_url || IMG_noicon"
                         class="main-avatar"
                     />
                     <div class="header-info">
