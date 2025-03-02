@@ -175,8 +175,9 @@ const gotoLogin = () => router.push('/auth')
                     </n-button> -->
                 </div>
             </n-card>
-            <h2 style="margin: 24px 0 16px">我的服务器</h2>
-            <div class="server-list">
+
+            <div class="server-list" v-if="token_status">
+                <h2 style="margin: 24px 0 16px">我的服务器</h2>
                 <n-empty
                     v-if="data?.servers?.length === 0"
                     description="您还没有任何服务器"
