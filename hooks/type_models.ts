@@ -4,23 +4,6 @@
 //
 
 /**
- * 用户（ServerAPI）
- */
-export interface User {
-    code: number
-    username: string
-    email: string
-    display_name: string
-    avatar_url: string
-    role: string
-    is_active: boolean
-    id: number
-    created_at: string
-    last_login: string
-    servers: Array<Array<number | string>>
-}
-
-/**
  * 服务器列表数据模型（ServerAPI）
  */
 export interface List {
@@ -151,4 +134,75 @@ export interface ReturnResponse_Register {
      * 用户ID，用户ID
      */
     user_id: number
+}
+
+/**
+ * Request
+ *
+ * GetServerManagers
+ */
+export interface ServerManagers {
+    /**
+     * 服务器管理员，服务器的所有管理员
+     */
+    admins: UserBase[]
+    /**
+     * 服务器主人，服务器的所有主人
+     */
+    owners: UserBase[]
+    [property: string]: any
+}
+
+/**
+ * UserBase
+ */
+export interface UserBase {
+    /**
+     * Avatar Url，用户的头像URL
+     */
+    avatar_url?: null | string
+    /**
+     * Display Name，用户的显示名称
+     */
+    display_name: string
+    /**
+     * Id，用户的唯一标识符
+     */
+    id: number
+    /**
+     * Is Active，用户是否激活
+     */
+    is_active?: boolean
+    /**
+     * 用户角色
+     */
+    role?: RoleEnum
+}
+
+/**
+ * 用户角色
+ *
+ * RoleEnum
+ */
+export enum RoleEnum {
+    Admin = 'admin',
+    User = 'user',
+}
+/**
+ * 用户（ServerAPI）
+ */
+export interface User extends UserBase {
+    /**
+     * Email，用户的电子邮箱
+     */
+    email: string
+    /**
+     * Username，用户的用户名
+     */
+    username: string
+    [property: string]: any
+    created_at: string
+    last_login: string
+    last_login_ip: string
+    servers: Array<Array<number | string>>
 }

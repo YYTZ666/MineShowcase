@@ -16,9 +16,13 @@ import {
     CloudOfflineOutline,
 } from '@vicons/ionicons5'
 import { useRequest } from 'alova/client'
-import type { Status } from '~/hooks/type_models'
+import type { ServerManagers, Status, UserBase } from '~/hooks/type_models'
 import IMG_noicon from '../../assets/noicon.svg'
-
+const { data: managers } = useRequest(
+    () =>
+        ServerAPI_Token.Get<ServerManagers>(`/v1/servers/${serverId}/managers`),
+    { immediate: true },
+)
 const route = useRoute()
 const serverId = route.params.id
 const { data: server, loading } = useRequest(
@@ -187,14 +191,60 @@ const formatDelay = (delay?: number) => {
                             </div>
                         </template>
                     </n-card>
-                    <n-card
-                        v-if="server.link"
-                        title="相关链接"
-                        class="link-card"
-                    >
-                        <a :href="server.link" target="_blank" class="link-url">
-                            {{ server.link }}
-                        </a>
+                    <n-card class="info-card">
+                        <!-- 所有者部分 -->
+                        <div v-if="managers?.owners?.length">
+                            <h3 class="section-title">所有者</h3>
+                            <n-space>
+                                <div
+                                    v-for="owner in managers.owners"
+                                    :key="owner.id"
+                                    class="user-item"
+                                >
+                                    <n-avatar
+                                        :src="owner.avatar_url || IMG_noicon"
+                                        round
+                                        size="small"
+                                    />
+                                    <span>
+                                        {{ owner.display_name }}
+                                    </span>
+                                </div>
+                            </n-space>
+                        </div>
+
+                        <!-- 管理员部分 -->
+                        <div v-if="managers?.admins?.length">
+                            <h3 class="section-title">管理员</h3>
+                            <n-space>
+                                <div
+                                    v-for="admin in managers.admins"
+                                    :key="admin.id"
+                                    class="user-item"
+                                >
+                                    <n-avatar
+                                        :src="admin.avatar_url || IMG_noicon"
+                                        round
+                                        size="small"
+                                    />
+                                    <span>
+                                        {{ admin.display_name }}
+                                    </span>
+                                </div>
+                            </n-space>
+                        </div>
+
+                        <!-- 相关链接部分 -->
+                        <template v-if="server.link">
+                            <h3 class="section-title">相关链接</h3>
+                            <a
+                                :href="server.link"
+                                target="_blank"
+                                class="link-url"
+                            >
+                                {{ server.link }}
+                            </a>
+                        </template>
                     </n-card>
                 </template>
                 <n-result
@@ -307,6 +357,41 @@ const formatDelay = (delay?: number) => {
                 }
             }
         }
+        .info-card {
+            margin-top: 16px;
+
+            .section-title {
+                font-size: 1.1em;
+                color: #333;
+            }
+
+            .user-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 4px 8px;
+                background-color: #f5f5f5;
+                border-radius: 4px;
+
+                span {
+                    font-size: 0.9em;
+                    color: #333;
+                }
+            }
+
+            .link-url {
+                word-break: break-all;
+                color: #2080f0;
+                text-decoration: none;
+                display: inline-block;
+                padding: 4px 0;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+
         .link-card {
             margin-top: 16px;
 
