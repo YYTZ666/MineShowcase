@@ -22,5 +22,5 @@ import '../assets/css/index.less'
 </template>
 
 <style scoped lang="less">
-@import '../assets/css/default.less';
+@import '../../assets/css/default.less';
 </style>

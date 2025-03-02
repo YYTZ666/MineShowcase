@@ -180,10 +180,38 @@ const dropdownOptions = [
         },
     },
 ]
+
+const isScrolled = ref(false)
+const isHovered = ref(false)
+
+const handleScroll = () => {
+    isScrolled.value = window.scrollY > 21
+}
+
+const handleMouseEnter = () => {
+    isHovered.value = true
+}
+
+const handleMouseLeave = () => {
+    isHovered.value = false
+}
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll)
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <template>
-    <div class="c_header">
+    <header
+        class="c_header"
+        :class="{ scrolled: isScrolled && !isHovered }"
+        @mouseenter="handleMouseEnter"
+        @mouseleave="handleMouseLeave"
+    >
         <div class="logo">
             <NuxtLink to="/">
                 <img :src="Logo" class="logo-img" />
@@ -235,7 +263,7 @@ const dropdownOptions = [
             </n-dropdown>
             <NuxtLink v-else class="login" to="/auth">登录</NuxtLink>
         </div>
-    </div>
+    </header>
 </template>
 
 <style scoped lang="less">
@@ -245,12 +273,71 @@ const dropdownOptions = [
     height: 100%;
     justify-content: space-between;
     padding: 0 1rem;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(2px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: radial-gradient(
+            circle,
+            rgba(0, 0, 0, 0.05) 1px,
+            transparent 1px
+        );
+        background-size: 8px 8px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    &.scrolled {
+        background: rgba(255, 255, 255, 0.637) !important;
+        box-shadow: none;
+
+        &::before {
+            opacity: 1;
+        }
+
+        .logo {
+            opacity: 0.6;
+        }
+
+        .search-container .n-input {
+            background: none;
+            opacity: 0.6;
+        }
+        .account {
+            opacity: 0.6;
+        }
+    }
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.9) !important;
+
+        &::before {
+            opacity: 0 !important;
+        }
+
+        .logo h2 {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+        }
+    }
     .logo {
         display: flex;
         gap: 1rem;
         align-items: center;
-
+        transition: all 0.4s;
         .logo-img {
             height: 2.4rem;
             transition: transform 0.3s;
@@ -273,8 +360,8 @@ const dropdownOptions = [
         max-width: 400px;
         margin: 0 2rem;
         position: relative;
-
         .n-input {
+            transition: all 0.4s;
             width: 100%;
             border-radius: 15px;
         }
@@ -293,6 +380,7 @@ const dropdownOptions = [
         gap: 1.5rem;
         align-items: center;
         height: 2rem;
+        transition: all 0.4s;
 
         .notify-icon {
             cursor: pointer;
@@ -375,6 +463,7 @@ const dropdownOptions = [
 
 @media (max-width: 768px) {
     .c_header {
+        z-index: 2000;
         .search-container {
             display: none;
         }
