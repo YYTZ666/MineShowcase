@@ -103,47 +103,61 @@ onMounted(() => {
 </script>
 
 <template>
-    <h1>服务器列表</h1>
-    <div v-if="loading">Loading...</div>
-    <div v-else-if="error">加载失败QAQ (code: {{ error.message }})</div>
-    <div v-else>
-        <!-- 搜索框 -->
+    <div class="ServerList">
+        <h1>服务器列表</h1>
+        <div v-if="loading">Loading...</div>
+        <div v-else-if="error">加载失败QAQ (code: {{ error.message }})</div>
+        <div v-else>
+            <!-- 搜索框 -->
 
-        <div class="search-box">
-            <n-input
-                v-model:value="searchQuery"
-                placeholder="输入服务器名称、拼音或拼音首字母搜索..."
-                clearable
-                @keyup.enter="page = 1"
+            <div class="search-box">
+                <n-input
+                    v-model:value="searchQuery"
+                    placeholder="输入服务器名称、拼音或拼音首字母搜索..."
+                    clearable
+                    @keyup.enter="page = 1"
+                />
+            </div>
+            <div class="page">
+                <n-button @click="random" size="small">随机</n-button>
+                <n-pagination
+                    v-model:page="page"
+                    :page-count="pageCount"
+                    simple
+                />
+            </div>
+
+            <br />
+            <NNotificationProvider placement="bottom-right">
+                <TransitionGroup
+                    tag="div"
+                    name="fade"
+                    class="grid-list"
+                    ref="serverList"
+                >
+                    <ServerCard
+                        v-for="server in currentPageData"
+                        v-if="isVisible"
+                        :key="server.id"
+                        :id="server.id"
+                        :name="server.name"
+                    />
+                </TransitionGroup>
+            </NNotificationProvider>
+            <br />
+            <n-pagination
+                v-model:page="page"
+                :page-count="pageCount"
+                v-if="isVisible"
             />
         </div>
-        <div class="page">
-            <n-button @click="random" size="small">随机</n-button>
-            <n-pagination v-model:page="page" :page-count="pageCount" simple />
-        </div>
-
-        <br />
-        <NNotificationProvider placement="bottom-right">
-            <TransitionGroup tag="div" name="fade" class="grid-list">
-                <ServerCard
-                    v-for="server in currentPageData"
-                    v-if="isVisible"
-                    :key="server.id"
-                    :id="server.id"
-                    :name="server.name"
-                />
-            </TransitionGroup>
-        </NNotificationProvider>
-        <br />
-        <n-pagination
-            v-model:page="page"
-            :page-count="pageCount"
-            v-if="isVisible"
-        />
     </div>
 </template>
 
 <style scoped lang="less">
+.ServerList {
+    padding: 20px;
+}
 .search-box {
     margin-bottom: 20px;
     max-width: 300px;
@@ -165,7 +179,6 @@ onMounted(() => {
         grid-template-columns: 1fr;
     }
 }
-
 // 翻页动画样式
 .fade-enter-active,
 .fade-leave-active {

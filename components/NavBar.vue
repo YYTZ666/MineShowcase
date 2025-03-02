@@ -6,32 +6,14 @@ const recommendations = ref([
     { label: 'XXX', value: 3, ping: 0 },
 ])
 
-const filters = ref({
-    modes: ['XXX', 'XXX', 'XXX', 'XXX'],
-    tags: ['XXX', 'XXX', 'XXX', 'XXX'],
-})
-
 const stats = {
     onlinePlayers: 0,
     newServers24h: 0,
 }
-
-import { NIcon } from 'naive-ui'
-import { CloseOutline } from '@vicons/ionicons5'
-
-const emit = defineEmits(['close'])
 </script>
 
 <template>
     <div class="custom-sider">
-        <!-- 移动端关闭按钮 -->
-        <div class="mobile-close">
-            <n-button text class="close-btn" @click="emit('close')">
-                <n-icon :component="CloseOutline" size="24" />
-            </n-button>
-        </div>
-
-        <!-- 滚动容器 -->
         <div class="content-wrapper">
             <!-- 智能推荐模块 -->
             <n-card class="section recommend-section">
@@ -84,7 +66,6 @@ const emit = defineEmits(['close'])
     top: 0;
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease;
 
     // 移动端关闭按钮
     .mobile-close {
@@ -195,32 +176,6 @@ const emit = defineEmits(['close'])
 
         .forum-btn {
             margin-top: 12px;
-        }
-    }
-
-    // 移动端适配
-    @media (max-width: 1200px) {
-        position: fixed;
-        left: 0;
-        top: 0;
-        z-index: 1001;
-        box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
-        transform: translateX(-100%);
-
-        &.active {
-            transform: translateX(0);
-        }
-
-        .mobile-close {
-            display: block;
-            height: 46px;
-            padding: 8px;
-            text-align: right;
-            border-bottom: 1px solid #f0f0f0;
-            background: #fff;
-            position: sticky;
-            top: 0;
-            z-index: 1;
         }
     }
 }

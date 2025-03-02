@@ -418,19 +418,13 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="less">
-
 .edit {
-    margin: 20px auto;
     padding: 20px;
-    display: flex;
-    flex-direction: column;
 
     .content-container {
         margin: 0 auto;
         background: white;
         border-radius: 12px;
-        padding: 24px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         img {
             max-width: 500px;
         }
