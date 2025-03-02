@@ -257,7 +257,7 @@ onBeforeUnmount(() => {
                 :options="dropdownOptions"
             >
                 <div class="avatar-wrapper">
-                    <n-avatar size="medium" :src="avatar" />
+                    <n-avatar size="medium" :src="avatar" rel="preload" />
                     <span class="username">{{ username }}</span>
                 </div>
             </n-dropdown>
@@ -340,6 +340,7 @@ onBeforeUnmount(() => {
         transition: all 0.4s;
         .logo-img {
             height: 2.4rem;
+            width: auto;
             transition: transform 0.3s;
 
             &:hover {

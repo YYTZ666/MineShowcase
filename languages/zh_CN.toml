@@ -1,10 +1,2 @@
-Language = "zh_CN"
-
 [NavBar]
-title = "MineShowcase"
-
-[ServerList.List]
-title = "MineShowcase"
-
-[ServerList.Card]
-title = "MineShowcase"
+title = "首页"

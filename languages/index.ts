@@ -1,5 +1,5 @@
-import zh_CN from './zh_CN.toml'
-import en_US from './en_US.toml'
+import zh_CN from '../languages/zh_CN.toml'
+import en_US from '../languages/en_US.toml'
 
 interface Lang {
     NavBar: NavBar

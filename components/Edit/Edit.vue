@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { reactive, onMounted, ref, watch, markRaw, version } from 'vue'
+import { reactive, onMounted, ref, watch, markRaw } from 'vue'
 import { useRoute } from 'vue-router'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
-import { createDiscreteApi, NNotificationProvider } from 'naive-ui'
+import { createDiscreteApi } from 'naive-ui'
 import {
     CloudOffline,
     CloudDownloadOutline,
     CloudDone,
 } from '@vicons/ionicons5'
-import NavBar from '../../components/NavBar.vue'
-import Header from '../../components/Header.vue'
 import { useRequest } from 'alova/client'
 import { ServerAPI_Token, fetch_status } from '../../hooks/api'
 import type { Fetch_Status, StatusWithUser } from '../../hooks/type_models'
