@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ServerCard from './ServerCard.vue'
+import { ref, watch, onMounted, computed, defineAsyncComponent } from 'vue'
 import { ServerAPI } from '../../hooks/api'
-import { ref, watch, onMounted, computed } from 'vue'
 import type { List, ListItem } from '../../hooks/type_models'
-import { pinyin } from 'pinyin-pro' // 引入拼音库
+
+const ServerCard = defineAsyncComponent(() => import('./ServerCard.vue'))
 
 const allData = ref<ListItem[]>([])
 const currentPageData = ref<ListItem[]>([])
@@ -15,45 +15,47 @@ const pageCount = ref(0)
 const isVisible = ref(true)
 const searchQuery = ref('')
 
-// 新增：缓存拼音和拼音首字母
 interface ServerWithPinyin extends ListItem {
-    pinyin: string // 全拼
-    initials: string // 拼音首字母
+    pinyin?: string // 全拼
+    initials?: string // 拼音首字母
 }
-
 const serverDataWithPinyin = ref<ServerWithPinyin[]>([])
 
-// 将中文名称转换为拼音和拼音首字母
-const convertToPinyin = (name: string) => {
+const convertToPinyin = async (name: string) => {
+    const { pinyin } = await import('pinyin-pro')
     const fullPinyin = pinyin(name, { toneType: 'none', type: 'array' }).join(
         '',
-    ) // 全拼
+    )
     const initials = pinyin(name, {
         pattern: 'first',
         toneType: 'none',
         type: 'array',
-    }).join('') // 首字母
+    }).join('')
     return { pinyin: fullPinyin, initials }
 }
 
-// 初始化时缓存拼音数据
-const initPinyinData = (data: ListItem[]) => {
-    return data.map((server) => ({
-        ...server,
-        ...convertToPinyin(server.name),
-    }))
+const initPinyinData = async (data: ListItem[]) => {
+    const promises = data.map(async (server) => {
+        const { pinyin, initials } = await convertToPinyin(server.name)
+        return { ...server, pinyin, initials }
+    })
+    return await Promise.all(promises)
 }
 
-// 过滤数据（支持中文、拼音、拼音首字母）
 const filteredData = computed(() => {
     if (!searchQuery.value) return serverDataWithPinyin.value
     const query = searchQuery.value.toLowerCase()
-    return serverDataWithPinyin.value.filter(
-        (server) =>
-            server.name.toLowerCase().includes(query) || // 匹配中文
-            server.pinyin.includes(query) || // 匹配全拼
-            server.initials.includes(query), // 匹配拼音首字母
-    )
+    return serverDataWithPinyin.value.filter((server) => {
+        // 若拼音数据还未加载，则仅匹配中文名称
+        if (!server.pinyin || !server.initials) {
+            return server.name.toLowerCase().includes(query)
+        }
+        return (
+            server.name.toLowerCase().includes(query) ||
+            server.pinyin.includes(query) ||
+            server.initials.includes(query)
+        )
+    })
 })
 
 const fetchAllData = async () => {
@@ -61,8 +63,14 @@ const fetchAllData = async () => {
         loading.value = true
         const response = await ServerAPI.Get<List>('/v1/servers', {})
         allData.value = response.server_list
-        serverDataWithPinyin.value = initPinyinData(allData.value) // 初始化拼音数据
-        random()
+        // 先直接显示基础数据，避免等待拼音转换
+        serverDataWithPinyin.value = [...allData.value]
+        updatePageData()
+        // 异步加载拼音数据，加载完成后再更新页面
+        initPinyinData(allData.value).then((dataWithPinyin) => {
+            serverDataWithPinyin.value = dataWithPinyin
+            updatePageData()
+        })
     } catch (err) {
         error.value = err as Error
     } finally {
@@ -70,10 +78,9 @@ const fetchAllData = async () => {
     }
 }
 
-// 更新分页数据
-const updatePageData = async () => {
+// 这里缩短了延时，可根据动画需求调整
+const updatePageData = () => {
     isVisible.value = false
-    await new Promise((resolve) => setTimeout(resolve, 310))
     pageCount.value = Math.ceil(filteredData.value.length / pageSize)
     const start = (page.value - 1) * pageSize
     const end = start + pageSize
@@ -88,11 +95,11 @@ const random = () => {
         const j = Math.floor(Math.random() * (i + 1))
         ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
     }
-    serverDataWithPinyin.value = [...shuffled] // 保持数据引用更新
+    serverDataWithPinyin.value = [...shuffled]
     updatePageData()
 }
 
-// 监听页码和搜索词变化
+// 监听页码和过滤数据变化
 watch([page, filteredData], () => {
     updatePageData()
 })
@@ -109,7 +116,6 @@ onMounted(() => {
         <div v-else-if="error">加载失败QAQ (code: {{ error.message }})</div>
         <div v-else>
             <!-- 搜索框 -->
-
             <div class="search-box">
                 <n-input
                     v-model:value="searchQuery"
@@ -126,12 +132,11 @@ onMounted(() => {
                     simple
                 />
             </div>
-
             <br />
             <NNotificationProvider placement="bottom-right">
                 <TransitionGroup
                     tag="div"
-                    name="fade"
+                    name="card"
                     class="grid-list"
                     ref="serverList"
                 >
@@ -162,7 +167,6 @@ onMounted(() => {
     margin-bottom: 20px;
     max-width: 300px;
 }
-
 .page {
     display: flex;
     gap: 0.4rem;
@@ -173,13 +177,42 @@ onMounted(() => {
     box-sizing: border-box;
     grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
     gap: 20px;
-    transition: 0.3s all;
-
+    /* 开启 GPU 加速 */
+    will-change: transform, opacity;
     @media screen and (max-width: 768px) {
         grid-template-columns: 1fr;
     }
 }
-// 翻页动画样式
+
+/* 定义卡片进入与离开的动画 */
+.card-enter-active {
+    animation: card-enter 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+.card-leave-active {
+    animation: card-leave 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+@keyframes card-enter {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95) rotateX(15deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotateX(0deg);
+    }
+}
+@keyframes card-leave {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+}
+
+/* 其他现有的翻页动画样式 */
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.3s ease;

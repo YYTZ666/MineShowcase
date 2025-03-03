@@ -16,7 +16,7 @@ import {
     CloudOfflineOutline,
 } from '@vicons/ionicons5'
 import { useRequest } from 'alova/client'
-import type { ServerManagers, Status, UserBase } from '~/hooks/type_models'
+import type { ServerManagers, Status } from '../../hooks/type_models'
 import IMG_noicon from '../../assets/noicon.svg'
 const { data: managers } = useRequest(
     () =>

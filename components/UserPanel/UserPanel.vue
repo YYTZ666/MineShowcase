@@ -10,7 +10,7 @@ import {
 } from 'naive-ui'
 import { useRequest } from 'alova/client'
 import { ServerAPI_Token } from '../../hooks/api'
-import type { User } from '~/hooks/type_models'
+import type { User } from '../../hooks/type_models'
 import { useRouter } from 'vue-router'
 import ServerCard from './ServerCard.vue'
 import IMG_noicon from '../../assets/noicon.svg'

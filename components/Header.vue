@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import lang from '../languages/index'
 import Logo from '../assets/logo.webp'
-import { ref, onMounted, computed, h } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, h } from 'vue'
 import { ServerAPI_Token } from '../hooks/api'
 import { useRequest } from 'alova/client'
 import {
@@ -20,7 +20,8 @@ import {
 } from '@vicons/ionicons5'
 import type { User } from '../hooks/type_models'
 import { useRouter } from 'vue-router'
-import { useDebounceFn } from '@vueuse/core'
+import { useDebounceFn, useThrottleFn, useEventListener } from '@vueuse/core'
+import { markRaw } from 'vue'
 
 const { data, onSuccess } = useRequest(ServerAPI_Token.Get<User>('/v1/me'))
 const { notification: msgNotification, dialog: msgDialog } = createDiscreteApi([
@@ -43,12 +44,12 @@ onMounted(() => {
     const token = localStorage.getItem('token')
     onSuccess(() => {
         if (token) {
-            if (data.value.code == 200) {
+            if (data.value.code === 200) {
                 token_status.value = true
                 avatar.value = data.value.avatar_url || Logo
                 username.value = data.value.display_name
             }
-            if (data.value.code == 401) {
+            if (data.value.code === 401) {
                 localStorage.removeItem('token')
                 Notify({
                     type: 'warning',
@@ -61,21 +62,22 @@ onMounted(() => {
     })
 })
 
-// 通知相关逻辑
 const fetchNotifications = () => {
-    unreadCount.value = 3
+    // 此处仅作示例，实际接口调用可替换
+    unreadCount.value = 0
 }
 
-onMounted(() => {
+setTimeout(() => {
     if (token_status.value) {
         fetchNotifications()
         setInterval(fetchNotifications, 60000)
     }
-})
+}, 100)
+
 interface SearchResult {
     id: string
     name: string
-    // 其他字段可以根据后端返回的数据结构添加
+    // 根据后端返回可扩展其他字段
 }
 // 搜索功能
 const performSearch = useDebounceFn(async () => {
@@ -84,7 +86,6 @@ const performSearch = useDebounceFn(async () => {
         showDropdown.value = false
         return
     }
-
     try {
         searchLoading.value = true
         const response = await ServerAPI_Token.Get<{ results: SearchResult[] }>(
@@ -105,6 +106,7 @@ const performSearch = useDebounceFn(async () => {
         searchLoading.value = false
     }
 }, 300)
+
 const searchOptions = computed(() => {
     return searchResults.value.map((item) => ({
         label: item.name,
@@ -152,11 +154,7 @@ const handleLogout = () => {
 
 // 图标渲染
 function renderIcon(icon: Component) {
-    return () => {
-        return h(NIcon, null, {
-            default: () => h(icon),
-        })
-    }
+    return () => h(NIcon, null, { default: () => h(icon) })
 }
 
 // 下拉菜单选项
@@ -181,12 +179,14 @@ const dropdownOptions = [
     },
 ]
 
+// 优化：对滚动事件进行节流处理
 const isScrolled = ref(false)
 const isHovered = ref(false)
-
-const handleScroll = () => {
+const handleScroll = useThrottleFn(() => {
     isScrolled.value = window.scrollY > 21
-}
+}, 100)
+
+useEventListener(window, 'scroll', handleScroll)
 
 const handleMouseEnter = () => {
     isHovered.value = true
@@ -195,14 +195,6 @@ const handleMouseEnter = () => {
 const handleMouseLeave = () => {
     isHovered.value = false
 }
-
-onMounted(() => {
-    window.addEventListener('scroll', handleScroll)
-})
-
-onBeforeUnmount(() => {
-    window.removeEventListener('scroll', handleScroll)
-})
 </script>
 
 <template>
@@ -231,7 +223,6 @@ onBeforeUnmount(() => {
                     <n-icon :component="SearchOutline" />
                 </template>
             </n-input>
-
             <n-dropdown
                 placement="bottom"
                 trigger="manual"
@@ -240,10 +231,8 @@ onBeforeUnmount(() => {
                 :loading="searchLoading"
             >
                 <div></div>
-                <!-- 确保有一个根元素 -->
             </n-dropdown>
         </div>
-
         <div class="account">
             <n-badge :value="unreadCount" :max="99" v-if="token_status">
                 <n-icon size="20" class="notify-icon">
@@ -281,6 +270,8 @@ onBeforeUnmount(() => {
     backdrop-filter: blur(2px);
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
 
     &::before {
         content: '';
@@ -323,11 +314,9 @@ onBeforeUnmount(() => {
 
     &:hover {
         background: rgba(255, 255, 255, 0.9) !important;
-
         &::before {
             opacity: 0 !important;
         }
-
         .logo h2 {
             opacity: 1 !important;
             transform: scale(1) !important;
@@ -342,12 +331,10 @@ onBeforeUnmount(() => {
             height: 2.4rem;
             width: auto;
             transition: transform 0.3s;
-
             &:hover {
                 transform: rotate(-15deg);
             }
         }
-
         h2 {
             background: linear-gradient(135deg, #4b6e91, #48a3e0);
             -webkit-background-clip: text;
@@ -355,7 +342,6 @@ onBeforeUnmount(() => {
             color: transparent;
         }
     }
-
     .search-container {
         flex: 1;
         max-width: 400px;
@@ -366,7 +352,6 @@ onBeforeUnmount(() => {
             width: 100%;
             border-radius: 15px;
         }
-
         .n-dropdown {
             width: 100%;
             position: absolute;
@@ -375,26 +360,22 @@ onBeforeUnmount(() => {
             margin-top: 4px;
         }
     }
-
     .account {
         display: flex;
         gap: 1.5rem;
         align-items: center;
         height: 2rem;
         transition: all 0.4s;
-
         .notify-icon {
             cursor: pointer;
             padding: 4px;
             border-radius: 50%;
             transition: all 0.3s;
-
             &:hover {
                 background: #f5f5f5;
                 transform: scale(1.1);
             }
         }
-
         .avatar-wrapper {
             display: flex;
             align-items: center;
@@ -403,15 +384,12 @@ onBeforeUnmount(() => {
             border-radius: 20px;
             transition: all 0.3s;
             cursor: pointer;
-
             &:hover {
                 background: #f5f5f5;
-
                 .username {
                     color: #2c3e50;
                 }
             }
-
             .username {
                 max-width: 120px;
                 overflow: hidden;
@@ -420,7 +398,6 @@ onBeforeUnmount(() => {
                 transition: color 0.3s;
             }
         }
-
         .login {
             font-size: 1rem;
             color: #2c3e50;
@@ -428,7 +405,6 @@ onBeforeUnmount(() => {
             border-radius: 20px;
             background: #f0f2f5;
             transition: all 0.3s;
-
             &:hover {
                 background: #e0e2e5;
                 color: #2c3e50;
@@ -440,21 +416,17 @@ onBeforeUnmount(() => {
 @media (max-width: 1200px) {
     .c_header {
         padding: 0 1rem;
-
         .logo h2 {
             display: none;
         }
-
         .search-container {
             margin: 0 1rem;
             max-width: 300px;
         }
-
         .account {
             .username {
                 display: none;
             }
-
             .avatar-wrapper {
                 padding: 4px;
             }

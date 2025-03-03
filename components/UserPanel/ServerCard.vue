@@ -2,7 +2,7 @@
 import { watchEffect, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ServerAPI_Token } from '../../hooks/api'
-import type { StatusWithUser } from '~/hooks/type_models'
+import type { StatusWithUser } from '../../hooks/type_models'
 import { useRequest } from 'alova/client'
 
 const router = useRouter()

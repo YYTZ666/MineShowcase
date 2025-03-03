@@ -11,10 +11,8 @@
         "postinstall": "nuxt prepare"
     },
     "dependencies": {
-        "@bg-dev/nuxt-naiveui": "2.0.0-rc.4",
         "@vueuse/core": "^12.7.0",
-        "alova": "^3.2.8",
-        "lodash": "^4.17.21",
+        "alova": "^3.2.9",
         "markdown-it": "^14.1.0",
         "markdown-it-emoji": "^3.0.0",
         "md-editor-v3": "^5.3.2",
@@ -24,16 +22,17 @@
         "vue-cropper": "^1.1.4"
     },
     "devDependencies": {
-        "@alova/mock": "^2.0.11",
+        "@alova/mock": "^2.0.12",
+        "@bg-dev/nuxt-naiveui": "2.0.0-rc.4",
         "@nuxtjs/pwa": "^3.3.5",
         "@nuxtjs/seo": "^2.2.0",
         "@originjs/vite-plugin-content": "^1.0.5",
         "@vicons/ionicons5": "^0.13.0",
-        "eslint-config-prettier": "^10.0.1",
+        "eslint-config-prettier": "^10.0.2",
         "eslint-plugin-prettier": "^5.2.3",
         "less": "^4.2.2",
         "nuxt": "^3.15.4",
-        "prettier": "^3.5.2",
+        "prettier": "^3.5.3",
         "typescript-plugin-toml": "^0.5.0",
         "vue": "^3.5.13",
         "vue-router": "^4.5.0"
