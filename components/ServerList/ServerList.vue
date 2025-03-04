@@ -78,14 +78,15 @@ const fetchAllData = async () => {
     }
 }
 
-// 这里缩短了延时，可根据动画需求调整
 const updatePageData = () => {
     isVisible.value = false
-    pageCount.value = Math.ceil(filteredData.value.length / pageSize)
-    const start = (page.value - 1) * pageSize
-    const end = start + pageSize
-    currentPageData.value = filteredData.value.slice(start, end)
-    isVisible.value = true
+    setTimeout(() => {
+        pageCount.value = Math.ceil(filteredData.value.length / pageSize)
+        const start = (page.value - 1) * pageSize
+        const end = start + pageSize
+        currentPageData.value = filteredData.value.slice(start, end)
+        isVisible.value = true
+    }, 300)
 }
 
 // 随机打乱数据
@@ -186,11 +187,13 @@ onMounted(() => {
 
 /* 定义卡片进入与离开的动画 */
 .card-enter-active {
-    animation: card-enter 0.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    animation: card-enter 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
+
 .card-leave-active {
-    animation: card-leave 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    animation: card-leave 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
+
 @keyframes card-enter {
     0% {
         opacity: 0;
@@ -201,6 +204,7 @@ onMounted(() => {
         transform: translateY(0) scale(1) rotateX(0deg);
     }
 }
+
 @keyframes card-leave {
     0% {
         opacity: 1;
