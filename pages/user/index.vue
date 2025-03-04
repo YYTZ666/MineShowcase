@@ -1,25 +1,10 @@
 <script setup lang="ts">
-import NavBar from '../../components/NavBar.vue'
-import Header from '../../components/Header.vue'
 import UserPanel from '../../components/UserPanel/UserPanel.vue'
-import '../assets/css/index.less'
+definePageMeta({
+    navbar: 'user',
+})
 </script>
 
 <template>
-    <div class="layout">
-        <header class="header">
-            <Header />
-        </header>
-        <div class="content">
-            <aside class="sidebar">
-                <NavBar />
-            </aside>
-            <main class="main-content">
-                <UserPanel />
-            </main>
-        </div>
-    </div>
+    <UserPanel />
 </template>
-<style scoped lang="less">
-@import '../../assets/css/default.less';
-</style>

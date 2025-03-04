@@ -36,16 +36,14 @@
     }
 
     .sidebar {
-        position: sticky;
-        left: 0;
-        top: @header-height;
         background: #fff;
-        height: calc(100vh - @header-height - 48px);
         z-index: @z-index-sidebar;
         border-radius: 16px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease-in-out;
-
+        &::-webkit-scrollbar {
+            display: none;
+        }
         @media (max-width: @mobile-breakpoint) {
             position: fixed;
             left: -@sidebar-width;

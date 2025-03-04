@@ -137,7 +137,7 @@ onMounted(() => {
             <NNotificationProvider placement="bottom-right">
                 <TransitionGroup
                     tag="div"
-                    name="card"
+                    name="fade"
                     class="grid-list"
                     ref="serverList"
                 >
@@ -178,7 +178,6 @@ onMounted(() => {
     box-sizing: border-box;
     grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
     gap: 20px;
-    /* 开启 GPU 加速 */
     will-change: transform, opacity;
     @media screen and (max-width: 768px) {
         grid-template-columns: 1fr;
@@ -186,11 +185,11 @@ onMounted(() => {
 }
 
 /* 定义卡片进入与离开的动画 */
-.card-enter-active {
+.fade-enter-active {
     animation: card-enter 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
-.card-leave-active {
+.fade-leave-active {
     animation: card-leave 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
@@ -214,15 +213,5 @@ onMounted(() => {
         opacity: 0;
         transform: translateY(30px) scale(0.95);
     }
-}
-
-/* 其他现有的翻页动画样式 */
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
 }
 </style>

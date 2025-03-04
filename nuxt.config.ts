@@ -29,7 +29,6 @@ export default defineNuxtConfig({
             ],
         },
     },
-    ssr: true,
     features: {
         inlineStyles: true,
     },
@@ -55,6 +54,6 @@ export default defineNuxtConfig({
     devtools: { enabled: true },
     modules: [
         '@bg-dev/nuxt-naiveui',
-        '@nuxtjs/seo'
+        '@nuxtjs/seo', '@pinia/nuxt',
     ],
 })

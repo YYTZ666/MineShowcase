@@ -270,7 +270,7 @@ const copyToClipboard = (event: MouseEvent) => {
         background 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
     &:hover {
-        transform: scale(1.05);
+        transform: scale(1.01);
         box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
     }
 

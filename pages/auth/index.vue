@@ -1,33 +1,46 @@
 <script setup lang="ts">
 import Login from '../../components/Authorization/Login.vue'
 import Register from '../../components/Authorization/Register.vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 
-const Switch = ref(false)
+// 设置页面不使用默认布局
+definePageMeta({
+    layout: false,
+    pageTransition: false,
+})
+import { useRouter } from 'vue-router'
 
-const RegToken = useRoute().query.token as string
-if (RegToken) {
-    Switch.value = true
-}
+const router = useRouter()
+
+router.beforeEach((to, from, next) => {
+    if (to.path === '/auth' || from.path === '/auth') {
+        window.location.href = to.fullPath
+    } else {
+        next()
+    }
+})
+// 使用 computed 获取 URL 中的 token
+const route = useRoute()
+const RegToken = computed(() => (route.query.token as string) || '')
+
+// 如果存在 token，则默认显示注册组件
+const Switch = ref(!!RegToken.value)
 </script>
 
 <template>
     <div class="layout">
         <div class="l_body">
-            <transition name="fade-in">
-                <h1>MineShowcase</h1>
-            </transition>
-            <transition name="fade-in">
-                <h2>管理实用程序</h2>
-            </transition>
+            <h1>MineShowcase</h1>
+            <h2>管理实用程序</h2>
         </div>
         <div class="r_body">
             <n-switch :round="false" v-model:value="Switch">
                 <template #checked>登录</template>
                 <template #unchecked>注册</template>
             </n-switch>
-                <Register :token="RegToken" v-if="Switch" />
-                <Login v-else />
+            <Register :token="RegToken" v-if="Switch" />
+            <Login v-else />
         </div>
     </div>
 </template>
@@ -36,6 +49,7 @@ if (RegToken) {
 .layout {
     box-sizing: border-box;
     height: 100vh;
+    /* 建议在 nuxt.config.ts 中预加载背景图片 */
     background-image: url('../../assets/bg.webp');
     background-size: cover;
     background-position: center;
@@ -44,6 +58,9 @@ if (RegToken) {
     justify-content: center;
     flex-direction: row;
 
+    /* 优化重绘提示 */
+    will-change: transform, opacity;
+
     .l_body {
         box-sizing: border-box;
         flex: 1;
@@ -51,6 +68,7 @@ if (RegToken) {
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        will-change: transform, opacity;
 
         h1 {
             text-align: center;
@@ -62,6 +80,7 @@ if (RegToken) {
             background-clip: text;
             opacity: 0;
             animation: fadeIn 1s forwards;
+            will-change: opacity, transform;
         }
 
         h2 {
@@ -70,6 +89,7 @@ if (RegToken) {
             color: white;
             opacity: 0;
             animation: fadeIn 1.5s forwards;
+            will-change: opacity, transform;
         }
     }
 
@@ -83,6 +103,7 @@ if (RegToken) {
         margin-right: 8rem;
         opacity: 0;
         animation: fadeIn 2s forwards;
+        will-change: opacity, transform;
     }
 
     @keyframes fadeIn {
@@ -90,7 +111,6 @@ if (RegToken) {
             opacity: 0;
             transform: translateY(20px);
         }
-
         100% {
             opacity: 1;
             transform: translateY(0);

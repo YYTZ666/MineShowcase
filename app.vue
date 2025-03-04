@@ -16,10 +16,7 @@ useHead({
 </script>
 
 <template>
-    <naive-config>
-        <div>
-            <NuxtRouteAnnouncer />
-        </div>
+    <NuxtLayout>
         <NuxtPage />
-    </naive-config>
+    </NuxtLayout>
 </template>
