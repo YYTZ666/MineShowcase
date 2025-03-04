@@ -113,8 +113,7 @@ onMounted(() => {
 <template>
     <div class="ServerList">
         <h1>服务器列表</h1>
-        <div v-if="loading">Loading...</div>
-        <div v-else-if="error">加载失败QAQ (code: {{ error.message }})</div>
+        <div v-if="error">加载失败QAQ (code: {{ error.message }})</div>
         <div v-else>
             <!-- 搜索框 -->
             <div class="search-box">
@@ -133,7 +132,7 @@ onMounted(() => {
                     simple
                 />
             </div>
-            <br />
+            <n-divider />
             <NNotificationProvider placement="bottom-right">
                 <TransitionGroup
                     tag="div"
@@ -150,7 +149,7 @@ onMounted(() => {
                     />
                 </TransitionGroup>
             </NNotificationProvider>
-            <br />
+            <n-divider />
             <n-pagination
                 v-model:page="page"
                 :page-count="pageCount"
