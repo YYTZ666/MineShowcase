@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import lozad from 'lozad'
 import IMG_noicon from '../../assets/noicon.svg'
 import IMG_noimage from '../../assets/noimage.webp'
 import { ref, defineProps, onMounted, watch } from 'vue'
@@ -7,7 +8,8 @@ import { useRetriableRequest } from 'alova/client'
 import type { Status, ListItem } from '../../hooks/type_models'
 import { useNotification } from 'naive-ui'
 import { useRouter } from 'vue-router'
-
+const observer = lozad()
+observer.observe()
 const router = useRouter()
 const info = defineProps<ListItem>()
 
@@ -142,14 +144,21 @@ const copyToClipboard = (event: MouseEvent) => {
     <div ref="cardRef" class="card" @click="handleCardClick">
         <div class="card-cover">
             <n-skeleton v-if="Loading" height="100%" width="100%" />
-            <img v-else :src="IMG_noimage" loading="lazy" />
+            <img
+                v-else
+                :src="IMG_noimage"
+                alt="无图片"
+                class="lozad"
+                rel="preload"
+                as="image"
+            />
             <n-skeleton v-if="Loading" height="1.5rem" width="10rem" />
             <div v-else class="card-type" v-text="StatusInfo.type"></div>
         </div>
         <div class="card-split">
             <div class="card-icon">
                 <n-skeleton v-if="Loading" height="100%" width="100%" />
-                <img v-else :src="statusIcon" loading="lazy" />
+                <img v-else :src="statusIcon" class="lozad" />
             </div>
             <div class="card-info">
                 <div class="title-box">

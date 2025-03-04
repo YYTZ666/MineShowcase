@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import lang from '../languages/index'
 import Logo from '../assets/logo.webp'
-import { ref, onMounted, onBeforeUnmount, computed, h } from 'vue'
+import { ref, onMounted, computed, h } from 'vue'
 import { ServerAPI_Token } from '../hooks/api'
 import { useRequest } from 'alova/client'
 import {
@@ -29,7 +29,6 @@ const { notification: msgNotification, dialog: msgDialog } = createDiscreteApi([
     'notification',
 ])
 
-const avatar = ref(Logo)
 const username = ref('')
 const token_status = ref(false)
 const unreadCount = ref(0)
@@ -46,7 +45,6 @@ onMounted(() => {
         if (token) {
             if (data.value.code === 200) {
                 token_status.value = true
-                avatar.value = data.value.avatar_url || Logo
                 username.value = data.value.display_name
             }
             if (data.value.code === 401) {
@@ -246,7 +244,12 @@ const handleMouseLeave = () => {
                 :options="dropdownOptions"
             >
                 <div class="avatar-wrapper">
-                    <n-avatar size="medium" :src="avatar" rel="preload" />
+                    <n-avatar
+                        v-if="data.avatar_url"
+                        size="medium"
+                        :src="data.avatar_url"
+                        rel="preconnect"
+                    />
                     <span class="username">{{ username }}</span>
                 </div>
             </n-dropdown>
