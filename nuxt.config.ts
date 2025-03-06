@@ -25,7 +25,7 @@ export default defineNuxtConfig({
         },
         prerender: {
             crawlLinks: true,
-            routes: ['/'],
+            routes: ['/', '/robots.txt', '/sitemap.xml'],
         },
     },
     build: {
