@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import lozad from 'lozad'
-import IMG_noicon from '../../assets/noicon.svg'
 import IMG_noimage from '../../assets/noimage.webp'
+import IMG_noicon from '../../assets/noicon.svg'
 import { ref, defineProps, onMounted, watch } from 'vue'
 import { ServerAPI } from '../../hooks/api'
 import { useRetriableRequest } from 'alova/client'
 import type { Status, ListItem } from '../../hooks/type_models'
-import { useNotification } from 'naive-ui'
-import { useRouter } from 'vue-router'
+import { createDiscreteApi } from 'naive-ui'
 const observer = lozad()
 observer.observe()
 const router = useRouter()
@@ -42,7 +41,7 @@ const StatusInfo = ref<Status>({
     id: info.id,
     name: info.name,
     ip: null,
-    type: 'BEDROCK',
+    type: '' as 'JAVA' | 'BEDROCK',
     version: '',
     desc: '',
     link: '',
@@ -69,16 +68,16 @@ const fetchStatus = () => {
         if (data.value.code === 200) {
             if (data.value.status) {
                 statusText.value = '在线'
-                statusColor.value = { color: '#E3F3EB', textColor: '#18A058' }
+                statusColor.value = { color: '#E3F3EB', textColor: '#08532B' }
                 statusIcon.value = data.value.status.icon ?? IMG_noicon
             } else {
                 statusText.value = '离线'
-                statusColor.value = { color: '#747d8c', textColor: '#f1f2f6' }
+                statusColor.value = { color: '#4C525D', textColor: '#F1F2F6' }
                 statusIcon.value = IMG_noicon
             }
         } else {
             statusText.value = '未知'
-            statusColor.value = { color: '#C9C9C9', textColor: '#808080' }
+            statusColor.value = { color: '#303030', textColor: '#C9C9C9' }
             statusIcon.value = IMG_noicon
         }
     })
@@ -86,7 +85,7 @@ const fetchStatus = () => {
     onError(() => {
         Loading.value = false
         statusText.value = '错误'
-        statusColor.value = { color: '#E9967A', textColor: '#CD5555' }
+        statusColor.value = { color: '#E9967A', textColor: '#280A0A' }
         statusIcon.value = IMG_noicon
     })
 }
@@ -113,9 +112,7 @@ const formatNumber = (num: number): string => {
     }
     return num.toString()
 }
-
-// 复制到剪贴板操作（可以加防抖处理以减少重复触发）
-const notification = useNotification()
+const { notification: notification } = createDiscreteApi(['notification'])
 const copyToClipboard = (event: MouseEvent) => {
     const input = event.target as HTMLInputElement
     const text = input.value
@@ -158,7 +155,12 @@ const copyToClipboard = (event: MouseEvent) => {
         <div class="card-split">
             <div class="card-icon">
                 <n-skeleton v-if="Loading" height="100%" width="100%" />
-                <img v-else :src="statusIcon" class="lozad" />
+                <img
+                    v-else
+                    :src="statusIcon"
+                    class="lozad"
+                    :alt="StatusInfo.name + '的服务器图标'"
+                />
             </div>
             <div class="card-info">
                 <div class="title-box">
@@ -216,6 +218,7 @@ const copyToClipboard = (event: MouseEvent) => {
             <n-space v-else size="small" class="tags-wrapper">
                 <n-tag
                     size="small"
+                    :color="{ color: '#E3F3EB', textColor: '#08532B' }"
                     :bordered="false"
                     :type="
                         StatusInfo.auth_mode === 'OFFLINE'
@@ -300,7 +303,7 @@ const copyToClipboard = (event: MouseEvent) => {
             line-height: 100%;
             text-align: center;
             transform: rotate(38deg);
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #000;
             background-color: rgba(255, 255, 255, 0.7);
@@ -308,18 +311,8 @@ const copyToClipboard = (event: MouseEvent) => {
             border-radius: 5px;
         }
 
-        .carousel-img {
-            width: 100%;
-            height: 100%;
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: cover;
-        }
-
         img {
-            max-width: 50%;
-            max-height: 50%;
-            object-fit: contain;
+            width: 50%;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -351,7 +344,7 @@ const copyToClipboard = (event: MouseEvent) => {
                 .t_player_num {
                     font-weight: bold;
                     font-size: 0.8rem;
-                    color: #747d8c;
+                    color: #4a515a;
                     line-clamp: 1;
                     -webkit-line-clamp: 1;
                     -webkit-box-orient: vertical;

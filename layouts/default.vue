@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { watch, shallowRef } from 'vue'
-import { useRoute } from 'vue-router'
 import type { DefineComponent } from 'vue'
 import DefaultNavBar from '~/components/NavBar/DefaultNavBar.vue'
 import IndexNavBar from '~/components/NavBar/IndexNavBar.vue'

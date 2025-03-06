@@ -1,19 +1,6 @@
 <script setup lang="ts">
 import { shallowRef, ref, onMounted, onBeforeUnmount } from 'vue'
 import { NCard, NTag, NSpace, NStatistic, NTime } from 'naive-ui'
-import { useFilterStore } from '~/stores/filterStore'
-const filterStore = useFilterStore()
-const handleModeChange = (values: string[]) => {
-    filterStore.setModes(values)
-}
-
-const handlePlayerRangeChange = (value: any) => {
-    filterStore.setPlayerRange(value)
-}
-
-const handleTagClick = (tag: string) => {
-    filterStore.toggleTag(tag)
-}
 const recommendations = shallowRef([
     { label: 'XXX', value: 1, ping: 0 },
     { label: 'XXX', value: 2, ping: 0 },
@@ -46,30 +33,34 @@ const filters = ref({
 
 <template>
     <div class="content-wrapper">
-        <div v-memo="[recommendations]">
-            <n-card class="section recommend-section">
-                <template #header>
-                    <div class="card-title">为您推荐</div>
-                </template>
-                <n-space vertical>
-                    <div
-                        v-for="server in recommendations"
-                        :key="server.value"
-                        class="server-item"
+        <!-- 为您推荐 -->
+        <n-card class="section recommend-section">
+            <template #header>
+                <div class="card-title" role="heading">为您推荐</div>
+            </template>
+            <n-space vertical>
+                <div
+                    v-for="server in recommendations"
+                    :key="server.value"
+                    class="server-item"
+                >
+                    <n-tag
+                        :bordered="false"
+                        type="success"
+                        size="small"
+                        :color="{ color: '#E3F3EB', textColor: '#08532B' }"
                     >
-                        <n-tag :bordered="false" type="success" size="small">
-                            {{ server.ping }}ms
-                        </n-tag>
-                        <span class="server-name">{{ server.label }}</span>
-                    </div>
-                </n-space>
-            </n-card>
-        </div>
+                        {{ server.ping }}ms
+                    </n-tag>
+                    <span class="server-name">{{ server.label }}</span>
+                </div>
+            </n-space>
+        </n-card>
 
-        <!-- 实时数据 -->
+        <!-- 全站状态 -->
         <n-card class="section stats-section">
             <template #header>
-                <div class="card-title">全站状态</div>
+                <div class="card-title" role="heading">全站状态</div>
             </template>
             <n-space vertical>
                 <n-statistic label="在线玩家" :value="stats.onlinePlayers" />
@@ -81,31 +72,29 @@ const filters = ref({
                 />
             </n-space>
         </n-card>
+
+        <!-- 精准筛选 -->
         <n-card class="section filter-section">
             <template #header>
-                <div class="card-title">精准筛选</div>
+                <div class="card-title" role="heading">精准筛选</div>
             </template>
             <n-space vertical>
                 <div class="custom-sider">
                     <!-- 游戏模式筛选 -->
                     <n-select
-                        :value="filterStore.selectedModes"
-                        @update:value="handleModeChange"
                         :options="
                             filters.modes.map((m) => ({ label: m, value: m }))
                         "
                         multiple
                         placeholder="游戏模式"
+                        aria-label="选择游戏模式"
                     />
 
                     <!-- 玩家数量范围筛选 -->
                     <n-slider
-                        :value="filterStore.playerRange"
-                        @update:value="handlePlayerRangeChange"
                         :step="10"
+                        v-model:value="playerRange"
                         range
-                        :min="0"
-                        :max="500"
                         :format-tooltip="(v: number) => `${v}+玩家`"
                     />
 
@@ -114,12 +103,6 @@ const filters = ref({
                         <n-tag
                             v-for="tag in filters.tags"
                             :key="tag"
-                            :type="
-                                filterStore.selectedTags.includes(tag)
-                                    ? 'primary'
-                                    : 'default'
-                            "
-                            @click="handleTagClick(tag)"
                             round
                             size="small"
                         >
@@ -179,7 +162,7 @@ const filters = ref({
 
     .time-display {
         font-size: 14px;
-        color: #888;
+        color: #595959;
         margin-top: 8px;
     }
 }

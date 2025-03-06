@@ -2,14 +2,14 @@
 import Login from '../../components/Authorization/Login.vue'
 import Register from '../../components/Authorization/Register.vue'
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
-
+useHead({
+    title: '登录',
+})
 // 设置页面不使用默认布局
 definePageMeta({
     layout: false,
     pageTransition: false,
 })
-import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
@@ -20,7 +20,6 @@ router.beforeEach((to, from, next) => {
         next()
     }
 })
-// 使用 computed 获取 URL 中的 token
 const route = useRoute()
 const RegToken = computed(() => (route.query.token as string) || '')
 

@@ -14,7 +14,6 @@ const pageSize = 12
 const pageCount = ref(0)
 const isVisible = ref(true)
 const searchQuery = ref('')
-
 interface ServerWithPinyin extends ListItem {
     pinyin?: string // 全拼
     initials?: string // 拼音首字母
@@ -22,15 +21,9 @@ interface ServerWithPinyin extends ListItem {
 const serverDataWithPinyin = ref<ServerWithPinyin[]>([])
 
 const convertToPinyin = async (name: string) => {
-    const { pinyin } = await import('pinyin-pro')
-    const fullPinyin = pinyin(name, { toneType: 'none', type: 'array' }).join(
-        '',
-    )
-    const initials = pinyin(name, {
-        pattern: 'first',
-        toneType: 'none',
-        type: 'array',
-    }).join('')
+    const pinyin = await import('tiny-pinyin')
+    const fullPinyin = pinyin.convertToPinyin(name, '', true)
+    const initials = pinyin.convertToPinyin(name, '', true).replace(/\s+/g, '')
     return { pinyin: fullPinyin, initials }
 }
 

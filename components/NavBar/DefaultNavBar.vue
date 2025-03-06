@@ -23,10 +23,10 @@ onBeforeUnmount(() => {
 
 <template>
     <div class="content-wrapper">
-        <!-- 实时数据 -->
+        <!-- 全站状态 -->
         <n-card class="section stats-section">
             <template #header>
-                <div class="card-title">全站状态</div>
+                <div class="card-title" role="heading">全站状态</div>
             </template>
             <n-space vertical>
                 <n-statistic label="在线玩家" :value="stats.onlinePlayers" />

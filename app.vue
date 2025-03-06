@@ -1,17 +1,13 @@
 <script setup lang="ts">
 useHead({
-    title: 'MineShowcase',
-    meta: [
+    link: [
         {
-            name: 'description',
-            content:
-                'MineShowcase 是一个以 MSCPO/ServerAPI 作为后端的MSCPO页面',
+            rel: 'preconnect',
+            href: 'https://mscpoapi.tblstudio.cn',
+            crossorigin: 'anonymous',
         },
+        { rel: 'dns-prefetch', href: 'https://mscpoapi.tblstudio.cn' },
     ],
-    bodyAttrs: {
-        class: 'test',
-    },
-    script: [{ innerHTML: "console.log('Hello world')" }],
 })
 </script>
 

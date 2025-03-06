@@ -19,7 +19,6 @@ import {
     SearchOutline,
 } from '@vicons/ionicons5'
 import type { User } from '../hooks/type_models'
-import { useRouter } from 'vue-router'
 import { useDebounceFn, useThrottleFn, useEventListener } from '@vueuse/core'
 import { markRaw } from 'vue'
 
@@ -35,7 +34,7 @@ const searchQuery = ref('')
 const searchResults = ref<any[]>([])
 const showDropdown = ref(false)
 const searchLoading = ref(false)
-const avatar_url = ref<string | undefined | null>(undefined)
+const avatar_url = ref<string | undefined | null>('')
 const router = useRouter()
 const handleTokenExpiration = () => {
     localStorage.removeItem('token')
@@ -62,16 +61,14 @@ onMounted(async () => {
 
     const response = await send()
 
-    onSuccess(() => {
-        if (response.code === 200) {
-            avatar_url.value = response.avatar_url
-            token_status.value = true
-            username.value = response.display_name
-        }
-        if (response.code === 401) {
-            handleTokenExpiration()
-        }
-    })
+    if (response.code === 200) {
+        token_status.value = true
+        avatar_url.value = response.avatar_url
+        username.value = response.display_name
+    }
+    if (response.code === 401) {
+        handleTokenExpiration()
+    }
 })
 
 const fetchNotifications = () => {
@@ -198,7 +195,7 @@ const handleScroll = useThrottleFn(() => {
     isScrolled.value = window.scrollY > 21
 }, 100)
 
-useEventListener(window, 'scroll', handleScroll)
+useEventListener(window, 'scroll', handleScroll, { passive: true })
 
 const handleMouseEnter = () => {
     isHovered.value = true
@@ -218,7 +215,13 @@ const handleMouseLeave = () => {
     >
         <div class="logo">
             <NuxtLink to="/">
-                <img :src="Logo" class="logo-img" />
+                <img
+                    width="40"
+                    height="40"
+                    :src="Logo"
+                    class="logo-img"
+                    :alt="lang.NavBar.title + ' 标志 - 返回首页'"
+                />
             </NuxtLink>
             <h2>{{ lang.NavBar.title }}</h2>
         </div>
@@ -226,6 +229,7 @@ const handleMouseLeave = () => {
             <n-input
                 v-model:value="searchQuery"
                 placeholder="搜索服务器..."
+                role="searchbox"
                 clearable
                 @update:value="performSearch"
                 @focus="showDropdown = true"
@@ -247,24 +251,33 @@ const handleMouseLeave = () => {
         </div>
         <div class="account">
             <n-badge :value="unreadCount" :max="99" v-if="token_status">
-                <n-icon size="20" class="notify-icon">
+                <n-icon
+                    size="20"
+                    class="notify-icon"
+                    aria-label="通知"
+                    role="status"
+                >
                     <Notifications />
                 </n-icon>
             </n-badge>
             <n-dropdown
-                v-if="token_status"
+                v-if="token_status && avatar_url"
                 placement="bottom-end"
                 trigger="hover"
                 :options="dropdownOptions"
             >
                 <div class="avatar-wrapper">
                     <n-avatar
-                        v-if="avatar_url"
                         size="medium"
                         :src="avatar_url"
-                        rel="preconnect"
+                        :alt="username + ' 的头像'"
+                        role="img"
+                        aria-labelledby="avatar-label"
                     />
                     <span class="username">{{ username }}</span>
+                    <span id="avatar-label" class="sr-only">
+                        {{ username }} 的个人资料头像
+                    </span>
                 </div>
             </n-dropdown>
             <NuxtLink v-else class="login" to="/auth">登录</NuxtLink>
@@ -345,8 +358,6 @@ const handleMouseLeave = () => {
         align-items: center;
         transition: all 0.4s;
         .logo-img {
-            height: 2.4rem;
-            width: auto;
             transition: transform 0.3s;
             &:hover {
                 transform: rotate(-15deg);
@@ -413,6 +424,17 @@ const handleMouseLeave = () => {
                 text-overflow: ellipsis;
                 color: #666;
                 transition: color 0.3s;
+            }
+            .sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border: 0;
             }
         }
         .login {

@@ -1,4 +1,6 @@
 import content from '@originjs/vite-plugin-content'
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
+import Components from 'unplugin-vue-components/vite'
 export default defineNuxtConfig({
     devServer: {
         host: '127.0.0.1',
@@ -13,23 +15,20 @@ export default defineNuxtConfig({
         cacheMaxAgeSeconds: 24 * 3600,
         autoLastmod: true,
     },
-    vite: { plugins: [content()] },
     experimental: {
         buildCache: true,
+        asyncEntry: true,
     },
     nitro: {
         static: true,
-        compressPublicAssets: {
-            gzip: true,
-            brotli: true,
-        },
+        compressPublicAssets: true,
         prerender: {
             crawlLinks: true,
             routes: ['/', '/robots.txt', '/sitemap.xml'],
         },
     },
     build: {
-        analyze: true,
+        analyze: { analyzerMode: 'static' },
     },
     features: {
         inlineStyles: true,
@@ -61,8 +60,28 @@ export default defineNuxtConfig({
             mode: 'in-out',
         },
     },
+    hub: {
+        cache: true,
+    },
+    vite: {
+        plugins: [
+            content(),
+            Components({
+                resolvers: [NaiveUiResolver()],
+            }),
+        ],
+        build: {
+            minify: 'terser',
+            terserOptions: {
+                compress: {
+                    drop_console: true,
+                    drop_debugger: true,
+                },
+            },
+        },
+    },
     compatibilityDate: '2025-03-03',
     devtools: { enabled: true },
     ssr: false,
-    modules: ['@bg-dev/nuxt-naiveui', '@pinia/nuxt', '@nuxtjs/seo'],
+    modules: ['@bg-dev/nuxt-naiveui', '@nuxtjs/seo', '@nuxthub/core'],
 })
