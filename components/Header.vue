@@ -2,7 +2,7 @@
 import lang from '../languages/index'
 import Logo from '../assets/logo.webp'
 import { ref, onMounted, computed, h } from 'vue'
-import { ServerAPI_Token } from '../hooks/api'
+import { ServerAPI, ServerAPI_Token } from '../hooks/api'
 import { useRequest } from 'alova/client'
 import {
     createDiscreteApi,
@@ -23,7 +23,6 @@ import { useRouter } from 'vue-router'
 import { useDebounceFn, useThrottleFn, useEventListener } from '@vueuse/core'
 import { markRaw } from 'vue'
 
-const { data, onSuccess } = useRequest(ServerAPI_Token.Get<User>('/v1/me'))
 const { notification: msgNotification, dialog: msgDialog } = createDiscreteApi([
     'dialog',
     'notification',
@@ -36,26 +35,41 @@ const searchQuery = ref('')
 const searchResults = ref<any[]>([])
 const showDropdown = ref(false)
 const searchLoading = ref(false)
+const avatar_url = ref<string | undefined | null>(undefined)
 const router = useRouter()
-
-// 用户信息初始化
-onMounted(() => {
+const handleTokenExpiration = () => {
+    localStorage.removeItem('token')
+    Notify({
+        type: 'warning',
+        content: '登录已过期',
+        duration: 2000,
+        meta: '请重新登录',
+    })
+    router.push('/login')
+}
+onMounted(async () => {
+    // 先检查token是否存在
     const token = localStorage.getItem('token')
+    if (!token) {
+        return
+    }
+
+    // 如果有token才发送请求
+    const { send, onSuccess } = useRequest(
+        ServerAPI_Token.Get<User>('/v1/me'),
+        { immediate: false },
+    )
+
+    const response = await send()
+
     onSuccess(() => {
-        if (token) {
-            if (data.value.code === 200) {
-                token_status.value = true
-                username.value = data.value.display_name
-            }
-            if (data.value.code === 401) {
-                localStorage.removeItem('token')
-                Notify({
-                    type: 'warning',
-                    content: '你的登录失效啦！',
-                    duration: 2000,
-                    meta: '你是不是需要重新去登录了？',
-                })
-            }
+        if (response.code === 200) {
+            avatar_url.value = response.avatar_url
+            token_status.value = true
+            username.value = response.display_name
+        }
+        if (response.code === 401) {
+            handleTokenExpiration()
         }
     })
 })
@@ -86,7 +100,7 @@ const performSearch = useDebounceFn(async () => {
     }
     try {
         searchLoading.value = true
-        const response = await ServerAPI_Token.Get<{ results: SearchResult[] }>(
+        const response = await ServerAPI.Get<{ results: SearchResult[] }>(
             '/v1/search',
             {
                 params: {
@@ -245,9 +259,9 @@ const handleMouseLeave = () => {
             >
                 <div class="avatar-wrapper">
                     <n-avatar
-                        v-if="data.avatar_url"
+                        v-if="avatar_url"
                         size="medium"
-                        :src="data.avatar_url"
+                        :src="avatar_url"
                         rel="preconnect"
                     />
                     <span class="username">{{ username }}</span>
