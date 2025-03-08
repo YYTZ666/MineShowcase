@@ -56,12 +56,12 @@ const fetchAllData = async () => {
         loading.value = true
         const response = await ServerAPI.Get<List>('/v1/servers', {})
         allData.value = response.server_list
-        // 先直接显示基础数据，避免等待拼音转换
         serverDataWithPinyin.value = [...allData.value]
-        updatePageData()
-        // 异步加载拼音数据，加载完成后再更新页面
+
+        // 异步加载拼音数据，完成后再更新
         initPinyinData(allData.value).then((dataWithPinyin) => {
             serverDataWithPinyin.value = dataWithPinyin
+            random()
             updatePageData()
         })
     } catch (err) {
@@ -146,6 +146,7 @@ onMounted(() => {
             <n-pagination
                 v-model:page="page"
                 :page-count="pageCount"
+                simple
                 v-if="isVisible"
             />
         </div>

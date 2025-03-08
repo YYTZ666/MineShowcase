@@ -120,10 +120,9 @@ const rules = {
 // reCAPTCHA逻辑
 const isLoaded = ref(false)
 const site_key = ref('')
-const { data: SiteKey, send: fetchSiteKey } = useRequest(
-    ServerAPI.Get<SiteKey>('/v1/reCAPTCHA_site_key'),
-    { immediate: true },
-)
+const { data } = useRequest(ServerAPI.Get<SiteKey>('/v1/reCAPTCHA_site_key'), {
+    immediate: true,
+})
 
 // 邮箱验证逻辑
 const VerifyEmail = ref({
@@ -405,10 +404,10 @@ const handleMailSubmit = async () => {
             <n-col :span="24">
                 <div class="form-actions">
                     <reCaptcha
-                        v-if="SiteKey"
+                        v-if="data"
                         v-model="site_key"
                         @loaded="isLoaded"
-                        :siteKey="SiteKey.recapcha_sitekey"
+                        :siteKey="data.recapcha_sitekey"
                         action="submit"
                         :key="captchaKey"
                     >
@@ -442,10 +441,10 @@ const handleMailSubmit = async () => {
             <n-col :span="24">
                 <div class="form-actions">
                     <reCaptcha
-                        v-if="SiteKey"
+                        v-if="data"
                         v-model="site_key"
                         @loaded="isLoaded"
-                        :siteKey="SiteKey.recapcha_sitekey"
+                        :siteKey="data.recapcha_sitekey"
                         action="submit"
                         :key="captchaKey"
                     >

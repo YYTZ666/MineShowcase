@@ -153,7 +153,6 @@ export interface ServerManagers {
      * 服务器主人，服务器的所有主人
      */
     owners: UserBase[]
-    [property: string]: any
 }
 
 /**
@@ -203,9 +202,9 @@ export interface User extends UserBase {
      * Username，用户的用户名
      */
     username: string
-    [property: string]: any
     created_at: string
     last_login: string
     last_login_ip: string
     servers: Array<Array<number | string>>
+    code: number
 }

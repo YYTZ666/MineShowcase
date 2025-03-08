@@ -1,19 +1,16 @@
 <script setup lang="ts">
 import { watch, shallowRef } from 'vue'
-import type { DefineComponent } from 'vue'
 import DefaultNavBar from '~/components/NavBar/DefaultNavBar.vue'
 import IndexNavBar from '~/components/NavBar/IndexNavBar.vue'
 import Header from '~/components/Header.vue'
 import '~/assets/css/index.less'
 
 const route = useRoute()
-
-const navbarComponents: Record<string, DefineComponent<any, any, any>> = {
+const navbarComponents: Record<string, Component> = {
     default: DefaultNavBar,
     index: IndexNavBar,
     user: DefaultNavBar,
 }
-
 let navbarType: string = (route.meta.navbar as string) || 'default'
 
 const NavBarComponent = shallowRef(

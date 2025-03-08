@@ -29,14 +29,14 @@ const { error, data, onSuccess, send, loading } = useRequest(
 )
 
 onMounted(() => {
-    onSuccess(async () => {
-        if (data.value.code == 401) {
+    onSuccess(() => {
+        if (data.value.code === 401) {
             isUnauthorized.value = true
         }
-        if (data.value.code == 200) {
+        if (data.value.code === 200) {
             token_status.value = true
         }
-        if (data.value.code == 404) {
+        if (data.value.code === 404) {
             isUnauthorized.value = true
         }
     })

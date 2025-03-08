@@ -239,6 +239,7 @@ const formatDelay = (delay?: number) => {
                             <a
                                 :href="server.link"
                                 target="_blank"
+                                rel="noopener noreferrer"
                                 class="link-url"
                             >
                                 {{ server.link }}

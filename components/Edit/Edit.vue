@@ -242,7 +242,7 @@ const autoSave = useDebounceFn(() => {
     hasDraft.value = true
 }, 3000)
 
-const manualSave = async () => {
+const manualSave = () => {
     const draftData = {
         name: serverInfo.name,
         ip: serverInfo.ip,
@@ -256,7 +256,7 @@ const manualSave = async () => {
 }
 
 onMounted(async () => {
-    let response: any = null
+    let response: StatusWithUser | undefined = undefined
 
     // 加载草稿
     await loadDraft()

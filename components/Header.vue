@@ -54,10 +54,9 @@ onMounted(async () => {
     }
 
     // 如果有token才发送请求
-    const { send, onSuccess } = useRequest(
-        ServerAPI_Token.Get<User>('/v1/me'),
-        { immediate: false },
-    )
+    const { send } = useRequest(ServerAPI_Token.Get<User>('/v1/me'), {
+        immediate: false,
+    })
 
     const response = await send()
 
