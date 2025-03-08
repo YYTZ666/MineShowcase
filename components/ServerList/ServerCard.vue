@@ -5,12 +5,12 @@ import IMG_noicon from '../../assets/noicon.svg'
 import { ref, defineProps, onMounted, watch } from 'vue'
 import { ServerAPI } from '../../hooks/api'
 import { useRetriableRequest } from 'alova/client'
-import type { Status, ListItem } from '../../hooks/type_models'
+import type { Status } from '../../hooks/type_models'
 import { createDiscreteApi } from 'naive-ui'
 const observer = lozad()
 observer.observe()
 const router = useRouter()
-const info = defineProps<ListItem>()
+const info = defineProps<Status>()
 
 // 设置 Intersection Observer 相关
 const cardRef = ref<HTMLElement | null>(null)
@@ -57,37 +57,17 @@ const StatusInfo = ref<Status>({
 
 // 延迟加载：只有当卡片进入视口且未发起请求时再请求状态数据
 const fetchStatus = () => {
-    const getStatus = () => ServerAPI.Get<Status>(`/v1/servers/info/${info.id}`)
-    const { data, onSuccess, onError } = useRetriableRequest(getStatus(), {
-        retry: 3,
-    })
-
-    onSuccess(() => {
-        Loading.value = false
-        StatusInfo.value = data.value
-        if (data.value.code === 200) {
-            if (data.value.status) {
-                statusText.value = '在线'
-                statusColor.value = { color: '#E3F3EB', textColor: '#08532B' }
-                statusIcon.value = data.value.status.icon ?? IMG_noicon
-            } else {
-                statusText.value = '离线'
-                statusColor.value = { color: '#4C525D', textColor: '#F1F2F6' }
-                statusIcon.value = IMG_noicon
-            }
-        } else {
-            statusText.value = '未知'
-            statusColor.value = { color: '#303030', textColor: '#C9C9C9' }
-            statusIcon.value = IMG_noicon
-        }
-    })
-
-    onError(() => {
-        Loading.value = false
-        statusText.value = '错误'
-        statusColor.value = { color: '#E9967A', textColor: '#280A0A' }
+    Loading.value = false
+    StatusInfo.value = info
+    if (info.status) {
+        statusText.value = '在线'
+        statusColor.value = { color: '#E3F3EB', textColor: '#08532B' }
+        statusIcon.value = info.status.icon ?? IMG_noicon
+    } else {
+        statusText.value = '离线'
+        statusColor.value = { color: '#4C525D', textColor: '#F1F2F6' }
         statusIcon.value = IMG_noicon
-    })
+    }
 }
 
 // 当卡片可见时触发 API 请求

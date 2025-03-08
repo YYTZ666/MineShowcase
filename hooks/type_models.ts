@@ -7,7 +7,7 @@
  * 服务器列表数据模型（ServerAPI）
  */
 export interface List {
-    server_list: ListItem[]
+    server_list: Status[]
     total_member: number
     total: number
 }

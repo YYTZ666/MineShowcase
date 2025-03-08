@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed, defineAsyncComponent } from 'vue'
 import { ServerAPI } from '../../hooks/api'
-import type { List, ListItem } from '../../hooks/type_models'
+import type { List, Server, Status } from '../../hooks/type_models'
 
 const ServerCard = defineAsyncComponent(() => import('./ServerCard.vue'))
 
-const allData = ref<ListItem[]>([])
-const currentPageData = ref<ListItem[]>([])
+const allData = ref<Status[]>([])
+const currentPageData = ref<Status[]>([])
 const loading = ref(true)
 const error = ref<Error | null>(null)
 const page = ref(1)
@@ -14,7 +14,7 @@ const pageSize = 12
 const pageCount = ref(0)
 const isVisible = ref(true)
 const searchQuery = ref('')
-interface ServerWithPinyin extends ListItem {
+interface ServerWithPinyin extends Status {
     pinyin?: string // 全拼
     initials?: string // 拼音首字母
 }
@@ -27,7 +27,7 @@ const convertToPinyin = async (name: string) => {
     return { pinyin: fullPinyin, initials }
 }
 
-const initPinyinData = async (data: ListItem[]) => {
+const initPinyinData = async (data: Status[]) => {
     const promises = data.map(async (server) => {
         const { pinyin, initials } = await convertToPinyin(server.name)
         return { ...server, pinyin, initials }
@@ -84,12 +84,28 @@ const updatePageData = () => {
 
 // 随机打乱数据
 const random = () => {
-    const shuffled = [...filteredData.value]
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1))
-        ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    // 将服务器数据分组：非 null 状态和 null 状态
+    const nonNullStatus = serverDataWithPinyin.value.filter(
+        (server) => server.status !== null,
+    )
+    const nullStatus = serverDataWithPinyin.value.filter(
+        (server) => server.status === null,
+    )
+
+    // 定义一个数组随机打乱函数（Fisher-Yates 洗牌算法）
+    const shuffleArray = (arr: any[]) => {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1))
+            ;[arr[i], arr[j]] = [arr[j], arr[i]]
+        }
     }
-    serverDataWithPinyin.value = [...shuffled]
+
+    // 分别随机打乱两部分数据
+    shuffleArray(nonNullStatus)
+    shuffleArray(nullStatus)
+
+    // 合并数据，保证 nonNullStatus 的数据排在前面
+    serverDataWithPinyin.value = [...nonNullStatus, ...nullStatus]
     updatePageData()
 }
 
@@ -139,6 +155,19 @@ onMounted(() => {
                         :key="server.id"
                         :id="server.id"
                         :name="server.name"
+                        :ip="server.ip"
+                        :auth_mode="server.auth_mode"
+                        :desc="server.desc"
+                        :status="server.status"
+                        :link="server.link"
+                        :tags="server.tags"
+                        :type="server.type"
+                        :version="server.version"
+                        :is_hide="server.is_hide"
+                        :is_member="server.is_member"
+                        :permission="server.permission"
+                        :detail="server.detail"
+                        :code="server.code"
                     />
                 </TransitionGroup>
             </NNotificationProvider>
