@@ -178,7 +178,7 @@ onMounted(() => {
 
 /* 定义卡片进入与离开的动画 */
 .fade-enter-active {
-    animation: card-enter 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    animation: card-enter 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
 
 .fade-leave-active {
