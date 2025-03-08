@@ -25,7 +25,10 @@ const { data: managers } = useRequest(
 const route = useRoute()
 const serverId = route.params.id
 const { data: server, loading } = useRequest(
-    () => ServerAPI_Token.Get<Status>(`/v1/servers/info/${serverId}`),
+    () =>
+        ServerAPI_Token.Get<Status>(`/v1/servers/info/${serverId}`, {
+            cacheFor: null,
+        }),
     {
         immediate: true,
     },
