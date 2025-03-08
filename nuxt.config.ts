@@ -3,7 +3,7 @@ import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 export default defineNuxtConfig({
     devServer: {
-        host: '127.0.0.1',
+        host: '0.0.0.0',
         port: 3000,
     },
     site: {
@@ -37,7 +37,8 @@ export default defineNuxtConfig({
         head: {
             title: 'Minecraft集体宣传组织(MSCPO)',
             titleTemplate: '%s | MSCPO',
-            viewport: 'width=device-width,initial-scale=1',
+            viewport:
+                'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"',
             meta: [
                 { charset: 'utf-8' },
                 {

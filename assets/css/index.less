@@ -6,8 +6,16 @@
 
 html,
 body {
-    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow-y: hidden;
+    @media (max-width: 1200px) {
+        overflow-y: auto;
+    }
 }
+
 .page-enter-active {
     transition-delay: 50ms;
 }

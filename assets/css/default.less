@@ -40,7 +40,10 @@
         z-index: @z-index-sidebar;
         border-radius: 16px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        height: calc(100vh - @header-height - 48px);
         transition: transform 0.3s ease-in-out;
+        overflow-y: auto;
+
         &::-webkit-scrollbar {
             display: none;
         }
@@ -60,7 +63,7 @@
         transition: margin-left 0.3s ease-in-out;
 
         @media (max-width: @mobile-breakpoint) {
-            height: calc(100vh - @header-height - 32px);
+            height: 100%;
         }
 
         &::-webkit-scrollbar {
