@@ -206,7 +206,6 @@ const gotoLogin = () => router.push('/auth')
 
 <style scoped lang="less">
 .user-panel {
-    margin: 20px auto;
     padding: 20px;
     display: flex;
     flex-direction: column;

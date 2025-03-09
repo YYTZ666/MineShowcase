@@ -14,17 +14,16 @@ body {
     @media (max-width: 1200px) {
         overflow-y: auto;
     }
+    scroll-behavior: smooth;
 }
 
-.page-enter-active {
-    transition-delay: 50ms;
-}
-
+.page-enter-active,
 .page-leave-active {
-    transition: opacity 0.3s ease 100ms;
+    transition: all 0.4s;
 }
 
 .page-enter-from,
 .page-leave-to {
     opacity: 0;
+    filter: blur(1rem);
 }

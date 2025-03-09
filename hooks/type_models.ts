@@ -51,7 +51,7 @@ export interface Status extends Server {
         icon: string | null
     } | null
     permission: 'owner' | 'admin' | 'guest' | undefined
-    code: number
+    code?: number
     detail: string | undefined
 }
 
@@ -94,7 +94,7 @@ export interface SiteKey {
  */
 export interface Login {
     detail: string | undefined
-    code: number
+    code?: number
     access_token: string
     token_type: string
 }
@@ -120,7 +120,7 @@ export interface ReturnResponse {
      * 消息, 状态返回消息
      */
     detail: string
-    code: number
+    code?: number
     success: boolean
 }
 
@@ -128,7 +128,7 @@ export interface ReturnResponse {
  * ReturnResponse_Register
  */
 export interface ReturnResponse_Register {
-    code: number
+    code?: number
     /**
      * 消息，状态返回消息
      */
@@ -206,5 +206,5 @@ export interface User extends UserBase {
     last_login: string
     last_login_ip: string
     servers: Array<Array<number | string>>
-    code: number
+    code?: number
 }

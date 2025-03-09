@@ -2,9 +2,7 @@
 import lozad from 'lozad'
 import IMG_noimage from '../../assets/noimage.webp'
 import IMG_noicon from '../../assets/noicon.svg'
-import { ref, defineProps, onMounted, watch } from 'vue'
-import { ServerAPI } from '../../hooks/api'
-import { useRetriableRequest } from 'alova/client'
+import { ref, onMounted, watch } from 'vue'
 import type { Status } from '../../hooks/type_models'
 import { createDiscreteApi } from 'naive-ui'
 const observer = lozad()

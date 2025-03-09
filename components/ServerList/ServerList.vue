@@ -167,7 +167,6 @@ onMounted(() => {
                         :is_member="server.is_member"
                         :permission="server.permission"
                         :detail="server.detail"
-                        :code="server.code"
                     />
                 </TransitionGroup>
             </NNotificationProvider>

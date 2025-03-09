@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineProps, onBeforeUnmount, onMounted, nextTick } from 'vue'
+import { ref, onBeforeUnmount, onMounted, nextTick } from 'vue'
 import { ServerAPI } from '../../hooks/api'
 import { useRequest } from 'alova/client'
 import reCaptcha from '../../components/Recaptcha/ReCaptchaV3.vue'

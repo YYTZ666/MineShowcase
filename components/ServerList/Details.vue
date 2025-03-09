@@ -9,6 +9,8 @@ import {
     NGi,
 } from 'naive-ui'
 import { ServerAPI_Token } from '../../hooks/api'
+import { MdPreview } from 'md-editor-v3'
+
 import {
     CheckmarkCircleOutline,
     WarningOutline,
@@ -83,7 +85,6 @@ const statusIcon = computed(() => {
         ? CheckmarkCircleOutline
         : WarningOutline
 })
-
 // 状态颜色
 const statusColor = computed(() => {
     if (!server.value?.status) return 'error'
@@ -180,9 +181,11 @@ const formatDelay = (delay?: number) => {
 
                     <!-- 描述和MOTD -->
                     <n-card title="服务器描述" class="description-card">
-                        <div class="description-content">
-                            {{ server.desc }}
-                        </div>
+                        <MdPreview
+                            editor-id="preview-only"
+                            :modelValue="server.desc"
+                            class="markdown-content"
+                        />
 
                         <template v-if="server.status?.motd" #footer>
                             <div class="motd-section">
@@ -270,7 +273,6 @@ const formatDelay = (delay?: number) => {
 
 <style scoped lang="less">
 .detail {
-    margin: 20px auto;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -334,13 +336,12 @@ const formatDelay = (delay?: number) => {
 
         .description-card {
             margin-top: 24px;
-
-            .description-content {
-                line-height: 1.8;
-                color: #4b5563;
-                white-space: pre-wrap;
+            .markdown-content {
+                font-family: monospace;
+                padding: 12px;
+                border-radius: 6px;
+                background-color: #f8f9fa;
             }
-
             .motd-section {
                 margin-top: 24px;
                 padding-top: 24px;
