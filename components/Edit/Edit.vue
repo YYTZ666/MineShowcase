@@ -31,10 +31,7 @@ const serverInfo = reactive({
     error: undefined as string | undefined,
     code: 200,
 })
-const { notification, message } = createDiscreteApi([
-    'notification',
-    'message',
-])
+const { notification, message } = createDiscreteApi(['notification', 'message'])
 // 服务器状态检测
 const serverStatus = reactive({
     type: 'warning' as 'success' | 'error' | 'warning',
@@ -302,6 +299,29 @@ onMounted(async () => {
         )
     }
 })
+
+const theme = ref('light' as 'light' | 'dark')
+
+const updateTheme = (e?: MediaQueryListEvent) => {
+    const isDarkMode = e
+        ? e.matches
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+    theme.value = isDarkMode ? 'dark' : 'light'
+}
+
+watchEffect(() => {
+    updateTheme()
+})
+
+onMounted(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    mediaQuery.addEventListener('change', updateTheme)
+})
+
+onUnmounted(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    mediaQuery.removeEventListener('change', updateTheme)
+})
 </script>
 
 <template>
@@ -388,6 +408,7 @@ onMounted(async () => {
                             noMermaid
                             noUploadImg
                             class="md-editor"
+                            :theme="theme"
                         />
                     </div>
                     <!-- 标签 -->
@@ -419,12 +440,13 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="less">
+@import '../assets/css/variables.less';
+
 .edit {
     padding: 20px;
 
     .content-container {
         margin: 0 auto;
-        background: white;
         border-radius: 12px;
         img {
             max-width: 500px;
@@ -434,7 +456,10 @@ onMounted(async () => {
     .page-title {
         margin-bottom: 24px;
         font-size: 1.5rem;
-        color: #1f2937;
+        color: @text-color-light;
+        @media (prefers-color-scheme: dark) {
+            color: @text-color-dark;
+        }
     }
 
     .status-indicator {
@@ -453,16 +478,20 @@ onMounted(async () => {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: #374151;
+            color: @text-color-secondary;
+            @media (prefers-color-scheme: dark) {
+                color: @text-color-secondary-dark;
+            }
         }
 
         .md-editor {
             border-radius: 8px;
-            border: 1px solid #e5e7eb;
-            overflow: hidden;
-
-            &:hover {
-                border-color: #d1d5db;
+            transition: all 0.3s;
+            --md-color: @text-color-light;
+            --md-bk-color: 1p x solid @border-color;
+            @media (prefers-color-scheme: dark) {
+                --md-bk-color: rgba(255, 255, 255, 0.1);
+                --md-color: @text-color-dark;
             }
         }
     }

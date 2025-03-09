@@ -11,6 +11,9 @@
     grid-template-rows: @header-height 1fr;
     min-height: 100vh;
     background: #f0f2f5;
+    @media (prefers-color-scheme: dark) {
+        background: @background-dark;
+    }
 
     .header {
         grid-row: 1;
@@ -39,6 +42,9 @@
 
     .sidebar {
         background: #fff;
+        @media (prefers-color-scheme: dark) {
+            background: @surface-dark;
+        }
         z-index: @z-index-sidebar;
         border-radius: 16px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -58,6 +64,9 @@
 
     .main-content {
         background: #fff;
+        @media (prefers-color-scheme: dark) {
+            background: @surface-dark;
+        }
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         height: calc(100vh - @header-height - 48px);

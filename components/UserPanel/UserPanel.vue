@@ -205,6 +205,8 @@ const gotoLogin = () => router.push('/auth')
 </template>
 
 <style scoped lang="less">
+@import '../assets/css/variables.less';
+
 .user-panel {
     padding: 20px;
     display: flex;
@@ -225,7 +227,10 @@ const gotoLogin = () => router.push('/auth')
             .display-name {
                 margin: 0 0 12px;
                 font-size: 2.2rem;
-                color: #1f2937;
+                color: @text-color-light;
+                @media (prefers-color-scheme: dark) {
+                    color: @text-color-dark;
+                }
             }
         }
     }
@@ -242,12 +247,15 @@ const gotoLogin = () => router.push('/auth')
         flex-direction: column;
         gap: 8px;
         padding: 16px;
-        background: #f8f9fa;
+        background: @border-color-secondary;
+        @media (prefers-color-scheme: dark) {
+            background: @border-color-secondary-dark;
+        }
         border-radius: 8px;
         transition: all 0.3s;
 
         &:hover {
-            background: #f1f3f5;
+            background: @hover-primary;
             transform: translateY(-2px);
         }
 
@@ -291,6 +299,10 @@ const gotoLogin = () => router.push('/auth')
     }
 }
 .server-list {
+    color: @text-color-light;
+    @media (prefers-color-scheme: dark) {
+        color: @text-color-dark;
+    }
     margin-top: 24px;
 
     .n-grid {

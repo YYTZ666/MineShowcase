@@ -182,7 +182,13 @@ onMounted(() => {
 </template>
 
 <style scoped lang="less">
+@import '../assets/css/variables.less';
+
 .ServerList {
+    color: @text-color-light;
+    @media (prefers-color-scheme: dark) {
+        color: @text-color-dark;
+    }
     padding: 20px;
 }
 .search-box {

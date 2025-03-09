@@ -42,6 +42,8 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped lang="less">
+@import '../assets/css/variables.less';
+
 .content-wrapper {
     padding: 12px;
 }
@@ -49,18 +51,22 @@ onBeforeUnmount(() => {
     width: 100%;
     border-radius: 8px;
     background-color: #fff;
+    @media (prefers-color-scheme: dark) {
+        background-color: @border-color-dark;
+    }
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
 
     .card-title {
         font-weight: bold;
         font-size: 16px;
-        color: #333;
+        color: @text-color-light;
+        @media (prefers-color-scheme: dark) {
+            color: @text-color-dark;
+        }
         padding: 5px 0;
-        border-bottom: 1px solid #f0f0f0;
     }
 }
-
 .stats-section {
     .n-statistic {
         margin-bottom: 16px;

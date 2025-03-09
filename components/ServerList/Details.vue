@@ -272,6 +272,8 @@ const formatDelay = (delay?: number) => {
 </template>
 
 <style scoped lang="less">
+@import '../assets/css/variables.less';
+
 .detail {
     padding: 20px;
     display: flex;
@@ -296,7 +298,7 @@ const formatDelay = (delay?: number) => {
             margin-bottom: 40px;
 
             .n-img {
-                background-color: #e6e6e6;
+                background-color: #fefefe;
             }
 
             .header-info {
@@ -312,11 +314,17 @@ const formatDelay = (delay?: number) => {
                     .server-name {
                         margin: 0 0 12px;
                         font-size: 2.4rem;
-                        color: #1f2937;
+                        color: @text-color-light;
+                        @media (prefers-color-scheme: dark) {
+                            color: @text-color-dark;
+                        }
                     }
 
                     .server-ip {
-                        color: #6b7280;
+                        color: @text-color-secondary;
+                        @media (prefers-color-scheme: dark) {
+                            color: @text-color-secondary-dark;
+                        }
                         font-family: monospace;
                     }
                 }
@@ -336,25 +344,38 @@ const formatDelay = (delay?: number) => {
 
         .description-card {
             margin-top: 24px;
+            color: @text-color-light;
+            @media (prefers-color-scheme: dark) {
+                color: @text-color-dark;
+            }
             .markdown-content {
                 font-family: monospace;
                 padding: 12px;
                 border-radius: 6px;
-                background-color: #f8f9fa;
+                background-color: @border-color-secondary;
+                color: @text-color-light;
+                @media (prefers-color-scheme: dark) {
+                    background-color: @border-color-secondary-dark;
+                    color: @text-color-dark;
+                    --md-color: @text-color-secondary-dark;
+                }
             }
             .motd-section {
                 margin-top: 24px;
                 padding-top: 24px;
-                border-top: 1px solid #e5e7eb;
+                border-top: 1px solid @border-color-dark;
 
                 h3 {
                     margin: 0 0 12px;
-                    color: #374151;
                 }
 
                 .motd-text {
                     font-family: monospace;
-                    background: #f8f9fa;
+                    background-color: @border-color-secondary;
+
+                    @media (prefers-color-scheme: dark) {
+                        background-color: @border-color-secondary-dark;
+                    }
                     padding: 12px;
                     border-radius: 6px;
                     white-space: pre-wrap;
@@ -366,7 +387,10 @@ const formatDelay = (delay?: number) => {
 
             .section-title {
                 font-size: 1.1em;
-                color: #333;
+                color: @text-color-light;
+                @media (prefers-color-scheme: dark) {
+                    color: @text-color-dark;
+                }
             }
 
             .user-item {
@@ -374,34 +398,25 @@ const formatDelay = (delay?: number) => {
                 align-items: center;
                 gap: 8px;
                 padding: 4px 8px;
-                background-color: #f5f5f5;
+                background-color: @border-color-secondary;
+                @media (prefers-color-scheme: dark) {
+                    background-color: @border-color-secondary-dark;
+                }
                 border-radius: 4px;
 
                 span {
                     font-size: 0.9em;
-                    color: #333;
+                    color: @text-color-light;
+                    @media (prefers-color-scheme: dark) {
+                        color: @text-color-dark;
+                    }
                 }
             }
 
             .link-url {
                 word-break: break-all;
-                color: #2080f0;
-                text-decoration: none;
-                display: inline-block;
-                padding: 4px 0;
 
-                &:hover {
-                    text-decoration: underline;
-                }
-            }
-        }
-
-        .link-card {
-            margin-top: 16px;
-
-            .link-url {
-                word-break: break-all;
-                color: #2080f0;
+                color: @accent;
                 text-decoration: none;
                 display: inline-block;
                 padding: 4px 0;

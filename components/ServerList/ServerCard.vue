@@ -245,13 +245,16 @@ const copyToClipboard = (event: MouseEvent) => {
 </template>
 
 <style scoped lang="less">
-@border-color: #ddd;
+@import '../assets/css/variables.less';
 
 .card {
     overflow: hidden;
     height: 20rem;
     box-sizing: border-box;
     border: 2px solid @border-color;
+    @media (prefers-color-scheme: dark) {
+        border: 2px solid @border-color-dark;
+    }
     border-radius: 8px;
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
     transition:
@@ -269,7 +272,14 @@ const copyToClipboard = (event: MouseEvent) => {
         overflow: hidden;
         box-sizing: border-box;
         margin: 0.6rem;
+        border-radius: 4px;
+        background-color: #fff;
+
         border: 2px dashed @border-color;
+        @media (prefers-color-scheme: dark) {
+            background-color: @border-color-dark;
+            border: 2px dashed @border-color-dark;
+        }
         position: relative;
 
         .card-type {
@@ -283,9 +293,15 @@ const copyToClipboard = (event: MouseEvent) => {
             transform: rotate(38deg);
             font-size: 1.2rem;
             font-weight: bold;
-            color: #000;
-            background-color: rgba(255, 255, 255, 0.7);
+            color: @text-color-light;
+            background-color: @border-color;
             border: 1px solid @border-color;
+            @media (prefers-color-scheme: dark) {
+                color: @text-color-dark;
+                background-color: @border-color-dark;
+                border: 1px solid @border-color-dark;
+            }
+
             border-radius: 5px;
         }
 
@@ -345,7 +361,10 @@ const copyToClipboard = (event: MouseEvent) => {
             display: flex;
             justify-content: center;
             align-items: center;
-
+            background-color: #fefefe;
+            @media (prefers-color-scheme: dark) {
+                border: 2px solid @border-color-secondary-dark;
+            }
             img {
                 width: 90%;
                 height: 90%;
