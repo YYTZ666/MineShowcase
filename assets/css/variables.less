@@ -1,0 +1,92 @@
+// ================================
+// 主题色（根据 AAA 标准调整）
+// ================================
+
+// 主色调（Primary Colors）
+@primary: #4a90e2; // 主色，适用于按钮、链接等主要交互元素
+@primary-light: #80d9cf; // 主色浅色，用于悬停、聚焦或次要状态
+@primary-dark: #3f4b59; // 主色深色，用于深色背景或高对比文本
+
+// 次要色调（Secondary Colors）
+@secondary: #347c92; // 次要色，用于辅助按钮、图标等
+@secondary-light: #60a6b5; // 次要色浅色，用于次要悬停状态
+@secondary-dark: #3e5e64; // 次要色深色，用于分割区域或高对比需求
+
+// 强调色（Accent Color）
+@accent: #2473b4; // 强调色，用于突出状态或重点标记
+
+// ================================
+// 状态色（State Colors）
+// ================================
+
+@success: #2e7d32; // 成功状态色，保证 AAA 对比（常用于提示成功、完成操作）
+@warning: #ed6c02; // 警告状态色，适当调整饱和度以确保对比
+@error: #d32f2f; // 错误状态色，确保提示信息清晰易读
+@info: #0288d1; // 信息状态色，用于一般提示信息
+
+// ================================
+// 背景及表面色（Background & Surface）
+// ================================
+
+@background-light: #ffffff; // 浅色背景（主要用于页面背景、内容区域）
+@background-dark: #121212; // 深色背景（适用于暗色模式页面背景）
+@surface-light: #f5f5f5; // 浅色表面，用于卡片、面板等区域
+@surface-dark: #1e1e1e; // 深色表面，用于暗色主题下的卡片或分区
+
+// ================================
+// 文本色（Text Colors）
+// ================================
+
+@text-color-light: #0a0a0a; // 浅色主题下的主文本颜色（高对比）
+@text-color-dark: #e0e0e0; // 深色主题下的主文本颜色
+@text-color-secondary: #6d6d6d; // 次级文本颜色，用于辅助信息展示
+
+// ================================
+// 边框色（Border Colors）
+// ================================
+
+@border-color: #e0e0e0; // 浅色主题边框颜色
+@border-color-dark: #303030; // 深色主题边框颜色
+
+// ================================
+// 交互状态（Interactive States）
+// ================================
+
+@hover-primary: lighten(@primary, 10%); // 主按钮悬停状态（轻微提亮）
+@active-primary: darken(@primary, 10%); // 主按钮激活状态（稍微变暗）
+@disabled: #bdbdbd; // 禁用状态颜色，确保低调显示
+
+// ================================
+// 渐变效果（Gradients）
+// ================================
+
+@gradient-primary: linear-gradient(
+    135deg,
+    @primary,
+    @primary-dark
+); // 主色渐变（适用于按钮、标题等）
+@gradient-secondary: linear-gradient(
+    135deg,
+    @secondary,
+    @secondary-dark
+); // 次要色渐变
+
+// ================================
+// 字体变量（Typography）
+// ================================
+
+@font-family-base: 'Helvetica Neue', Helvetica, Arial, sans-serif; // 基本字体
+@font-size-base: 16px; // 基础字体大小
+@font-size-sm: 14px; // 小字体
+@font-size-lg: 20px; // 大字体
+@line-height-base: 1.5; // 基础行高
+
+// ================================
+// 间距变量（Spacing）
+// ================================
+
+@spacing-xs: 4px; // 极小间距
+@spacing-sm: 8px; // 小间距
+@spacing-md: 16px; // 中等间距
+@spacing-lg: 24px; // 大间距
+@spacing-xl: 32px; // 超大间距

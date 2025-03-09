@@ -285,6 +285,8 @@ const handleMouseLeave = () => {
 </template>
 
 <style scoped lang="less">
+@import '../assets/css/variables.less';
+
 .c_header {
     display: flex;
     align-items: center;
@@ -295,7 +297,7 @@ const handleMouseLeave = () => {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.9);
+    background: @primary;
     backdrop-filter: blur(2px);
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -342,7 +344,7 @@ const handleMouseLeave = () => {
     }
 
     &:hover {
-        background: rgba(255, 255, 255, 0.9) !important;
+        background: @primary !important;
         &::before {
             opacity: 0 !important;
         }
@@ -363,7 +365,7 @@ const handleMouseLeave = () => {
             }
         }
         h2 {
-            background: linear-gradient(135deg, #4b6e91, #48a3e0);
+            background: @background-light;
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -393,13 +395,14 @@ const handleMouseLeave = () => {
         align-items: center;
         height: 2rem;
         transition: all 0.4s;
+        color: @background-light;
         .notify-icon {
             cursor: pointer;
             padding: 4px;
             border-radius: 50%;
             transition: all 0.3s;
             &:hover {
-                background: #f5f5f5;
+                background: @hover-primary;
                 transform: scale(1.1);
             }
         }
@@ -412,16 +415,16 @@ const handleMouseLeave = () => {
             transition: all 0.3s;
             cursor: pointer;
             &:hover {
-                background: #f5f5f5;
+                background: @hover-primary;
                 .username {
-                    color: #2c3e50;
+                    color: @background-light;
                 }
             }
             .username {
                 max-width: 120px;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                color: #666;
+                color: @background-light;
                 transition: color 0.3s;
             }
             .sr-only {
