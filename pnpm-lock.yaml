@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@bg-dev/nuxt-naiveui':
-        specifier: 2.0.0-rc.3
-        version: 2.0.0-rc.3(magicast@0.3.5)(vue@3.5.13(typescript@5.7.3))
+        specifier: 2.0.0-rc.4
+        version: 2.0.0-rc.4(magicast@0.3.5)(vue@3.5.13(typescript@5.7.3))
       '@vueuse/core':
         specifier: ^12.8.2
         version: 12.8.2(typescript@5.7.3)
@@ -241,8 +241,8 @@ packages:
     resolution: {integrity: sha512-Y3IR1cRnOxOCDvMmNiym7XpXQ93iGDDPHx+Zj+NM+rg0fBaShfQLkg+hKPaZCEvg5N/LeCo4+Rj/i3FuJsIQaw==}
     engines: {node: '>=6.9.0'}
 
-  '@bg-dev/nuxt-naiveui@2.0.0-rc.3':
-    resolution: {integrity: sha512-4h/hRmfbBdbDLWC4Ohsf4UpGHXZZNFUM0kT4LgLrkgrRG239hH3zJRJ56phgFESfTthXeVRTw6rANYAsQZDRMA==}
+  '@bg-dev/nuxt-naiveui@2.0.0-rc.4':
+    resolution: {integrity: sha512-5rvaaoRKpHmO3aBcUFK9BFUBMCnA7VeMJmuqDWcl4DVTcJsE62LlxAWWm54DTpgmGbTQJCbDlC9l8Y6vAz5huw==}
 
   '@cloudflare/kv-asset-handler@0.3.4':
     resolution: {integrity: sha512-YLPHc8yASwjNkmcDMQMY35yiWjoKAKnhUbPRszBRS0YgH+IXtsMp61j+yTcnCE3oO2DgP0U3iejLC8FTtKDC8Q==}
@@ -5064,7 +5064,7 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@bg-dev/nuxt-naiveui@2.0.0-rc.3(magicast@0.3.5)(vue@3.5.13(typescript@5.7.3))':
+  '@bg-dev/nuxt-naiveui@2.0.0-rc.4(magicast@0.3.5)(vue@3.5.13(typescript@5.7.3))':
     dependencies:
       '@ant-design/colors': 7.2.0
       '@iconify/vue': 4.3.0(vue@3.5.13(typescript@5.7.3))
