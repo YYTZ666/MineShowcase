@@ -79,7 +79,7 @@ export default defineNuxtConfig({
     },
     compatibilityDate: '2025-03-03',
     devtools: { enabled: true },
-    ssr: true,
+    ssr: false,
     modules: [
         '@bg-dev/nuxt-naiveui',
         '@nuxtjs/seo',
