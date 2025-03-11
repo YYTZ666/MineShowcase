@@ -1,6 +1,4 @@
 import content from '@originjs/vite-plugin-content'
-import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
-import Components from 'unplugin-vue-components/vite'
 export default defineNuxtConfig({
     devServer: {
         host: '0.0.0.0',
@@ -29,6 +27,7 @@ export default defineNuxtConfig({
     },
     build: {
         analyze: { analyzerMode: 'static' },
+        transpile: ['naive-ui', 'vueuc'],
     },
     features: {
         inlineStyles: true,
@@ -67,9 +66,6 @@ export default defineNuxtConfig({
     vite: {
         plugins: [
             content(),
-            Components({
-                resolvers: [NaiveUiResolver()],
-            }),
         ],
         build: {
             minify: 'terser',
@@ -83,6 +79,11 @@ export default defineNuxtConfig({
     },
     compatibilityDate: '2025-03-03',
     devtools: { enabled: true },
-    ssr: false,
-    modules: ['@bg-dev/nuxt-naiveui', '@nuxtjs/seo', '@nuxthub/core'],
+    ssr: true,
+    modules: [
+        '@bg-dev/nuxt-naiveui',
+        '@nuxtjs/seo',
+        '@nuxthub/core',
+        'nuxt-og-image'
+    ],
 })

@@ -9,16 +9,17 @@ useHead({
         { rel: 'dns-prefetch', href: 'https://mscpoapi.tblstudio.cn' },
     ],
 })
-import { darkTheme, lightTheme } from 'naive-ui'
+
 import { ref, watchEffect, onMounted, onUnmounted } from 'vue'
 
-const theme = ref(darkTheme)
-
+const dark_theme = ref(false)
 const updateTheme = (e?: MediaQueryListEvent) => {
-    const isDarkMode = e
-        ? e.matches
-        : window.matchMedia('(prefers-color-scheme: dark)').matches
-    theme.value = isDarkMode ? darkTheme : lightTheme
+    if (typeof window !== 'undefined') {
+        const isDarkMode = e
+            ? e.matches
+            : window.matchMedia('(prefers-color-scheme:  dark)').matches
+        dark_theme.value = isDarkMode
+    }
 }
 
 watchEffect(() => {
@@ -26,20 +27,25 @@ watchEffect(() => {
 })
 
 onMounted(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    mediaQuery.addEventListener('change', updateTheme)
+    if (typeof window !== 'undefined') {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme:  dark)')
+        updateTheme()
+        mediaQuery.addEventListener('change', updateTheme)
+    }
 })
 
 onUnmounted(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    mediaQuery.removeEventListener('change', updateTheme)
+    if (typeof window !== 'undefined') {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme:  dark)')
+        mediaQuery.removeEventListener('change', updateTheme)
+    }
 })
 </script>
 
 <template>
-    <n-config-provider :theme="theme">
+    <naive-config :dark="dark_theme">
         <NuxtLayout>
             <NuxtPage />
         </NuxtLayout>
-    </n-config-provider>
+    </naive-config>
 </template>
