@@ -10,16 +10,16 @@ useHead({
     ],
 })
 
+import { darkTheme, lightTheme } from 'naive-ui'
 import { ref, watchEffect, onMounted, onUnmounted } from 'vue'
 
-const dark_theme = ref(false)
+const theme = ref(darkTheme)
+
 const updateTheme = (e?: MediaQueryListEvent) => {
-    if (typeof window !== 'undefined') {
-        const isDarkMode = e
-            ? e.matches
-            : window.matchMedia('(prefers-color-scheme:  dark)').matches
-        dark_theme.value = isDarkMode
-    }
+    const isDarkMode = e
+        ? e.matches
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+    theme.value = isDarkMode ? darkTheme : lightTheme
 }
 
 watchEffect(() => {
@@ -27,23 +27,18 @@ watchEffect(() => {
 })
 
 onMounted(() => {
-    if (typeof window !== 'undefined') {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme:  dark)')
-        updateTheme()
-        mediaQuery.addEventListener('change', updateTheme)
-    }
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    mediaQuery.addEventListener('change', updateTheme)
 })
 
 onUnmounted(() => {
-    if (typeof window !== 'undefined') {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme:  dark)')
-        mediaQuery.removeEventListener('change', updateTheme)
-    }
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    mediaQuery.removeEventListener('change', updateTheme)
 })
 </script>
 
 <template>
-    <naive-config :dark="dark_theme">
+    <naive-config :theme="theme">
         <NuxtLayout>
             <NuxtPage />
         </NuxtLayout>

@@ -27,7 +27,6 @@ export default defineNuxtConfig({
     },
     build: {
         analyze: { analyzerMode: 'static' },
-        transpile: ['naive-ui', 'vueuc'],
     },
     features: {
         inlineStyles: true,
@@ -41,7 +40,6 @@ export default defineNuxtConfig({
             meta: [
                 { charset: 'utf-8' },
                 {
-                    hid: 'keywords',
                     name: 'keywords',
                     content:
                         'Minecraft服务器,MC服务器宣传,我的世界技术交流,集体宣传片,开服教程',
@@ -84,6 +82,6 @@ export default defineNuxtConfig({
         '@bg-dev/nuxt-naiveui',
         '@nuxtjs/seo',
         '@nuxthub/core',
-        'nuxt-og-image'
+        'nuxt-og-image',
     ],
 })
