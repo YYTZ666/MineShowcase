@@ -24,6 +24,11 @@ export default defineNuxtConfig({
             crawlLinks: true,
             routes: ['/', '/robots.txt', '/sitemap.xml'],
         },
+        esbuild: {
+            options: {
+                target: 'esnext',
+            },
+        },
     },
     build: {
         analyze: { analyzerMode: 'static' },
@@ -74,12 +79,22 @@ export default defineNuxtConfig({
         },
     },
     compatibilityDate: '2025-03-03',
-    devtools: { enabled: true },
-    ssr: false,
+    devtools: {
+        enabled: true,
+    },
+    styleExtractor: {
+        minify: true, // 是否开启压缩
+        removeUnused: true, // 是否移除未使用
+    },
     modules: [
-        '@bg-dev/nuxt-naiveui',
         '@nuxtjs/seo',
         '@nuxthub/core',
         'nuxt-og-image',
+        '@ant-design-vue/nuxt',
+        'nuxt-style-extractor',
     ],
+    // Ant Design Vue Config
+    antd: {
+        extractStyle: true,
+    },
 })

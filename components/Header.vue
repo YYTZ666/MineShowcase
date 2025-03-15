@@ -4,28 +4,15 @@ import Logo from '../assets/logo.webp'
 import { ref, onMounted, computed, h } from 'vue'
 import { ServerAPI, ServerAPI_Token } from '../hooks/api'
 import { useRequest } from 'alova/client'
+import { notification, Modal } from 'ant-design-vue'
 import {
-    createDiscreteApi,
-    NBadge,
-    NDropdown,
-    NIcon,
-    NInput,
-    type NotificationType,
-} from 'naive-ui'
-import {
-    Notifications,
-    PersonCircleOutline,
-    LogOutOutline,
-    SearchOutline,
-} from '@vicons/ionicons5'
+    SearchOutlined,
+    SolutionOutlined,
+    UnlockOutlined,
+} from '@ant-design/icons-vue'
 import type { User } from '../hooks/type_models'
 import { useDebounceFn, useThrottleFn, useEventListener } from '@vueuse/core'
 import { markRaw } from 'vue'
-
-const { notification: msgNotification, dialog: msgDialog } = createDiscreteApi([
-    'dialog',
-    'notification',
-])
 
 const username = ref('')
 const token_status = ref(false)
@@ -38,11 +25,10 @@ const avatar_url = ref<string | undefined | null>('')
 const router = useRouter()
 const handleTokenExpiration = () => {
     localStorage.removeItem('token')
-    Notify({
-        type: 'warning',
-        content: '登录已过期',
-        duration: 2000,
-        meta: '请重新登录',
+    notification.warning({
+        message: '登录已过期',
+        duration: 4,
+        description: '请重新登录',
     })
     router.push('/login')
 }
@@ -132,60 +118,19 @@ const handleBlur = () => {
     }, 200)
 }
 
-// 通知弹窗
-const Notify = (info: {
-    type: NotificationType
-    content: string
-    meta: string
-    duration: number
-}) =>
-    msgNotification[info.type]({
-        content: info.content,
-        meta: info.meta,
-        duration: info.duration,
-        keepAliveOnHover: true,
-    })
-
 // 登出逻辑
 const handleLogout = () => {
-    msgDialog.warning({
+    Modal.confirm({
         title: '确认退出',
         content: '确定要退出当前账号吗？',
-        positiveText: '确定',
-        negativeText: '取消',
-        onPositiveClick: () => {
+        okText: '确定',
+        cancelText: '取消',
+        onOk() {
             localStorage.removeItem('token')
             window.location.reload()
-        },
+        }
     })
 }
-
-// 图标渲染
-function renderIcon(icon: Component) {
-    return () => h(NIcon, null, { default: () => h(icon) })
-}
-
-// 下拉菜单选项
-const dropdownOptions = [
-    {
-        label: '个人中心',
-        key: 'profile',
-        icon: renderIcon(markRaw(PersonCircleOutline)),
-        props: {
-            onClick: () => router.push('/user'),
-            style: { cursor: 'pointer' },
-        },
-    },
-    {
-        label: '退出登录',
-        key: 'logout',
-        icon: renderIcon(markRaw(LogOutOutline)),
-        props: {
-            onClick: handleLogout,
-            style: { cursor: 'pointer' },
-        },
-    },
-]
 
 // 优化：对滚动事件进行节流处理
 const isScrolled = ref(false)
@@ -225,20 +170,20 @@ const handleMouseLeave = () => {
             <h2>{{ lang.NavBar.title }}</h2>
         </div>
         <div class="search-container">
-            <n-input
+            <a-input
                 v-model:value="searchQuery"
                 placeholder="搜索服务器..."
                 role="searchbox"
-                clearable
-                @update:value="performSearch"
+                allowClear
+                @change="performSearch"
                 @focus="showDropdown = true"
                 @blur="handleBlur"
             >
                 <template #prefix>
-                    <n-icon :component="SearchOutline" />
+                    <SearchOutlined />
                 </template>
-            </n-input>
-            <n-dropdown
+            </a-input>
+            <a-dropdown
                 placement="bottom"
                 trigger="manual"
                 :options="searchOptions"
@@ -246,27 +191,15 @@ const handleMouseLeave = () => {
                 :loading="searchLoading"
             >
                 <div></div>
-            </n-dropdown>
+            </a-dropdown>
         </div>
         <div class="account">
-            <n-badge :value="unreadCount" :max="99" v-if="token_status">
-                <n-icon
-                    size="20"
-                    class="notify-icon"
-                    aria-label="通知"
-                    role="status"
-                >
-                    <Notifications />
-                </n-icon>
-            </n-badge>
-            <n-dropdown
-                v-if="token_status && avatar_url"
-                placement="bottom-end"
-                trigger="hover"
-                :options="dropdownOptions"
-            >
+            <a-badge :badge="unreadCount" :max="99" v-if="token_status">
+                <NotificationFilled class="notify-icon" />
+            </a-badge>
+            <a-dropdown v-if="token_status && avatar_url">
                 <div class="avatar-wrapper">
-                    <n-avatar
+                    <a-avatar
                         size="medium"
                         :src="avatar_url"
                         :alt="username + ' 的头像'"
@@ -278,7 +211,22 @@ const handleMouseLeave = () => {
                         {{ username }} 的个人资料头像
                     </span>
                 </div>
-            </n-dropdown>
+                <template #overlay>
+                    <a-menu>
+                        <a-menu-item
+                            key="profile"
+                            @click="router.push('/user')"
+                        >
+                            <SolutionOutlined />
+                            个人中心
+                        </a-menu-item>
+                        <a-menu-item key="logout" @click="handleLogout">
+                            <UnlockOutlined />
+                            退出登录
+                        </a-menu-item>
+                    </a-menu>
+                </template>
+            </a-dropdown>
             <NuxtLink v-else class="login" to="/auth">登录</NuxtLink>
         </div>
     </header>
@@ -337,7 +285,7 @@ const handleMouseLeave = () => {
             opacity: 0.6;
         }
 
-        .search-container .n-input {
+        .search-container .a-input {
             background: none;
             opacity: 0.6;
         }
@@ -382,12 +330,12 @@ const handleMouseLeave = () => {
         max-width: 400px;
         margin: 0 2rem;
         position: relative;
-        .n-input {
+        .a-input {
             transition: all 0.4s;
             width: 100%;
             border-radius: 15px;
         }
-        .n-dropdown {
+        .a-dropdown {
             width: 100%;
             position: absolute;
             top: 100%;
@@ -407,6 +355,7 @@ const handleMouseLeave = () => {
             padding: 4px;
             border-radius: 50%;
             transition: all 0.3s;
+            color: @background-light;
             &:hover {
                 background: @hover-primary;
                 transform: scale(1.1);
