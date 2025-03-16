@@ -89,7 +89,7 @@ const onlineStatusTag = computed(() => {
 </script>
 <template>
     <a-card hoverable>
-        <a-spin :show="loading">
+        <a-spin :spinning="loading">
             <div class="server-card">
                 <!-- 服务器名称和IP -->
                 <a-text strong class="server-name">

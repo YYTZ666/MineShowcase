@@ -148,9 +148,13 @@ onMounted(() => {
                 class="grid-list"
                 ref="serverList"
             >
+                <div v-if="!isVisible" class="skeleton" style="max-width: 20rem">
+                    <a-skeleton active />
+                    <a-skeleton avatar active :paragraph="{ rows: 2 }" />
+                </div>
                 <ServerCard
                     v-for="server in currentPageData"
-                    v-if="isVisible"
+                    v-else
                     :key="server.id"
                     :id="server.id"
                     :name="server.name"
@@ -167,10 +171,6 @@ onMounted(() => {
                     :permission="server.permission"
                     :detail="server.detail"
                 />
-                <div v-else class="skeleton" style="max-width: 20rem">
-                    <a-skeleton active />
-                    <a-skeleton avatar active :paragraph="{ rows: 2 }" />
-                </div>
             </TransitionGroup>
             <a-divider />
             <a-pagination
