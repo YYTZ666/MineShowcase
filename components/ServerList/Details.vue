@@ -122,25 +122,25 @@ const formatDelay = (delay?: number) => {
                     <a-row :gutter="[24, 24]">
                         <a-col :xs="24" :sm="12" :md="8" :lg="6">
                             <a-statistic
-                                :title="'在线玩家'"
+                                title="在线玩家"
                                 :value="`${server.status?.players.online ?? '-'}/${server.status?.players.max ?? '-'}`"
                             />
                         </a-col>
                         <a-col :xs="24" :sm="12" :md="8" :lg="6">
                             <a-statistic
-                                :title="'延迟'"
+                                title="延迟"
                                 :value="formatDelay(server.status?.delay)"
                             />
                         </a-col>
                         <a-col :xs="24" :sm="12" :md="8" :lg="6">
                             <a-statistic
-                                :title="'版本'"
+                                title="版本"
                                 :value="server.version"
                             />
                         </a-col>
                         <a-col :xs="24" :sm="12" :md="8" :lg="6">
                             <a-statistic
-                                :title="'认证模式'"
+                                title="认证模式"
                                 :value="server.auth_mode"
                             />
                         </a-col>
