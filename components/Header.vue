@@ -2,25 +2,17 @@
 import lang from '../languages/index'
 import Logo from '../assets/logo.webp'
 import { ref, onMounted, computed, h } from 'vue'
-import { ServerAPI, ServerAPI_Token } from '../hooks/api'
+import { ServerAPI_Token } from '../hooks/api'
 import { useRequest } from 'alova/client'
 import { notification, Modal } from 'ant-design-vue'
-import {
-    SearchOutlined,
-    SolutionOutlined,
-    UnlockOutlined,
-} from '@ant-design/icons-vue'
+import { SolutionOutlined, UnlockOutlined } from '@ant-design/icons-vue'
 import type { User } from '../hooks/type_models'
-import { useDebounceFn, useThrottleFn, useEventListener } from '@vueuse/core'
-import { markRaw } from 'vue'
+import { useThrottleFn, useEventListener } from '@vueuse/core'
+import GlobalSearch from './GlobalSearch/GlobalSearch.vue'
 
 const username = ref('')
 const token_status = ref(false)
 const unreadCount = ref(0)
-const searchQuery = ref('')
-const searchResults = ref<any[]>([])
-const showDropdown = ref(false)
-const searchLoading = ref(false)
 const avatar_url = ref<string | undefined | null>('')
 const router = useRouter()
 const handleTokenExpiration = () => {
@@ -68,56 +60,6 @@ setTimeout(() => {
     }
 }, 100)
 
-interface SearchResult {
-    id: string
-    name: string
-    // 根据后端返回可扩展其他字段
-}
-// 搜索功能
-const performSearch = useDebounceFn(async () => {
-    if (!searchQuery.value) {
-        searchResults.value = []
-        showDropdown.value = false
-        return
-    }
-    try {
-        searchLoading.value = true
-        const response = await ServerAPI.Get<{ results: SearchResult[] }>(
-            '/v1/search',
-            {
-                params: {
-                    query: searchQuery.value,
-                    limit: 5,
-                },
-            },
-        )
-        searchResults.value = response.results
-        showDropdown.value = true
-    } catch (error) {
-        console.error('搜索失败:', error)
-        searchResults.value = []
-    } finally {
-        searchLoading.value = false
-    }
-}, 300)
-
-const searchOptions = computed(() => {
-    return searchResults.value.map((item) => ({
-        label: item.name,
-        key: item.id,
-        props: {
-            onClick: () => router.push(`/details/${item.id}`),
-            style: { cursor: 'pointer' },
-        },
-    }))
-})
-
-const handleBlur = () => {
-    setTimeout(() => {
-        showDropdown.value = false
-    }, 200)
-}
-
 // 登出逻辑
 const handleLogout = () => {
     Modal.confirm({
@@ -128,7 +70,7 @@ const handleLogout = () => {
         onOk() {
             localStorage.removeItem('token')
             window.location.reload()
-        }
+        },
     })
 }
 
@@ -170,28 +112,7 @@ const handleMouseLeave = () => {
             <h2>{{ lang.NavBar.title }}</h2>
         </div>
         <div class="search-container">
-            <a-input
-                v-model:value="searchQuery"
-                placeholder="搜索服务器..."
-                role="searchbox"
-                allowClear
-                @change="performSearch"
-                @focus="showDropdown = true"
-                @blur="handleBlur"
-            >
-                <template #prefix>
-                    <SearchOutlined />
-                </template>
-            </a-input>
-            <a-dropdown
-                placement="bottom"
-                trigger="manual"
-                :options="searchOptions"
-                :show="showDropdown && searchOptions.length > 0"
-                :loading="searchLoading"
-            >
-                <div></div>
-            </a-dropdown>
+            <GlobalSearch />
         </div>
         <div class="account">
             <a-badge :badge="unreadCount" :max="99" v-if="token_status">
@@ -253,7 +174,6 @@ const handleMouseLeave = () => {
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     position: relative;
-    overflow: hidden;
 
     &::before {
         content: '';
@@ -280,13 +200,7 @@ const handleMouseLeave = () => {
         &::before {
             opacity: 1;
         }
-
         .logo {
-            opacity: 0.6;
-        }
-
-        .search-container .a-input {
-            background: none;
             opacity: 0.6;
         }
         .account {
