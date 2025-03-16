@@ -43,11 +43,7 @@ const filters = ref({
                     :key="server.value"
                     class="server-item"
                 >
-                    <a-tag
-                        :bordered="false"
-                        type="success"
-                        size="small"
-                    >
+                    <a-tag :bordered="false" type="success" size="small">
                         {{ server.ping }}ms
                     </a-tag>
                     <span class="server-name">{{ server.label }}</span>
@@ -63,7 +59,7 @@ const filters = ref({
             <a-space direction="vertical">
                 <a-statistic title="在线玩家" :value="stats.onlinePlayers" />
                 <a-statistic title="24小时新服" :value="stats.newServers24h" />
-                <p> 更新时间 </p>
+                <p>更新时间</p>
             </a-space>
         </a-card>
 

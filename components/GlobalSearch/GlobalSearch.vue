@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import {
-    useDebounceFn,
-    onClickOutside,
-} from '@vueuse/core'
+import { useDebounceFn, onClickOutside } from '@vueuse/core'
 import { ServerAPI } from '../../hooks/api'
 
 const router = useRouter()
@@ -82,7 +79,11 @@ const PushRouter = (id: string) => {
                     <caret-right-outlined :rotate="isActive ? 90 : 0" />
                 </template>
                 <a-collapse-panel key="1" header="服务器">
-                    <div class="info-item" v-for="server in searchResults" @click="PushRouter(server.id)">
+                    <div
+                        class="info-item"
+                        v-for="server in searchResults"
+                        @click="PushRouter(server.id)"
+                    >
                         {{ server.name }}
                     </div>
                 </a-collapse-panel>

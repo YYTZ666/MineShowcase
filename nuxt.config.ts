@@ -85,7 +85,7 @@ export default defineNuxtConfig({
     },
     styleExtractor: {
         minify: true, // 是否开启压缩
-        removeUnused: false
+        removeUnused: false,
     },
     modules: [
         '@nuxtjs/seo',
@@ -98,5 +98,5 @@ export default defineNuxtConfig({
     antd: {
         extractStyle: true,
     },
-    pwa
+    pwa,
 })

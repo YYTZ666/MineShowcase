@@ -131,7 +131,9 @@ const gotoLogin = () => router.push('/auth')
                 </div>
 
                 <div class="advanced-info" v-if="showAdvanced">
-                    <a-divider style="border-color: #a6c3ee" dashed>高级信息</a-divider>
+                    <a-divider style="border-color: #a6c3ee" dashed>
+                        高级信息
+                    </a-divider>
                     <div class="info-grid">
                         <div class="info-item">
                             <label>

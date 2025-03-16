@@ -118,7 +118,12 @@ const formatDelay = (delay?: number) => {
                     </div>
 
                     <!-- 关键指标 -->
-                    <a-grid x-gap="24" y-gap="24" cols="2 s:3 m:4" class="key-stats">
+                    <a-grid
+                        x-gap="24"
+                        y-gap="24"
+                        cols="2 s:3 m:4"
+                        class="key-stats"
+                    >
                         <a-col>
                             <a-statistic label="在线玩家">
                                 {{ server.status?.players.online ?? '-' }}/{{

@@ -9,9 +9,10 @@ export const pwa: ModuleOptions = {
     base: scope,
     manifest: {
         id: '/',
-        name: "Minecraft Server Collective Promotion Organization",
-        short_name: "MSCPO",
-        description: "The Minecraft Server Collective Promotion Organization (MSCPO) is an up-and-coming organization dedicated to the propaganda and technical communication of Minecraft servers (x) Fellow server owners group (√)",
+        name: 'Minecraft Server Collective Promotion Organization',
+        short_name: 'MSCPO',
+        description:
+            'The Minecraft Server Collective Promotion Organization (MSCPO) is an up-and-coming organization dedicated to the propaganda and technical communication of Minecraft servers (x) Fellow server owners group (√)',
         theme_color: '#06f',
         icons: [
             {

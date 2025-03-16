@@ -118,9 +118,7 @@ const handleSubmit = async () => {
                             登录
                         </a-button>
                     </reCaptcha>
-                    <a-button v-else type="primary" loading>
-                        登录
-                    </a-button>
+                    <a-button v-else type="primary" loading>登录</a-button>
                 </div>
             </a-col>
         </a-row>
