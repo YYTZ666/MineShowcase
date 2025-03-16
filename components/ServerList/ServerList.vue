@@ -2,7 +2,6 @@
 import { ref, watch, onMounted, computed, defineAsyncComponent } from 'vue'
 import { ServerAPI } from '../../hooks/api'
 import type { List, Server, Status } from '../../hooks/type_models'
-import CardSkeleton from './CardSkeleton.vue'
 
 const ServerCard = defineAsyncComponent(() => import('./ServerCard.vue'))
 
@@ -118,6 +117,8 @@ watch([page, filteredData], () => {
 onMounted(() => {
     fetchAllData()
 })
+
+import ServerCardSkeleton from './ServerCardSkeleton.vue'
 </script>
 
 <template>
@@ -148,7 +149,7 @@ onMounted(() => {
                 name="fade"
                 class="grid-list"
                 ref="serverList"
-                v-show="isVisible"
+                v-if="isVisible"
             >
                 <ServerCard
                     v-for="server in currentPageData"
@@ -169,14 +170,21 @@ onMounted(() => {
                     :detail="server.detail"
                 />
             </TransitionGroup>
-            <div v-for="(item, index) in 12" v-show="!isVisible" class="grid-list">
-                <CardSkeleton />
+
+            <!-- 修改加载状态部分 -->
+            <div v-else class="grid-list">
+                <ServerCardSkeleton
+                    v-for="n in pageSize"
+                    :key="'skeleton-' + n"
+                />
             </div>
+
             <a-divider />
             <a-pagination
                 v-model:current="page"
                 :page-size="pageSize"
                 :total="ServersTotal"
+                v-if="isVisible"
             />
         </div>
     </div>
