@@ -169,14 +169,13 @@ const formatDelay = (delay?: number) => {
                             class="markdown-content"
                         />
 
-                        <template v-if="server.status?.motd" #footer>
-                            <div class="motd-section">
-                                <h3>MOTD</h3>
-                                <pre class="motd-text">{{
-                                    server.status.motd.plain
-                                }}</pre>
-                            </div>
-                        </template>
+                        <div v-if="server.status?.motd" class="motd-section">
+                            <h3>MOTD</h3>
+                            <pre
+                                class="motd-text"
+                                v-html="server.status.motd.html"
+                            ></pre>
+                        </div>
                     </a-card>
                     <a-card class="info-card">
                         <!-- 所有者部分 -->

@@ -142,16 +142,12 @@ onMounted(() => {
                 />
             </div>
             <a-divider />
-            <div v-if="!isVisible" class="skeleton" style="max-width: 20rem">
-                <a-skeleton active />
-                <a-skeleton avatar active :paragraph="{ rows: 2 }" />
-            </div>
             <TransitionGroup
-                v-show="isVisible"
                 tag="div"
                 name="fade"
                 class="grid-list"
                 ref="serverList"
+                v-if="isVisible"
             >
                 <ServerCard
                     v-for="server in currentPageData"
@@ -179,6 +175,10 @@ onMounted(() => {
                 :total="ServersTotal"
                 v-if="isVisible"
             />
+            <div v-else class="skeleton" style="max-width: 20rem">
+                <a-skeleton active />
+                <a-skeleton avatar active :paragraph="{ rows: 2 }" />
+            </div>
         </div>
     </div>
 </template>
