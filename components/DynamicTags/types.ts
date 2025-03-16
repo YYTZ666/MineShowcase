@@ -12,8 +12,6 @@ export type DynamicTagsOption = {
 
 // 定义组件的 Props 类型
 export type DynamicTagsProps = {
-    // 标签是否可关闭
-    closable?: boolean
     // 标签的颜色配置
     color?: {
         color?: string

@@ -7,7 +7,7 @@
             :title="getTagLabel(tag)"
         >
             <a-tag
-                :closable="closable && index !== 0"
+                closable
                 :color="color?.color"
                 :border-color="color?.borderColor"
                 :text-color="color?.textColor"
@@ -28,7 +28,7 @@
         <!-- 标签标签长度不超过 20 直接显示标签 -->
         <a-tag
             v-else
-            :closable="closable && index !== 0"
+            closable
             :color="color?.color"
             :border-color="color?.borderColor"
             :text-color="color?.textColor"
@@ -74,10 +74,10 @@
 <script lang="ts" setup>
 import { ref, reactive, nextTick, computed } from 'vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
-import type { DynamicTagsOption } from './types' // 假设你有一个 types.ts     文件定义了 DynamicTagsOption
+// DynamicTagsOption 类型文件
+import type { DynamicTagsOption } from './types'
 
 const props = defineProps<{
-    closable?: boolean
     color?: { color?: string; borderColor?: string; textColor?: string }
     defaultValue?: string[] | DynamicTagsOption[]
     disabled?: boolean

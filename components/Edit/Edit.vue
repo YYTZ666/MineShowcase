@@ -20,6 +20,7 @@ const route = useRoute()
 const ServerID = route.params.id
 const hasDraft = ref(false) // 新增草稿状态标记
 const hasPermission = ref(false) // 新增权限状态
+const tags = ref()
 // 服务器信息状态
 const serverInfo = reactive({
     name: '',
