@@ -119,35 +119,32 @@ const formatDelay = (delay?: number) => {
                     </div>
 
                     <!-- 关键指标 -->
-                    <a-grid
-                        x-gap="24"
-                        y-gap="24"
-                        cols="2 s:3 m:4"
-                        class="key-stats"
-                    >
-                        <a-col>
-                            <a-statistic label="在线玩家">
-                                {{ server.status?.players.online ?? '-' }}/{{
-                                    server.status?.players.max ?? '-'
-                                }}
-                            </a-statistic>
+                    <a-row :gutter="[24, 24]">
+                        <a-col :xs="24" :sm="12" :md="8" :lg="6">
+                            <a-statistic
+                                :title="'在线玩家'"
+                                :value="`${server.status?.players.online ?? '-'}/${server.status?.players.max ?? '-'}`"
+                            />
                         </a-col>
-                        <a-col>
-                            <a-statistic label="延迟">
-                                {{ formatDelay(server.status?.delay) }}
-                            </a-statistic>
+                        <a-col :xs="24" :sm="12" :md="8" :lg="6">
+                            <a-statistic
+                                :title="'延迟'"
+                                :value="formatDelay(server.status?.delay)"
+                            />
                         </a-col>
-                        <a-col>
-                            <a-statistic label="版本">
-                                {{ server.version }}
-                            </a-statistic>
+                        <a-col :xs="24" :sm="12" :md="8" :lg="6">
+                            <a-statistic
+                                :title="'版本'"
+                                :value="server.version"
+                            />
                         </a-col>
-                        <a-col>
-                            <a-statistic label="认证模式">
-                                {{ server.auth_mode }}
-                            </a-statistic>
+                        <a-col :xs="24" :sm="12" :md="8" :lg="6">
+                            <a-statistic
+                                :title="'认证模式'"
+                                :value="server.auth_mode"
+                            />
                         </a-col>
-                    </a-grid>
+                    </a-row>
 
                     <!-- 标签 -->
                     <div class="tag-section">
@@ -358,7 +355,8 @@ const formatDelay = (delay?: number) => {
 
                 .motd-text {
                     font-family: monospace;
-                    background-color: @border-color-secondary;
+                    color: @primary-light;
+                    background-color: @secondary;
 
                     @media (prefers-color-scheme: dark) {
                         background-color: @border-color-secondary-dark;
