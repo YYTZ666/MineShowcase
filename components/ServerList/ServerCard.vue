@@ -187,30 +187,30 @@ const copyToClipboard = (event: MouseEvent) => {
                                 : '未知'
                     "
                 ></a-tag>
-                <a-tooltip
-                    v-if="StatusInfo.is_member === true"
-                    trigger="hover"
-                    placement="top-start"
-                >
-                    <template #trigger>
-                        <a-tag size="small" :bordered="false" type="info">
-                            成员服
-                        </a-tag>
+                <a-tooltip v-if="StatusInfo.is_member === true">
+                    <template #title>
+                        <span>
+                            此服务器是集体宣传组织的成员服
+                            <br />
+                            我们可以确保其可以长期运行
+                        </span>
                     </template>
-                    <span>
-                        此服务器是集体宣传组织的成员服
-                        <br />
-                        我们可以确保其可以长期运行
-                    </span>
+                    <a-tag size="small" :bordered="false" type="info">
+                        成员服
+                    </a-tag>
                 </a-tooltip>
-                <a-tag
-                    v-for="(tag, index) in StatusInfo.tags.slice(0, 4)"
-                    :key="index"
-                    size="small"
-                    :bordered="false"
-                    :title="tag"
-                    v-text="tag"
-                />
+                <a-tooltip v-for="(tag, index) in StatusInfo.tags.slice(0, 4)">
+                    <template #title>
+                        <span v-text="tag"></span>
+                    </template>
+                    <a-tag
+                        :key="index"
+                        size="small"
+                        :bordered="false"
+                        :title="tag"
+                        v-text="tag"
+                    />
+                </a-tooltip>
             </a-space>
         </div>
     </div>
