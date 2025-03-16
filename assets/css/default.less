@@ -1,4 +1,4 @@
-@import '../assets/css/variables.less';
+@import '../assets/css/variables.less'; 
 
 @header-height: 64px;
 @sidebar-width: 280px;
@@ -6,26 +6,27 @@
 @z-index-header: 1000;
 @z-index-sidebar: 999;
 @text-color: #333;
+
 .layout {
-    display: grid;
-    grid-template-rows: @header-height 1fr;
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
     background: #f0f2f5;
+
     @media (prefers-color-scheme: dark) {
         background: @background-dark;
     }
 
     .header {
-        grid-row: 1;
+        height: @header-height;
         position: sticky;
         top: 0;
         z-index: @z-index-header + 3;
     }
 
     .content {
-        grid-row: 2;
-        display: grid;
-        grid-template-columns: @sidebar-width 1fr;
+        display: flex;
+        flex: 1;
         gap: 24px;
         padding: 24px;
         margin: 0 auto;
@@ -33,7 +34,7 @@
         box-sizing: border-box;
 
         @media (max-width: @mobile-breakpoint) {
-            grid-template-columns: 1fr;
+            flex-direction: column;
             padding: 16px;
             position: relative;
             overflow-x: hidden;
@@ -41,10 +42,8 @@
     }
 
     .sidebar {
+        width: @sidebar-width;
         background: #fff;
-        @media (prefers-color-scheme: dark) {
-            background: @surface-dark;
-        }
         z-index: @z-index-sidebar;
         border-radius: 16px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -55,26 +54,25 @@
         &::-webkit-scrollbar {
             display: none;
         }
+
         @media (max-width: @mobile-breakpoint) {
             position: fixed;
-            left: -@sidebar-width;
-            transition: left 0.3s ease-in-out;
+            transform: translateX(calc(-100% - 24px));
         }
     }
 
     .main-content {
+        flex: 1;
         background: #fff;
-        @media (prefers-color-scheme: dark) {
-            background: @surface-dark;
-        }
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         height: calc(100vh - @header-height - 48px);
         overflow-y: auto;
-        transition: margin-left 0.3s ease-in-out;
+        transition: width 0.3s ease-in-out;
 
         @media (max-width: @mobile-breakpoint) {
             height: 100%;
+            width: 100vw;
         }
 
         &::-webkit-scrollbar {
