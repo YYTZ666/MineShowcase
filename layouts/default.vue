@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { watch, shallowRef } from 'vue'
+import { ref, watch, shallowRef } from 'vue'
 import DefaultNavBar from '~/components/NavBar/DefaultNavBar.vue'
 import IndexNavBar from '~/components/NavBar/IndexNavBar.vue'
 import Header from '~/components/Header.vue'
 
+const isActive = ref(true)
 const route = useRoute()
 const navbarComponents: Record<string, Component> = {
     default: DefaultNavBar,
@@ -33,7 +34,7 @@ watch(
             <Header />
         </header>
         <div class="content">
-            <aside class="sidebar">
+            <aside class="sidebar" :class="{ active: isActive }">
                 <transition name="slide" mode="out-in">
                     <component :is="NavBarComponent"></component>
                 </transition>
@@ -42,6 +43,13 @@ watch(
                 <slot />
             </main>
         </div>
+        <a-float-button-group class="menu_button" shape="square" :style="{ right: '94px' }">
+            <a-float-button @click="isActive = !isActive">
+                <template #icon>
+                    <MenuOutlined />
+                </template>
+            </a-float-button>
+        </a-float-button-group>
     </div>
 </template>
 
@@ -69,5 +77,9 @@ watch(
 .slide-leave-from {
     transform: translateY(0);
     opacity: 1;
+}
+
+.active {
+    transform: translateX(0) !important;
 }
 </style>
