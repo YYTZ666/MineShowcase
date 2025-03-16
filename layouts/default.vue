@@ -3,7 +3,6 @@ import { watch, shallowRef } from 'vue'
 import DefaultNavBar from '~/components/NavBar/DefaultNavBar.vue'
 import IndexNavBar from '~/components/NavBar/IndexNavBar.vue'
 import Header from '~/components/Header.vue'
-import '~/assets/css/index.less'
 
 const route = useRoute()
 const navbarComponents: Record<string, Component> = {
