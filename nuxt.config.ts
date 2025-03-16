@@ -1,4 +1,5 @@
 import content from '@originjs/vite-plugin-content'
+import { pwa } from './config/pwa'
 export default defineNuxtConfig({
     devServer: {
         host: '0.0.0.0',
@@ -84,7 +85,7 @@ export default defineNuxtConfig({
     },
     styleExtractor: {
         minify: true, // 是否开启压缩
-        removeUnused: true, // 是否移除未使用
+        removeUnused: false
     },
     modules: [
         '@nuxtjs/seo',
@@ -97,4 +98,5 @@ export default defineNuxtConfig({
     antd: {
         extractStyle: true,
     },
+    pwa
 })
