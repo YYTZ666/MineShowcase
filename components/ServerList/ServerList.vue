@@ -147,6 +147,7 @@ onMounted(() => {
                 <a-skeleton avatar active :paragraph="{ rows: 2 }" />
             </div>
             <TransitionGroup
+                v-show="isVisible"
                 tag="div"
                 name="fade"
                 class="grid-list"
@@ -154,7 +155,6 @@ onMounted(() => {
             >
                 <ServerCard
                     v-for="server in currentPageData"
-                    v-if="isVisible"
                     :key="server.id"
                     :id="server.id"
                     :name="server.name"
