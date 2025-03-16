@@ -5,6 +5,7 @@ import IMG_noicon from '../../assets/noicon.svg'
 import { ref, onMounted, watch } from 'vue'
 import type { Status } from '../../hooks/type_models'
 import { notification } from 'ant-design-vue'
+
 const observer = lozad()
 observer.observe()
 const router = useRouter()
