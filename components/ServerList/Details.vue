@@ -4,6 +4,7 @@ import { MdPreview } from 'md-editor-v3'
 import { useRequest } from 'alova/client'
 import type { ServerManagers, Status } from '../../hooks/type_models'
 import IMG_noicon from '../../assets/noicon.svg'
+import Img404 from '../../assets/error.webp'
 const { data: managers } = useRequest(
     () =>
         ServerAPI_Token.Get<ServerManagers>(`/v1/servers/${serverId}/managers`),
@@ -237,11 +238,16 @@ const formatDelay = (delay?: number) => {
                 <a-result
                     v-else
                     class="status-result"
-                    :status="resultStatus.type"
                     :title="resultStatus.title"
-                    :description="resultStatus.description"
+                    :subTitle="resultStatus.description"
                 >
-                    <template #footer>
+                    <template #icon>
+                        <img
+                            :src="Img404"
+                            style="width: 100%; max-width: 10rem"
+                        />
+                    </template>
+                    <template #extra>
                         <NuxtLink :to="`/`">
                             <a-button type="primary">返回首页</a-button>
                         </NuxtLink>

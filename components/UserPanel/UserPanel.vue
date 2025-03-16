@@ -1,18 +1,10 @@
 <script setup lang="ts">
-// import {
-//     NAvatar,
-//     NCard,
-//     NSpace,
-//     NSpin,
-//     NText,
-//     NButton,
-//     NResult,
-// } from 'naive-ui'
 import { useRequest } from 'alova/client'
 import { ServerAPI_Token } from '../../hooks/api'
 import type { User } from '../../hooks/type_models'
 import ServerCard from './ServerCard.vue'
 import IMG_noicon from '../../assets/noicon.svg'
+import Img404 from '../../assets/error.webp'
 
 const router = useRouter()
 const showAdvanced = ref(false)
@@ -21,25 +13,21 @@ const token_status = ref(false)
 
 const isUnauthorized = ref(false)
 
-const { error, data, onSuccess, send, loading } = useRequest(
+const { error, data, send, loading } = useRequest(
     ServerAPI_Token.Get<User>('/v1/me'),
     {
         immediate: true,
     },
-)
-
-onMounted(() => {
-    onSuccess(() => {
-        if (data.value.code === 401) {
-            isUnauthorized.value = true
-        }
-        if (data.value.code === 200) {
-            token_status.value = true
-        }
-        if (data.value.code === 404) {
-            isUnauthorized.value = true
-        }
-    })
+).onSuccess(() => {
+    if (data.value.code === 401) {
+        isUnauthorized.value = true
+    }
+    if (data.value.code === 200) {
+        token_status.value = true
+    }
+    if (data.value.code === 404) {
+        isUnauthorized.value = true
+    }
 })
 
 const formatDate = (dateString: string) => {
@@ -59,12 +47,13 @@ const gotoLogin = () => router.push('/auth')
         <a-spin :spinning="loading">
             <a-result
                 v-if="isUnauthorized"
-                status="403"
                 title="未登录"
-                description="需要登录才能查看个人信息"
-                size="large"
+                subTitle="需要登录才能查看个人信息"
             >
-                <template #footer>
+                <template #icon>
+                    <img :src="Img404" style="width: 100%; max-width: 10rem" />
+                </template>
+                <template #extra>
                     <a-space justify="center">
                         <a-button type="primary" @click="gotoLogin">
                             立即登录
@@ -75,12 +64,13 @@ const gotoLogin = () => router.push('/auth')
             </a-result>
             <a-result
                 v-else-if="error"
-                status="error"
                 title="加载失败"
-                description="无法获取用户信息，请检查网络连接"
-                size="large"
+                subTitle="无法获取用户信息，请检查网络连接"
             >
-                <template #footer>
+                <template #icon>
+                    <img :src="Img404" style="width: 100%; max-width: 10rem" />
+                </template>
+                <template #extra>
                     <a-space justify="center">
                         <a-button type="primary" @click="send">重试</a-button>
                         <a-button @click="goBack">返回上一页</a-button>
@@ -136,22 +126,16 @@ const gotoLogin = () => router.push('/auth')
                     </a-divider>
                     <div class="info-grid">
                         <div class="info-item">
-                            <label>
-                                <a-text depth="3">登录账号</a-text>
-                            </label>
-                            <a-text>{{ data.username }}</a-text>
+                            <label>登录账号</label>
+                            {{ data.username }}
                         </div>
                         <div class="info-item">
-                            <label>
-                                <a-text depth="3">账户类型</a-text>
-                            </label>
-                            <a-text>
-                                {{
-                                    data.role === 'admin'
-                                        ? '管理员账户'
-                                        : '普通账户'
-                                }}
-                            </a-text>
+                            <label>账户类型</label>
+                            {{
+                                data.role === 'admin'
+                                    ? '管理员账户'
+                                    : '普通账户'
+                            }}
                         </div>
                     </div>
                 </div>
@@ -184,17 +168,20 @@ const gotoLogin = () => router.push('/auth')
                 </a-button>
             </template> -->
 
-                <a-grid cols="1 600:2 960:3" x-gap="16" y-gap="16">
-                    <a-gi
+                <a-row :gutter="[16, 16]">
+                    <a-col
                         v-for="[role, serverId] in data?.servers || []"
                         :key="serverId"
+                        :xs="24"
+                        :sm="12"
+                        :md="8"
                     >
                         <ServerCard
                             :server-id="Number(serverId)"
                             :role="role"
                         />
-                    </a-gi>
-                </a-grid>
+                    </a-col>
+                </a-row>
             </div>
         </a-spin>
     </div>
