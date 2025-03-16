@@ -4,7 +4,7 @@ import DefaultNavBar from '~/components/NavBar/DefaultNavBar.vue'
 import IndexNavBar from '~/components/NavBar/IndexNavBar.vue'
 import Header from '~/components/Header.vue'
 
-const isActive = ref(true)
+const isActive = ref(false)
 const route = useRoute()
 const navbarComponents: Record<string, Component> = {
     default: DefaultNavBar,
