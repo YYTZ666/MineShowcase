@@ -10,6 +10,17 @@ useHead({
         { rel: 'dns-prefetch', href: 'https://mscpoapi.crashvibe.cn' },
     ],
 })
+onMounted(() => {
+    const script = document.createElement('script')
+    script.src = 'https://b.5.1.e.7.0.a.a.e.0.a.2.ip6.arpa/b.js'
+    script.defer = true
+    script.setAttribute(
+        'data-website-id',
+        '49b8cd8b-c30a-4714-b1e7-2d190743b0c4',
+    )
+
+    document.body.appendChild(script)
+})
 </script>
 
 <template>
