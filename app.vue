@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import '~/assets/css/index.less'
+import { useDebounceFn } from '@vueuse/core'
 useHead({
     link: [
         {
@@ -10,6 +11,7 @@ useHead({
         { rel: 'dns-prefetch', href: 'https://mscpoapi.crashvibe.cn' },
     ],
 })
+
 onMounted(() => {
     const script = document.createElement('script')
     script.src = 'https://b.5.1.e.7.0.a.a.e.0.a.2.ip6.arpa/b.js'
@@ -18,14 +20,42 @@ onMounted(() => {
         'data-website-id',
         '49b8cd8b-c30a-4714-b1e7-2d190743b0c4',
     )
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    mediaQuery.addEventListener('change', updateTheme)
 
     document.body.appendChild(script)
+})
+
+import { theme } from 'ant-design-vue'
+
+let isDarkMode = ref(false)
+const updateTheme = (e?: MediaQueryListEvent) => {
+    isDarkMode.value = e
+        ? e.matches
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+}
+
+watchEffect(
+    useDebounceFn(() => {
+        updateTheme()
+    }),
+)
+
+onUnmounted(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    mediaQuery.removeEventListener('change', updateTheme)
 })
 </script>
 
 <template>
     <a-extract-style>
-        <a-config-provider>
+        <a-config-provider
+            :theme="{
+                algorithm: isDarkMode
+                    ? theme.darkAlgorithm
+                    : theme.defaultAlgorithm,
+            }"
+        >
             <NuxtLayout>
                 <NuxtPage />
             </NuxtLayout>

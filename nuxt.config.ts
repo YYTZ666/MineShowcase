@@ -17,6 +17,7 @@ export default defineNuxtConfig({
     experimental: {
         buildCache: true,
         asyncEntry: true,
+        writeEarlyHints: false,
     },
     nitro: {
         static: true,
@@ -85,15 +86,15 @@ export default defineNuxtConfig({
     },
     styleExtractor: {
         minify: true, // 是否开启压缩
-        removeUnused: false,
+        removeUnused: true,
     },
     modules: [
-      '@nuxtjs/seo',
-      '@nuxthub/core',
-      'nuxt-og-image',
-      '@ant-design-vue/nuxt',
-      'nuxt-style-extractor',
-      '@vite-pwa/nuxt',
+        '@nuxtjs/seo',
+        '@nuxthub/core',
+        'nuxt-og-image',
+        '@ant-design-vue/nuxt',
+        'nuxt-style-extractor',
+        '@vite-pwa/nuxt',
     ],
     // Ant Design Vue Config
     antd: {
