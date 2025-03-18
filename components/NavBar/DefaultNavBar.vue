@@ -45,9 +45,10 @@ onBeforeUnmount(() => {
 .section {
     width: 100%;
     border-radius: 8px;
-    background-color: #fff;
+    background: #fff;
     @media (prefers-color-scheme: dark) {
-        background-color: @border-color-dark;
+        background: @card-dark;
+        border: 2px solid @border-color-dark;
     }
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
@@ -65,15 +66,17 @@ onBeforeUnmount(() => {
 .stats-section {
     .a-statistic {
         margin-bottom: 16px;
+        @media (prefers-color-scheme: dark) {
+            color: @text-color-dark;
+        }
 
         &:last-child {
             margin-bottom: 0;
         }
     }
-
     .time-display {
         font-size: 14px;
-        color: #888;
+        color: #595959;
         margin-top: 8px;
     }
 }
