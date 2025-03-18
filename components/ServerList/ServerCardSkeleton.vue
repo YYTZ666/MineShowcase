@@ -28,6 +28,8 @@ import IMG_noimage from '../../assets/noimage.webp'
 </template>
 
 <style scoped lang="less">
+@import '../assets/css/variables.less';
+
 @keyframes skeleton-loading {
     0% {
         opacity: 0.6;
@@ -45,6 +47,10 @@ import IMG_noimage from '../../assets/noimage.webp'
     border-radius: 8px;
     height: 20rem;
     overflow: hidden;
+    @media (prefers-color-scheme: dark) {
+        border: 2px solid @border-color-dark;
+        background-color: @card-dark;
+    }
 
     .skeleton-image {
         height: 100%;
