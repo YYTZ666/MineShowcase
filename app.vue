@@ -32,14 +32,14 @@ import { theme } from 'ant-design-vue'
 
 let isDarkMode = ref(false)
 const updateTheme = (e?: MediaQueryListEvent) => {
-    if (typeof window === 'undefined') return
-    isDarkMode.value = e
-        ? e.matches
-        : window.matchMedia('(prefers-color-scheme: dark)').matches
+    if (typeof window !== 'undefined') {
+        isDarkMode.value = e
+            ? e.matches
+            : window.matchMedia('(prefers-color-scheme: dark)').matches
+    }
 }
 
 onUnmounted(() => {
-    if (typeof window === 'undefined') return
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     mediaQuery.removeEventListener('change', updateTheme)
 })
