@@ -86,7 +86,7 @@ export default defineNuxtConfig({
     },
     styleExtractor: {
         minify: true, // 是否开启压缩
-        removeUnused: true,
+        removeUnused: false,
     },
     modules: [
         '@nuxtjs/seo',
