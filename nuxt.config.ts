@@ -88,11 +88,12 @@ export default defineNuxtConfig({
         removeUnused: false,
     },
     modules: [
-        '@nuxtjs/seo',
-        '@nuxthub/core',
-        'nuxt-og-image',
-        '@ant-design-vue/nuxt',
-        'nuxt-style-extractor',
+      '@nuxtjs/seo',
+      '@nuxthub/core',
+      'nuxt-og-image',
+      '@ant-design-vue/nuxt',
+      'nuxt-style-extractor',
+      '@vite-pwa/nuxt',
     ],
     // Ant Design Vue Config
     antd: {
