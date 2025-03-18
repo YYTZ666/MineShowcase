@@ -74,11 +74,7 @@ const docResults = computed<SearchResult[]>(() => [])
         <transition name="slide-fade">
             <div class="search-result" v-show="showResult" @click.stop>
                 <template v-if="serverResults.length || docResults.length">
-                    <a-collapse
-                        v-model:activeKey="activeKey"
-                        :bordered="false"
-                        style="background: rgb(255, 255, 255)"
-                    >
+                    <a-collapse v-model:activeKey="activeKey" :bordered="false">
                         <a-collapse-panel
                             key="1"
                             header="服务器"
@@ -128,6 +124,9 @@ const docResults = computed<SearchResult[]>(() => [])
     position: absolute;
     top: 100%;
     background: @background-light;
+    @media (prefers-color-scheme: dark) {
+        background: @background-dark;
+    }
     border: 1px solid @border-color;
     width: 100%;
     left: 0;
