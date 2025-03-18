@@ -87,7 +87,7 @@ const formatDelay = (delay?: number) => {
                     <!-- 头部信息 -->
                     <div class="server-header">
                         <a-avatar
-                            class="a-img"
+                            class="glow-avatar"
                             round
                             :size="120"
                             :src="server.status?.icon ?? IMG_noicon"
@@ -100,7 +100,7 @@ const formatDelay = (delay?: number) => {
                                 <a-space align="center">
                                     <a-tag
                                         :bordered="false"
-                                        :type="statusColor"
+                                        :color="statusColor"
                                     >
                                         {{ server.status ? '在线' : '离线' }}
                                     </a-tag>
@@ -133,10 +133,7 @@ const formatDelay = (delay?: number) => {
                             />
                         </a-col>
                         <a-col :xs="24" :sm="12" :md="8" :lg="6">
-                            <a-statistic
-                                title="版本"
-                                :value="server.version"
-                            />
+                            <a-statistic title="版本" :value="server.version" />
                         </a-col>
                         <a-col :xs="24" :sm="12" :md="8" :lg="6">
                             <a-statistic
@@ -280,10 +277,37 @@ const formatDelay = (delay?: number) => {
             gap: 32px;
             margin-bottom: 40px;
 
-            .a-img {
-                background-color: #fefefe;
-            }
+            .glow-avatar {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 0 0 0 #1a76ff81;
+                border: 2px solid rgba(0, 0, 0, 0.315);
 
+                &:hover {
+                    transform: scale(1.05);
+                    box-shadow: 0 0 20px 8px #1a76ff81;
+
+                    &::after {
+                        opacity: 0.15;
+                    }
+                }
+
+                // 暗色模式适配
+                @media (prefers-color-scheme: dark) {
+                    border: 2px solid rgba(255, 255, 255, 0.185);
+
+                    &:hover {
+                        box-shadow: 0 0 25px 10px #1a76ff81;
+
+                        &::after {
+                            opacity: 0.2;
+                        }
+                    }
+                }
+            }
+            .glow-avatar:active {
+                transform: scale(0.98);
+                box-shadow: 0 0 15px 3px #1a76ff6b;
+            }
             .header-info {
                 display: flex;
                 justify-content: space-between;
@@ -356,7 +380,7 @@ const formatDelay = (delay?: number) => {
                 .motd-text {
                     font-family: monospace;
                     color: @primary-light;
-                    background-color: @secondary;
+                    background-color: #567bb359;
 
                     @media (prefers-color-scheme: dark) {
                         background-color: @border-color-secondary-dark;
