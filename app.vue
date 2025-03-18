@@ -20,6 +20,7 @@ onMounted(() => {
         'data-website-id',
         '49b8cd8b-c30a-4714-b1e7-2d190743b0c4',
     )
+    script.setAttribute('data-domains', 'mscpo.crashvibe.cn,mscpo.1fu.top')
     document.body.appendChild(script)
 
     // Client only code
