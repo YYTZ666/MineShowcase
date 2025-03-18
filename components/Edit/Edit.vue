@@ -10,7 +10,7 @@ import {
     CloudDone,
 } from '@vicons/ionicons5'
 import { useRequest } from 'alova/client'
-import DynamicTags from '../DynamicTags/DynamicTags.vue'
+import DynamicTags from '../Common/DynamicTags/DynamicTags.vue'
 import { ServerAPI_Token, fetch_status } from '../../hooks/api'
 import type { Fetch_Status, StatusWithUser } from '../../hooks/type_models'
 import Img404 from '../../assets/error.webp'

@@ -105,7 +105,6 @@ import IMG_noimage from '../../assets/noimage.webp'
         position: relative;
         overflow: hidden;
     }
-
     .card-split {
         display: flex;
         align-items: center;
