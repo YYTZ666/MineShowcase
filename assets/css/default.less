@@ -57,7 +57,7 @@
         }
 
         @media (prefers-color-scheme: dark) {
-            background: #252525;
+            background: @surface-dark;
         }
 
         @media (max-width: @mobile-breakpoint) {
@@ -76,7 +76,9 @@
         height: calc(100vh - @header-height - 48px);
         overflow-y: auto;
         transition: all 0.3s ease-in-out;
-
+        @media (prefers-color-scheme: dark) {
+            background: @surface-dark;
+        }
         @media (max-width: @mobile-breakpoint) {
             height: 100%;
             width: 100%;

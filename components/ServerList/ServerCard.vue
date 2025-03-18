@@ -226,6 +226,7 @@ const copyToClipboard = (event: MouseEvent) => {
     border: 2px solid @border-color;
     @media (prefers-color-scheme: dark) {
         border: 2px solid @border-color-dark;
+        background-color: @card-dark;
     }
     border-radius: 8px;
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
