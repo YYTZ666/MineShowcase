@@ -59,12 +59,7 @@
             @keyup.enter="handleInputConfirm(deactivate)"
         />
         <!-- 触发标签模板 -->
-        <a-tag
-            v-else
-            :style="{ background: '#fff', borderStyle: 'dashed' }"
-            @click="activate"
-            :disabled="disabled"
-        >
+        <a-tag v-else class="new-tag" @click="activate" :disabled="disabled">
             <PlusOutlined />
             New Tag
         </a-tag>
@@ -147,3 +142,13 @@ const handleInputConfirm = (deactivate: () => void) => {
     deactivate()
 }
 </script>
+
+<style scoped lang="less">
+.new-tag {
+    background: #fff;
+    border-style: dashed;
+    @media (prefers-color-scheme: dark) {
+        background: #333;
+    }
+}
+</style>

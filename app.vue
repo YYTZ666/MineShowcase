@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import '~/assets/css/index.less'
-import { useDebounceFn } from '@vueuse/core'
 useHead({
     link: [
         {

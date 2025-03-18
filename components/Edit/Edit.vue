@@ -299,6 +299,24 @@ onMounted(async () => {
             }, 1000),
         )
     }
+    // Client only code
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    mediaQuery.addEventListener('change', updateTheme)
+    updateTheme()
+})
+
+let isDarkMode = ref(false)
+const updateTheme = (e?: MediaQueryListEvent) => {
+    if (typeof window !== 'undefined') {
+        isDarkMode.value = e
+            ? e.matches
+            : window.matchMedia('(prefers-color-scheme: dark)').matches
+    }
+}
+
+onUnmounted(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    mediaQuery.removeEventListener('change', updateTheme)
 })
 </script>
 
@@ -373,7 +391,13 @@ onMounted(async () => {
                         <a-input
                             v-model:value="serverInfo.ip"
                             placeholder="输入IP地址和端口"
-                            :status="serverStatus.color"
+                            :status="
+                                serverStatus.color === 'error'
+                                    ? 'error'
+                                    : serverStatus.color === 'processing'
+                                      ? 'warning'
+                                      : ''
+                            "
                             allow-clear
                         />
                     </div>
@@ -397,6 +421,7 @@ onMounted(async () => {
                             noMermaid
                             noUploadImg
                             class="md-editor"
+                            :theme="isDarkMode ? 'dark' : 'light'"
                         />
                     </div>
                     <!-- 标签 -->
@@ -476,9 +501,7 @@ onMounted(async () => {
             border-radius: 8px;
             transition: all 0.3s;
             --md-color: @text-color-light;
-            --md-bk-color: 1p x solid @border-color;
             @media (prefers-color-scheme: dark) {
-                --md-bk-color: rgba(255, 255, 255, 0.1);
                 --md-color: @text-color-dark;
             }
         }
