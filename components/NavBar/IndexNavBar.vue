@@ -25,8 +25,8 @@ onBeforeUnmount(() => {
     if (intervalId) clearInterval(intervalId)
 })
 const filters = ref({
-    modes: ['XXX', 'XXX', 'XXX', 'XXX'],
-    tags: ['XXX', 'XXX', 'XXX', 'XXX'],
+    modes: ['1', '2', '3', '4'],
+    tags: ['1', '2', '3', 'XXX'],
 })
 </script>
 

@@ -8,7 +8,6 @@ export const pwa: ModuleOptions = {
     scope,
     base: scope,
     manifest: {
-        id: '/',
         name: 'Minecraft Server Collective Promotion Organization',
         short_name: 'MSCPO',
         description:
@@ -33,7 +32,7 @@ export const pwa: ModuleOptions = {
         ],
     },
     workbox: {
-        globPatterns: ['**/*.{js,css,html,txt,png,ico,svg}'],
+        globPatterns: ['**/*.{js,css,html,txt,png,ico,svg,webp}'],
         navigateFallbackDenylist: [/^\/api\//],
         navigateFallback: '/',
         cleanupOutdatedCaches: true,
