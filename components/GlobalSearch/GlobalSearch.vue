@@ -122,14 +122,14 @@ const docResults = computed<SearchResult[]>(() => [])
 
 .search-result {
     position: absolute;
-    top: 100%;
     background: @background-light;
     @media (prefers-color-scheme: dark) {
         background: @background-dark;
     }
+    left: -2%;
     border: 1px solid @border-color;
     width: 100%;
-    left: 0;
+    margin-top: 5px;
     border-radius: 0.4rem;
     padding: 0.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
