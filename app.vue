@@ -20,28 +20,26 @@ onMounted(() => {
         'data-website-id',
         '49b8cd8b-c30a-4714-b1e7-2d190743b0c4',
     )
+    document.body.appendChild(script)
+
+    // Client only code
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     mediaQuery.addEventListener('change', updateTheme)
-
-    document.body.appendChild(script)
+    updateTheme()
 })
 
 import { theme } from 'ant-design-vue'
 
 let isDarkMode = ref(false)
 const updateTheme = (e?: MediaQueryListEvent) => {
+    if (typeof window === 'undefined') return
     isDarkMode.value = e
         ? e.matches
         : window.matchMedia('(prefers-color-scheme: dark)').matches
 }
 
-watchEffect(
-    useDebounceFn(() => {
-        updateTheme()
-    }),
-)
-
 onUnmounted(() => {
+    if (typeof window === 'undefined') return
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     mediaQuery.removeEventListener('change', updateTheme)
 })
