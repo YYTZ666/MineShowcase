@@ -46,6 +46,7 @@ onUnmounted(() => {
 </script>
 
 <template>
+    <VitePwaManifest />
     <a-extract-style>
         <a-config-provider
             :theme="{
