@@ -5,6 +5,7 @@ const scope = '/'
 
 export const pwa: ModuleOptions = {
     registerType: 'autoUpdate',
+    strategies: 'generateSW',
     scope,
     base: scope,
     manifest: {
@@ -33,7 +34,7 @@ export const pwa: ModuleOptions = {
     },
     workbox: {
         globPatterns: ['**/*.{js,css,html,txt,png,ico,svg,webp}'],
-        navigateFallbackDenylist: [/^\/api\//],
+        navigateFallbackDenylist: [/\/$/, /\?\w+/],
         navigateFallback: '/',
         cleanupOutdatedCaches: true,
         runtimeCaching: [
