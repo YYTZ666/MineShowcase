@@ -278,6 +278,7 @@ const formatDelay = (delay?: number) => {
             margin-bottom: 40px;
 
             .glow-avatar {
+                background: #fff;
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 box-shadow: 0 0 0 0 #1a76ff81;
                 border: 2px solid rgba(0, 0, 0, 0.315);
