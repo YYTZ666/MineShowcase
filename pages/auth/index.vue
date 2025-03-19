@@ -21,11 +21,11 @@ router.beforeEach((to, from, next) => {
     }
 })
 const route = useRoute()
-const RegToken = computed(() => (route.query.token as string) || '')
+const RegToken = computed(() => (route.query.token as string) || undefined)
 
-// 如果存在 token，则默认显示注册组件
 const activeKey = ref('login')
 
+// 如果存在 token，则默认显示注册组件
 onMounted(() => {
     if (RegToken) {
         activeKey.value = 'register'
