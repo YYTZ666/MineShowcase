@@ -149,8 +149,7 @@ const copyToClipboard = (event: MouseEvent) => {
                         ></a-tag>
                         <a-input
                             @click.stop="copyToClipboard"
-                            placeholder="加载中..."
-                            :value="StatusInfo.ip"
+                            :value="StatusInfo.ip ?? '加载中...'"
                             readonly
                             size="small"
                             style="

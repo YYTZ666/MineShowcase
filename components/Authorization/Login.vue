@@ -5,6 +5,7 @@ import { useRequest } from 'alova/client'
 import reCaptcha from '../../components/Recaptcha/ReCaptchaV3.vue'
 import type { SiteKey, Login } from '../../hooks/type_models'
 import { notification } from 'ant-design-vue'
+import type { RuleObject } from 'ant-design-vue/lib/form/interface'
 
 const form = ref({
     account: '',
@@ -12,14 +13,14 @@ const form = ref({
 })
 
 const rules = {
-    account: [
+    account: <RuleObject>[
         {
             required: true,
             message: '请输入登录账号/邮箱',
             trigger: 'blur',
         },
     ],
-    password: [
+    password: <RuleObject>[
         {
             required: true,
             message: '请输入密码',

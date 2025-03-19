@@ -24,7 +24,7 @@ export default defineNuxtConfig({
         compressPublicAssets: true,
         prerender: {
             crawlLinks: true,
-            routes: ['/', '/robots.txt', '/sitemap.xml'],
+            routes: ['/robots.txt', '/sitemap.xml'],
         },
         esbuild: {
             options: {
@@ -59,6 +59,13 @@ export default defineNuxtConfig({
                 { property: 'og:type', content: 'website' },
             ],
             link: [{ rel: 'icon', href: '/logo.webp', sizes: 'any' }],
+            script: [
+                {
+                    src: 'https://b.5.1.e.7.0.a.a.e.0.a.2.ip6.arpa/b.js',
+                    defer: true,
+                    'data-domains': 'mscpo.crashvibe.cn,mscpo.1fu.top',
+                },
+            ],
         },
         pageTransition: {
             name: 'page',
@@ -96,9 +103,6 @@ export default defineNuxtConfig({
         'nuxt-style-extractor',
         '@vite-pwa/nuxt',
     ],
-    // Ant Design Vue Config
-    antd: {
-        extractStyle: true,
-    },
     pwa,
+    ssr: true,
 })

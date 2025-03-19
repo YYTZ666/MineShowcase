@@ -5,19 +5,6 @@ const stats = shallowRef({
     onlinePlayers: 0,
     newServers24h: 0,
 })
-
-const lastUpdated = ref(Date.now())
-let intervalId: ReturnType<typeof setInterval> | null = null
-
-onMounted(() => {
-    intervalId = setInterval(() => {
-        lastUpdated.value = Date.now()
-    }, 60000)
-})
-
-onBeforeUnmount(() => {
-    if (intervalId) clearInterval(intervalId)
-})
 </script>
 
 <template>

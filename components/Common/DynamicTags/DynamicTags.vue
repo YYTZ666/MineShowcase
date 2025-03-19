@@ -111,7 +111,9 @@ const handleClose = (removedTag: string | DynamicTagsOption) => {
     const tags = currentTags.value.filter(
         (tag) => getTagKey(tag) !== getTagKey(removedTag),
     )
-    emits('update:value', tags)
+    emits('update:value', Array.isArray(tags) && tags.every(tag => typeof tag === 'string')
+        ? tags as string[]
+        : tags as DynamicTagsOption[])
 }
 
 const activate = () => {
@@ -131,7 +133,9 @@ const handleInputConfirm = (deactivate: () => void) => {
     if (inputValue && !tags.some((tag) => getTagLabel(tag) === inputValue)) {
         const newTag = props.onCreate ? props.onCreate(inputValue) : inputValue
         if (!props.max || tags.length < props.max) {
-            tags = [...tags, newTag]
+            tags = Array.isArray(tags) && tags.every(tag => typeof tag === 'string')
+                ? [...tags, newTag as string]
+                : [...tags, newTag as DynamicTagsOption]
         }
     }
     emits('update:value', tags)

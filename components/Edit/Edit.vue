@@ -299,25 +299,9 @@ onMounted(async () => {
             }, 1000),
         )
     }
-    // Client only code
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    mediaQuery.addEventListener('change', updateTheme)
-    updateTheme()
 })
 
-let isDarkMode = ref(false)
-const updateTheme = (e?: MediaQueryListEvent) => {
-    if (typeof window !== 'undefined') {
-        isDarkMode.value = e
-            ? e.matches
-            : window.matchMedia('(prefers-color-scheme: dark)').matches
-    }
-}
-
-onUnmounted(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    mediaQuery.removeEventListener('change', updateTheme)
-})
+const isDarkMode = useState<boolean>('isDarkMode')
 </script>
 
 <template>

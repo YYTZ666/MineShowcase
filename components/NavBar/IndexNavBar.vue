@@ -11,19 +11,7 @@ const stats = shallowRef({
     newServers24h: 0,
 })
 
-const lastUpdated = ref(Date.now())
 const playerRange = ref<[number, number]>([0, 500])
-let intervalId: ReturnType<typeof setInterval> | null = null
-
-onMounted(() => {
-    intervalId = setInterval(() => {
-        lastUpdated.value = Date.now()
-    }, 60000)
-})
-
-onBeforeUnmount(() => {
-    if (intervalId) clearInterval(intervalId)
-})
 const filters = ref({
     modes: ['1', '2', '3', '4'],
     tags: ['1', '2', '3', 'XXX'],

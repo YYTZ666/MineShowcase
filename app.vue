@@ -1,63 +1,44 @@
 <script setup lang="ts">
-import '~/assets/css/index.less'
-useHead({
-    link: [
-        {
-            rel: 'preconnect',
-            href: 'https://mscpoapi.crashvibe.cn',
-            crossorigin: 'anonymous',
-        },
-        { rel: 'dns-prefetch', href: 'https://mscpoapi.crashvibe.cn' },
-    ],
-})
-
-onMounted(() => {
-    const script = document.createElement('script')
-    script.src = 'https://b.5.1.e.7.0.a.a.e.0.a.2.ip6.arpa/b.js'
-    script.defer = true
-    script.setAttribute(
-        'data-website-id',
-        '49b8cd8b-c30a-4714-b1e7-2d190743b0c4',
-    )
-    script.setAttribute('data-domains', 'mscpo.crashvibe.cn,mscpo.1fu.top')
-    document.body.appendChild(script)
-
-    // Client only code
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    mediaQuery.addEventListener('change', updateTheme)
-    updateTheme()
-})
-
 import { theme } from 'ant-design-vue'
+import '~/assets/css/index.less'
 
-let isDarkMode = ref(false)
+const isDarkMode = useState<boolean>('isDarkMode', () => false)
+
 const updateTheme = (e?: MediaQueryListEvent) => {
     if (typeof window !== 'undefined') {
         isDarkMode.value = e
             ? e.matches
             : window.matchMedia('(prefers-color-scheme: dark)').matches
     }
+
+    // 设置全局 HTML `data-theme`，便于 CSS 适配
+    document.documentElement.setAttribute(
+        'data-theme',
+        isDarkMode.value ? 'dark' : 'light',
+    )
 }
 
-onUnmounted(() => {
+onMounted(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    mediaQuery.removeEventListener('change', updateTheme)
+    mediaQuery.addEventListener('change', updateTheme)
+    updateTheme()
+    onUnmounted(() => {
+        mediaQuery.removeEventListener('change', updateTheme)
+    })
 })
 </script>
 
 <template>
     <NuxtPwaManifest />
-    <a-extract-style>
-        <a-config-provider
-            :theme="{
-                algorithm: isDarkMode
-                    ? theme.darkAlgorithm
-                    : theme.defaultAlgorithm,
-            }"
-        >
-            <NuxtLayout>
-                <NuxtPage />
-            </NuxtLayout>
-        </a-config-provider>
-    </a-extract-style>
+    <a-config-provider
+        :theme="{
+            algorithm: isDarkMode
+                ? theme.darkAlgorithm
+                : theme.defaultAlgorithm,
+        }"
+    >
+        <NuxtLayout>
+            <NuxtPage />
+        </NuxtLayout>
+    </a-config-provider>
 </template>
