@@ -104,5 +104,8 @@ export default defineNuxtConfig({
         '@vite-pwa/nuxt',
     ],
     pwa,
+    antd: {
+        extractStyle: true,
+    },
     ssr: true,
 })

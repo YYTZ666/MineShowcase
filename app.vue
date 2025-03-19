@@ -30,15 +30,17 @@ onMounted(() => {
 
 <template>
     <NuxtPwaManifest />
-    <a-config-provider
-        :theme="{
-            algorithm: isDarkMode
-                ? theme.darkAlgorithm
-                : theme.defaultAlgorithm,
-        }"
-    >
-        <NuxtLayout>
-            <NuxtPage />
-        </NuxtLayout>
-    </a-config-provider>
+    <a-extract-style>
+        <a-config-provider
+            :theme="{
+                algorithm: isDarkMode
+                    ? theme.darkAlgorithm
+                    : theme.defaultAlgorithm,
+            }"
+        >
+            <NuxtLayout>
+                <NuxtPage />
+            </NuxtLayout>
+        </a-config-provider>
+    </a-extract-style>
 </template>
