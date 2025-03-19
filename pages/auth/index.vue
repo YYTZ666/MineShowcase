@@ -27,7 +27,7 @@ const activeKey = ref('login')
 
 // 如果存在 token，则默认显示注册组件
 onMounted(() => {
-    if (RegToken) {
+    if (RegToken.value) {
         activeKey.value = 'register'
     }
 })
