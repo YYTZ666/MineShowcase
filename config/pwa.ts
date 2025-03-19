@@ -33,36 +33,19 @@ export const pwa: ModuleOptions = {
         ],
     },
     workbox: {
+        navigateFallback: null,
+        navigateFallbackDenylist: [/./],
         globPatterns: ['**/*.{js,css,html,txt,png,ico,svg,webp}'],
-        navigateFallbackDenylist: [/\/$/, /\?\w+/],
-        navigateFallback: '/',
         cleanupOutdatedCaches: true,
         runtimeCaching: [
             {
-                urlPattern: /^https:\/\/fonts.googleapis.com\/.*/i,
-                handler: 'CacheFirst',
+                urlPattern: /^https:\/\/.*/i,
+                handler: 'StaleWhileRevalidate',
                 options: {
-                    cacheName: 'google-fonts-cache',
+                    cacheName: 'cross-origin-assets',
                     expiration: {
-                        maxEntries: 10,
-                        maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
-                    },
-                    cacheableResponse: {
-                        statuses: [0, 200],
-                    },
-                },
-            },
-            {
-                urlPattern: /^https:\/\/fonts.gstatic.com\/.*/i,
-                handler: 'CacheFirst',
-                options: {
-                    cacheName: 'gstatic-fonts-cache',
-                    expiration: {
-                        maxEntries: 10,
-                        maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
-                    },
-                    cacheableResponse: {
-                        statuses: [0, 200],
+                        maxEntries: 64,
+                        maxAgeSeconds: 24 * 60 * 60,
                     },
                 },
             },
