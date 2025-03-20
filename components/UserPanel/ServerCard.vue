@@ -38,6 +38,10 @@ watchEffect(() => {
     }
 })
 
+onMounted(() => {
+    send()
+})
+
 // 简介字数限制
 const truncateText = (text: string, maxLength = 50) => {
     return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
@@ -129,14 +133,12 @@ const getOnlineStatusTag = computed(() => {
                     {{ data?.type || '未知' }}
                 </a-tag>
                 <!-- 服务器简介 -->
-                <div class="server-desc">
-                    <MdPreview
-                        class="markdown-content"
-                        editor-id="preview-only"
-                        :modelValue="truncateText(data?.desc || '暂无简介')"
-                        noImgZoomIn
-                    />
-                </div>
+                <MdPreview
+                    class="server-desc"
+                    editor-id="preview-only"
+                    :modelValue="truncateText(data?.desc || '暂无简介')"
+                    noImgZoomIn
+                />
                 <!-- 操作按钮 -->
                 <a-space justify="end">
                     <a-button
@@ -152,7 +154,9 @@ const getOnlineStatusTag = computed(() => {
     </a-card>
 </template>
 
-<style scoped>
+<style scoped lang="less">
+@import '../assets/css/variables.less';
+
 .server-card {
     display: flex;
     flex-direction: column;
@@ -228,6 +232,14 @@ const getOnlineStatusTag = computed(() => {
         line-clamp: 2;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
+
+        --md-bk-color: none !important;
+        color: @text-color-light;
+
+        @media (prefers-color-scheme: dark) {
+            color: @text-color-dark;
+            --md-color: @text-color-secondary-dark;
+        }
     }
 }
 
