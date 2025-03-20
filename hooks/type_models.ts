@@ -193,8 +193,9 @@ export enum RoleEnum {
 
 /**
  * 用户（ServerAPI）
+ * (获取当前用户信息 鉴权)
  */
-export interface User extends UserBase {
+export interface UserMe extends UserBase {
     /**
      * Email，用户的电子邮箱
      */
@@ -206,6 +207,21 @@ export interface User extends UserBase {
     created_at: string
     last_login: string
     last_login_ip: string
+    servers: Array<Array<number | string>>
+    code?: number
+}
+
+/**
+ * 用户（ServerAPI）
+ * (获取用户信息 公有)
+ */
+export interface User extends UserBase {
+    /**
+     * Username，用户的用户名
+     */
+    username: string
+    created_at: string
+    last_login: string
     servers: Array<Array<number | string>>
     code?: number
 }

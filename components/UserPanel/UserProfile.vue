@@ -1,36 +1,22 @@
 <script setup lang="ts">
 import { useRequest } from 'alova/client'
-import { ServerAPI } from '../../hooks/api'
-import type { UserMe } from '../../hooks/type_models'
+import { ServerAPI_Token } from '../../hooks/api'
+import type { User } from '../../hooks/type_models'
 import ServerCard from './ServerCard.vue'
 import IMG_noicon from '../../assets/noicon.svg'
 import Img404 from '../../assets/error.webp'
 
 const router = useRouter()
-const showAdvanced = ref(false)
-const toggleAdvanced = () => (showAdvanced.value = !showAdvanced.value)
-const token_status = ref(false)
+const route = useRoute()
 
-const isUnauthorized = ref(false)
-const title = useState<string>('pageTitle')
+const UUID = route.params.UUID
+
 const { error, data, send, loading } = useRequest(
-    ServerAPI.Get<UserMe>('/v1/me'),
+    ServerAPI_Token.Get<User>(`/v1/user/${UUID}/public`),
     {
         immediate: true,
     },
-).onSuccess(() => {
-    if (data.value.code === 401) {
-        isUnauthorized.value = true
-    }
-    if (data.value.code === 200) {
-        token_status.value = true
-        title.value = `个人信息 - ${data.value.display_name}`
-        document.title = title.value
-    }
-    if (data.value.code === 404) {
-        isUnauthorized.value = true
-    }
-})
+)
 
 const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('zh-CN', {
@@ -41,31 +27,13 @@ const formatDate = (dateString: string) => {
 }
 
 const goBack = () => router.go(-1)
-const gotoLogin = () => router.push('/auth')
 </script>
 
 <template>
     <div class="user-panel">
         <a-spin :spinning="loading">
             <a-result
-                v-if="isUnauthorized"
-                title="未登录"
-                subTitle="需要登录才能查看个人信息"
-            >
-                <template #icon>
-                    <img :src="Img404" style="width: 100%; max-width: 10rem" />
-                </template>
-                <template #extra>
-                    <a-space justify="center">
-                        <a-button type="primary" @click="gotoLogin">
-                            立即登录
-                        </a-button>
-                        <a-button @click="goBack">返回上一页</a-button>
-                    </a-space>
-                </template>
-            </a-result>
-            <a-result
-                v-else-if="error"
+                v-if="error"
                 title="加载失败"
                 subTitle="无法获取用户信息，请检查网络连接"
             >
@@ -80,7 +48,7 @@ const gotoLogin = () => router.push('/auth')
                 </template>
             </a-result>
 
-            <a-card v-else-if="token_status" hoverable>
+            <a-card hoverable>
                 <div class="profile-header">
                     <a-avatar
                         round
@@ -107,11 +75,6 @@ const gotoLogin = () => router.push('/auth')
                     </div>
 
                     <div class="info-item">
-                        <label>注册邮箱</label>
-                        {{ data.email }}
-                    </div>
-
-                    <div class="info-item">
                         <label>创建时间</label>
                         {{ formatDate(data.created_at) }}
                     </div>
@@ -121,46 +84,13 @@ const gotoLogin = () => router.push('/auth')
                         {{ formatDate(data.last_login) }}
                     </div>
                 </div>
-
-                <div class="advanced-info" v-if="showAdvanced">
-                    <a-divider dashed>高级信息</a-divider>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>登录账号</label>
-                            {{ data.username }}
-                        </div>
-                        <div class="info-item">
-                            <label>账户类型</label>
-                            {{
-                                data.role === 'admin'
-                                    ? '管理员账户'
-                                    : '普通账户'
-                            }}
-                        </div>
-                    </div>
-                </div>
-                <a-divider v-else />
-
-                <div class="action-bar">
-                    <a-button type="primary" dashed @click="toggleAdvanced">
-                        {{ showAdvanced ? '收起详情' : '展开详情' }}
-                    </a-button>
-                    <!-- <a-button
-                        tag="a"
-                        href="/settings"
-                        type="primary"
-                        class="edit-btn"
-                    >
-                        编辑资料
-                    </a-button> -->
-                </div>
             </a-card>
 
-            <div class="server-list" v-if="token_status">
-                <h2 style="margin: 24px 0 16px">我的服务器</h2>
+            <div class="server-list">
+                <h2 style="margin: 24px 0 16px">服务器</h2>
                 <a-empty
                     v-if="data?.servers?.length === 0"
-                    description="您还没有任何服务器"
+                    description="Ta还没有任何服务器"
                     style="margin: 32px 0"
                 ></a-empty>
                 <!-- <template #extra>
@@ -255,6 +185,7 @@ const gotoLogin = () => router.push('/auth')
         gap: 16px;
         margin-top: 32px;
         padding-top: 24px;
+        border-top: 1px solid #e5e7eb;
 
         .edit-btn {
             min-width: 120px;
