@@ -8,6 +8,7 @@ import Img404 from '../../assets/error.webp'
 
 const router = useRouter()
 const route = useRoute()
+const title = useState<string>('pageTitle')
 const user_status = ref(false)
 
 const UUID = route.params.UUID
@@ -20,6 +21,8 @@ const { error, data, send, loading } = useRequest(
 ).onSuccess(() => {
     if (data.value.code === 200) {
         user_status.value = true
+        title.value = `个人信息 - ${data.value.display_name}`
+        document.title = title.value
     }
 })
 
