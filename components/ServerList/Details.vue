@@ -187,6 +187,7 @@ const isDarkMode = useState<boolean>('isDarkMode')
                                 editor-id="preview-only"
                                 :modelValue="server.desc"
                                 :theme="isDarkMode ? 'dark' : 'light'"
+                                noImgZoomIn
                             />
                         </div>
                         <div v-if="server.status?.motd" class="motd-section">
@@ -389,11 +390,12 @@ const isDarkMode = useState<boolean>('isDarkMode')
                 padding: 12px;
                 border-radius: 6px;
                 background-color: @border-color-secondary;
-                ::v-deep img {
+                :deep(img) {
                     max-width: 100%;
                     height: auto;
                     border-radius: 6px;
                 }
+
                 @media (prefers-color-scheme: dark) {
                     background-color: @border-color-secondary-dark;
                 }

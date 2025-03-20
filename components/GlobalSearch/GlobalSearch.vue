@@ -121,6 +121,7 @@ const docResults = computed<SearchResult[]>(() => [])
 @import '../../assets/css/variables.less';
 
 .search-result {
+    z-index: 9999;
     position: absolute;
     background: @background-light;
     @media (prefers-color-scheme: dark) {

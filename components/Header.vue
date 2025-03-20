@@ -134,9 +134,6 @@ const handleMouseLeave = () => {
                         aria-labelledby="avatar-label"
                     />
                     <span class="username">{{ username }}</span>
-                    <span id="avatar-label" class="sr-only">
-                        {{ username }} 的个人资料头像
-                    </span>
                 </div>
                 <template #overlay>
                     <a-menu>
@@ -171,7 +168,6 @@ const handleMouseLeave = () => {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
     background: @primary;
     @media (prefers-color-scheme: dark) {
         background: @primary-dark;
@@ -260,7 +256,6 @@ const handleMouseLeave = () => {
             width: 100%;
             position: absolute;
             top: 100%;
-            z-index: 1000;
             margin-top: 4px;
         }
     }
@@ -298,21 +293,9 @@ const handleMouseLeave = () => {
             }
             .username {
                 max-width: 120px;
-                overflow: hidden;
                 text-overflow: ellipsis;
                 color: @background-light;
                 transition: color 0.3s;
-            }
-            .sr-only {
-                position: absolute;
-                width: 1px;
-                height: 1px;
-                padding: 0;
-                margin: -1px;
-                overflow: hidden;
-                clip: rect(0, 0, 0, 0);
-                white-space: nowrap;
-                border: 0;
             }
         }
         .login {
@@ -369,7 +352,6 @@ const handleMouseLeave = () => {
 
 @media (max-width: 768px) {
     .c_header {
-        z-index: 2000;
         .search-container {
             display: none;
         }
