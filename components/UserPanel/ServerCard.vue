@@ -14,10 +14,9 @@ const props = defineProps<{
 // 使用 useRequest 获取服务器详情
 const { data, loading, error, send } = useRequest(
     () =>
-        ServerAPI_Token.Get<Status>(
-            `/v1/servers/info/${props.serverId}`,
-            { cacheFor: null },
-        ),
+        ServerAPI_Token.Get<Status>(`/v1/servers/info/${props.serverId}`, {
+            cacheFor: null,
+        }),
     {
         immediate: false,
         initialData: {
@@ -46,7 +45,13 @@ onMounted(() => {
 const truncateText = (text: string, maxLength = 50) => {
     return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
 }
-
+const descContent = computed(() => {
+    const sanitizedDesc = (data.value.desc || '暂无简介').replace(
+        /\r?\n|\r/g,
+        ' ',
+    )
+    return truncateText(sanitizedDesc)
+})
 // 点击管理按钮
 const handleManage = () => {
     router.push(`/details/${props.serverId}`)
@@ -136,7 +141,8 @@ const getOnlineStatusTag = computed(() => {
                 <MdPreview
                     class="server-desc"
                     editor-id="preview-only"
-                    :modelValue="truncateText(data?.desc || '暂无简介')"
+                    :modelValue="descContent"
+                    :key="descContent"
                     noImgZoomIn
                 />
                 <!-- 操作按钮 -->
