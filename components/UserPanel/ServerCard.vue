@@ -3,6 +3,8 @@ import { watchEffect, computed } from 'vue'
 import { ServerAPI_Token } from '../../hooks/api'
 import type { StatusWithUser } from '../../hooks/type_models'
 import { useRequest } from 'alova/client'
+import { useRouter } from 'vue-router'
+import { MdPreview } from 'md-editor-v3'
 
 const router = useRouter()
 const props = defineProps<{
@@ -10,15 +12,10 @@ const props = defineProps<{
 }>()
 
 // 使用 useRequest 获取服务器详情
-const {
-    data: serverData,
-    loading,
-    error,
-    send: fetchServer,
-} = useRequest(
+const { data, loading, error, send } = useRequest(
     () =>
         ServerAPI_Token.Get<StatusWithUser>(
-            `/v1/servers/${props.serverId}/editor`,
+            `/v1/servers/info/${props.serverId}`,
             { cacheFor: null },
         ),
     {
@@ -37,7 +34,7 @@ const {
 // 监听 serverId 变化，自动发起请求
 watchEffect(() => {
     if (props.serverId) {
-        fetchServer()
+        send()
     }
 })
 
@@ -53,7 +50,7 @@ const handleManage = () => {
 
 // 判断服务器是否在线
 const isOnline = computed(() => {
-    return serverData.value?.status !== null
+    return data.value?.status !== null
 })
 
 import {
@@ -74,7 +71,7 @@ const onlineStatusTag = computed(() => {
 
     return isOnline.value
         ? {
-              text: `在线（${serverData.value?.status?.players.online || 0}人在线）`,
+              text: `在线（${data.value?.status?.players.online || 0}人在线）`,
               type: 'success' as 'success' | 'error' | 'warning',
               icon: CheckmarkCircleOutline,
               statusClass: 'online-pulse',
@@ -87,17 +84,20 @@ const onlineStatusTag = computed(() => {
           }
 })
 </script>
+
 <template>
     <a-card hoverable>
         <a-spin :spinning="loading">
             <div class="server-card">
                 <!-- 服务器名称和IP -->
-                <a-text strong class="server-name">
-                    {{ serverData?.name || `服务器 ${serverId}` }}
-                    <a-tag v-if="serverData?.ip" size="small" :bordered="false">
-                        {{ serverData.ip }}
+                <div class="server-name">
+                    <span style="font-weight: bold">
+                        {{ data?.name || `服务器 ${props.serverId}` }}
+                    </span>
+                    <a-tag v-if="data?.ip" size="small" :bordered="false">
+                        {{ data.ip }}
                     </a-tag>
-                </a-text>
+                </div>
 
                 <div class="status-indicator">
                     <a-tag
@@ -117,18 +117,21 @@ const onlineStatusTag = computed(() => {
                     />
                 </div>
                 <!-- 服务器类型 -->
-                <a-text depth="2" class="server-type">
-                    类型：{{ serverData?.type || '未知' }}
-                </a-text>
+                <div class="server-type">类型：{{ data?.type || '未知' }}</div>
                 <!-- 服务器简介 -->
-                <a-text depth="3" class="server-desc">
-                    {{ truncateText(serverData?.desc || '暂无简介') }}
-                </a-text>
+                <div class="server-desc">
+                    <MdPreview
+                        class="markdown-content"
+                        editor-id="preview-only"
+                        :modelValue="truncateText(data?.desc || '暂无简介')"
+                        noImgZoomIn
+                    />
+                </div>
                 <!-- 操作按钮 -->
                 <a-space justify="end">
                     <a-button
                         size="small"
-                        :disabled="!serverData"
+                        :disabled="!data"
                         @click="handleManage"
                     >
                         查看
