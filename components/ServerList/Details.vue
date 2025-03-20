@@ -198,9 +198,10 @@ const formatDelay = (delay?: number) => {
                         <div v-if="managers?.owners?.length">
                             <h3 class="section-title">所有者</h3>
                             <a-space>
-                                <div
+                                <NuxtLink
                                     v-for="owner in managers.owners"
                                     :key="owner.id"
+                                    :to="`/user/${owner.id}`"
                                     class="user-item"
                                 >
                                     <a-avatar
@@ -211,7 +212,7 @@ const formatDelay = (delay?: number) => {
                                     <span>
                                         {{ owner.display_name }}
                                     </span>
-                                </div>
+                                </NuxtLink>
                             </a-space>
                         </div>
 
@@ -219,9 +220,10 @@ const formatDelay = (delay?: number) => {
                         <div v-if="managers?.admins?.length">
                             <h3 class="section-title">管理员</h3>
                             <a-space>
-                                <div
+                                <NuxtLink
                                     v-for="admin in managers.admins"
                                     :key="admin.id"
+                                    :to="`/user/${admin.id}`"
                                     class="user-item"
                                 >
                                     <a-avatar
@@ -232,7 +234,7 @@ const formatDelay = (delay?: number) => {
                                     <span>
                                         {{ admin.display_name }}
                                     </span>
-                                </div>
+                                </NuxtLink>
                             </a-space>
                         </div>
 
