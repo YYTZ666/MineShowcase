@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watchEffect, computed } from 'vue'
+import { watchEffect, ref } from 'vue'
 import { ServerAPI_Token } from '../../hooks/api'
 import type { StatusWithUser } from '../../hooks/type_models'
 import { useRequest } from 'alova/client'
@@ -48,40 +48,37 @@ const handleManage = () => {
     router.push(`/details/${props.serverId}`)
 }
 
-// 判断服务器是否在线
-const isOnline = computed(() => {
-    return data.value?.status !== null
-})
-
 import {
     CheckmarkCircleOutline, // 在线图标
     AlertCircleOutline, // 离线图标
     CloseCircleOutline, // 错误图标
 } from '@vicons/ionicons5'
 
-// 修改在线状态计算属性
-const onlineStatusTag = computed(() => {
-    if (error.value)
+const getOnlineStatusTag = computed(() => {
+    if (error.value) {
         return {
             text: '连接错误',
-            type: 'error' as 'success' | 'error' | 'warning',
+            color: 'error' as 'success' | 'error' | 'warning',
             icon: CloseCircleOutline,
             statusClass: 'error-pulse',
         }
+    }
 
-    return isOnline.value
-        ? {
-              text: `在线（${data.value?.status?.players.online || 0}人在线）`,
-              type: 'success' as 'success' | 'error' | 'warning',
-              icon: CheckmarkCircleOutline,
-              statusClass: 'online-pulse',
-          }
-        : {
-              text: '离线',
-              type: 'warning' as 'success' | 'error' | 'warning',
-              icon: AlertCircleOutline,
-              statusClass: 'offline',
-          }
+    if (data.value?.status !== null) {
+        return {
+            text: `在线（${data.value?.status?.players.online || 0}人在线）`,
+            color: 'success' as 'success' | 'error' | 'warning',
+            icon: CheckmarkCircleOutline,
+            statusClass: 'online-pulse',
+        }
+    }
+
+    return {
+        text: '离线',
+        color: 'warning' as 'success' | 'error' | 'warning',
+        icon: AlertCircleOutline,
+        statusClass: 'offline',
+    }
 })
 </script>
 
@@ -101,23 +98,36 @@ const onlineStatusTag = computed(() => {
 
                 <div class="status-indicator">
                     <a-tag
-                        :type="onlineStatusTag.type"
+                        :color="getOnlineStatusTag.color"
                         size="small"
                         :bordered="false"
                         class="status-tag"
                     >
                         <template #icon>
-                            <n-icon :component="onlineStatusTag.icon" />
+                            <component
+                                style="
+                                    height: 1em;
+                                    width: 1em;
+                                    line-height: 1em;
+                                    text-align: center;
+                                    display: inline-block;
+                                    position: relative;
+                                    fill: currentColor;
+                                "
+                                :is="getOnlineStatusTag.icon"
+                            />
                         </template>
-                        {{ onlineStatusTag.text }}
+                        {{ getOnlineStatusTag.text }}
                     </a-tag>
                     <div
                         class="status-dot"
-                        :class="onlineStatusTag.statusClass"
+                        :class="getOnlineStatusTag.statusClass"
                     />
                 </div>
                 <!-- 服务器类型 -->
-                <div class="server-type">类型：{{ data?.type || '未知' }}</div>
+                <a-tag :bordered="false" class="status-tag">
+                    {{ data?.type || '未知' }}
+                </a-tag>
                 <!-- 服务器简介 -->
                 <div class="server-desc">
                     <MdPreview
@@ -170,13 +180,6 @@ const onlineStatusTag = computed(() => {
             border-radius: 6px;
             transition: all 0.3s ease;
             padding-right: 8px;
-
-            :deep(.n-icon) {
-                margin-right: 4px;
-                font-size: 14px;
-                position: relative;
-                top: 1px;
-            }
         }
 
         .status-dot {
