@@ -99,8 +99,6 @@ const formatDelay = (delay?: number) => {
     if (delay < 1) return '<1ms'
     return `${delay.toFixed(2)}ms`
 }
-
-const isDarkMode = useState<boolean>('isDarkMode')
 </script>
 
 <template>
@@ -181,15 +179,12 @@ const isDarkMode = useState<boolean>('isDarkMode')
 
                     <!-- 描述和MOTD -->
                     <a-card title="服务器描述" class="description-card">
-                        <div class="markdown-content">
-                            <MdPreview
-                                preview-theme="github"
-                                editor-id="preview-only"
-                                :modelValue="server.desc"
-                                :theme="isDarkMode ? 'dark' : 'light'"
-                                noImgZoomIn
-                            />
-                        </div>
+                        <MdPreview
+                            class="markdown-content"
+                            editor-id="preview-only"
+                            :modelValue="server.desc"
+                            noImgZoomIn
+                        />
                         <div v-if="server.status?.motd" class="motd-section">
                             <h3>MOTD</h3>
                             <pre
@@ -390,6 +385,7 @@ const isDarkMode = useState<boolean>('isDarkMode')
                 padding: 12px;
                 border-radius: 6px;
                 background-color: @border-color-secondary;
+                color: @text-color-light;
                 :deep(img) {
                     max-width: 100%;
                     height: auto;
@@ -398,6 +394,8 @@ const isDarkMode = useState<boolean>('isDarkMode')
 
                 @media (prefers-color-scheme: dark) {
                     background-color: @border-color-secondary-dark;
+                    color: @text-color-dark;
+                    --md-color: @text-color-secondary-dark;
                 }
             }
             .motd-section {
