@@ -243,7 +243,7 @@ const handleMouseLeave = () => {
             background: @background-light;
             -webkit-background-clip: text;
             background-clip: text;
-            color: transparent;
+            color: @background-light;
         }
     }
     .search-container {
