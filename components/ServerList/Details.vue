@@ -77,6 +77,8 @@ const formatDelay = (delay?: number) => {
     if (delay < 1) return '<1ms'
     return `${delay.toFixed(2)}ms`
 }
+
+const isDarkMode = useState<boolean>('isDarkMode')
 </script>
 
 <template>
@@ -157,12 +159,14 @@ const formatDelay = (delay?: number) => {
 
                     <!-- 描述和MOTD -->
                     <a-card title="服务器描述" class="description-card">
-                        <MdPreview
-                            editor-id="preview-only"
-                            :modelValue="server.desc"
-                            class="markdown-content"
-                        />
-
+                        <div class="markdown-content">
+                            <MdPreview
+                                preview-theme="github"
+                                editor-id="preview-only"
+                                :modelValue="server.desc"
+                                :theme="isDarkMode ? 'dark' : 'light'"
+                            />
+                        </div>
                         <div v-if="server.status?.motd" class="motd-section">
                             <h3>MOTD</h3>
                             <pre
@@ -357,16 +361,19 @@ const formatDelay = (delay?: number) => {
                 --n-title-text-color: @text-color-dark;
                 color: @text-color-dark;
             }
+
             .markdown-content {
                 font-family: monospace;
                 padding: 12px;
                 border-radius: 6px;
                 background-color: @border-color-secondary;
-                color: @text-color-light;
+                ::v-deep img {
+                    max-width: 100%;
+                    height: auto;
+                    border-radius: 6px;
+                }
                 @media (prefers-color-scheme: dark) {
                     background-color: @border-color-secondary-dark;
-                    color: @text-color-dark;
-                    --md-color: @text-color-secondary-dark;
                 }
             }
             .motd-section {

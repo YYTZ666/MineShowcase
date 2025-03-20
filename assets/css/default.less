@@ -3,8 +3,6 @@
 @header-height: 64px;
 @sidebar-width: 280px;
 @mobile-breakpoint: 1200px;
-@z-index-header: 1000;
-@z-index-sidebar: 999;
 @text-color: #333;
 
 .layout {
@@ -21,7 +19,6 @@
         height: @header-height;
         position: sticky;
         top: 0;
-        z-index: @z-index-header + 3;
     }
 
     .content {
@@ -45,7 +42,6 @@
     .sidebar {
         width: @sidebar-width;
         background: #fff;
-        z-index: @z-index-sidebar;
         border-radius: 16px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         height: calc(100vh - @header-height - 48px);
