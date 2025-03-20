@@ -89,7 +89,7 @@ const RegToken = defineProps<{ token?: string }>()
 
 // 表单相关逻辑
 const form = ref({ email: '' })
-const rules = {
+const rules: Record<string, Rule[]> = {
     email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
 }
 
@@ -151,7 +151,8 @@ const RegForm = ref({
     display_name: '',
     avatar: undefined as File | undefined,
 })
-const RegRules = {
+
+const RegRules: Record<string, Rule[]> = {
     avatar: [
         {
             validator: (rule: Rule, value: File | undefined) => {
