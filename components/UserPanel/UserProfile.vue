@@ -8,6 +8,7 @@ import Img404 from '../../assets/error.webp'
 
 const router = useRouter()
 const route = useRoute()
+const user_status = ref(false)
 
 const UUID = route.params.UUID
 
@@ -16,7 +17,11 @@ const { error, data, send, loading } = useRequest(
     {
         immediate: true,
     },
-)
+).onSuccess(() => {
+    if (data.value.code === 200) {
+        user_status.value = true
+    }
+})
 
 const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('zh-CN', {
@@ -48,7 +53,7 @@ const goBack = () => router.go(-1)
                 </template>
             </a-result>
 
-            <a-card hoverable>
+            <a-card v-if="user_status" hoverable>
                 <div class="profile-header">
                     <a-avatar
                         round
@@ -93,11 +98,6 @@ const goBack = () => router.go(-1)
                     description="Ta还没有任何服务器"
                     style="margin: 32px 0"
                 ></a-empty>
-                <!-- <template #extra>
-                <a-button size="small" @click="router.push('/create')">
-                    创建新服务器
-                </a-button>
-            </template> -->
 
                 <a-row :gutter="[16, 16]">
                     <a-col
