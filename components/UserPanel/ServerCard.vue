@@ -145,78 +145,89 @@ const onlineStatusTag = computed(() => {
     flex-direction: column;
     gap: 12px;
     min-height: 120px;
-}
 
-.server-name {
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+    .server-name {
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-.server-type {
-    font-size: 0.9rem;
-}
-.status-indicator {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
+    .server-type {
+        font-size: 0.9rem;
+    }
 
-/* 标签样式 */
-.status-tag {
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    padding-right: 8px;
-
-    /* 图标样式 */
-    :deep(.n-icon) {
-        margin-right: 4px;
-        font-size: 14px;
+    .status-indicator {
         position: relative;
-        top: 1px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+
+        .status-tag {
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            padding-right: 8px;
+
+            :deep(.n-icon) {
+                margin-right: 4px;
+                font-size: 14px;
+                position: relative;
+                top: 1px;
+            }
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            position: relative;
+
+            &::after {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                animation: pulse 1.5s infinite;
+            }
+        }
+    }
+
+    .online-pulse {
+        background: #19be6b;
+
+        &::after {
+            background: rgba(25, 190, 107, 0.3);
+        }
+    }
+
+    .offline {
+        background: #ff9900;
+    }
+
+    .error-pulse {
+        background: #ed4014;
+
+        &::after {
+            background: rgba(237, 64, 20, 0.3);
+        }
+    }
+
+    .server-desc {
+        flex: 1;
+        line-height: 1.5;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
     }
 }
 
-/* 状态点动画 */
-.status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    position: relative;
-
-    &::after {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        animation: pulse 1.5s infinite;
-    }
-}
-
-/* 在线状态 */
-.online-pulse {
-    background: #19be6b;
-
-    &::after {
-        background: rgba(25, 190, 107, 0.3);
-    }
-}
-
-/* 离线状态 */
-.offline {
-    background: #ff9900;
-}
-
-/* 错误状态 */
-.error-pulse {
-    background: #ed4014;
-
-    &::after {
-        background: rgba(237, 64, 20, 0.3);
-    }
+.a-card-footer {
+    padding-top: 12px;
+    border-top: 1px solid var(--a-border-color);
 }
 
 @keyframes pulse {
@@ -228,21 +239,5 @@ const onlineStatusTag = computed(() => {
         transform: scale(2.5);
         opacity: 0;
     }
-}
-
-.server-desc {
-    flex: 1;
-    line-height: 1.5;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    line-clamp: 2;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
-
-.a-card-footer {
-    padding-top: 12px;
-    border-top: 1px solid var(--a-border-color);
 }
 </style>

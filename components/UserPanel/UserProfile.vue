@@ -98,7 +98,7 @@ const goBack = () => router.go(-1)
                 <h2 style="margin: 24px 0 16px">服务器</h2>
                 <a-empty
                     v-if="data?.servers?.length === 0"
-                    description="Ta还没有任何服务器"
+                    description="Ta 还没有任何服务器"
                     style="margin: 32px 0"
                 ></a-empty>
 
