@@ -2,7 +2,6 @@
 import { ref, computed } from 'vue'
 import { useDebounceFn, onClickOutside } from '@vueuse/core'
 import { ServerAPI } from '../../hooks/api'
-import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const inputRef = ref(null)

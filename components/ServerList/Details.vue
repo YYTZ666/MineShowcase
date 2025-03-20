@@ -5,6 +5,7 @@ import { useRequest } from 'alova/client'
 import type { ServerManagers, Status } from '../../hooks/type_models'
 import IMG_noicon from '../../assets/noicon.svg'
 import Img404 from '../../assets/error.webp'
+import Share from '../Share/Share.vue'
 const { data: managers } = useRequest(
     () =>
         ServerAPI_Token.Get<ServerManagers>(`/v1/servers/${serverId}/managers`),
@@ -250,6 +251,9 @@ const formatDelay = (delay?: number) => {
                                 {{ server.link }}
                             </a>
                         </template>
+                    </a-card>
+                    <a-card title="分享" class="info-card">
+                        <Share :desc="server.desc" />
                     </a-card>
                 </template>
                 <a-result
