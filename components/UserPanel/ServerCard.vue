@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { watchEffect, ref } from 'vue'
+import { watchEffect } from 'vue'
 import { ServerAPI_Token } from '../../hooks/api'
-import type { StatusWithUser } from '../../hooks/type_models'
+import type { Status } from '../../hooks/type_models'
 import { useRequest } from 'alova/client'
 import { useRouter } from 'vue-router'
 import { MdPreview } from 'md-editor-v3'
@@ -14,7 +14,7 @@ const props = defineProps<{
 // 使用 useRequest 获取服务器详情
 const { data, loading, error, send } = useRequest(
     () =>
-        ServerAPI_Token.Get<StatusWithUser>(
+        ServerAPI_Token.Get<Status>(
             `/v1/servers/info/${props.serverId}`,
             { cacheFor: null },
         ),
@@ -27,7 +27,7 @@ const { data, loading, error, send } = useRequest(
             type: 'JAVA',
             ip: null,
             status: null, // 初始状态为 null
-        } as unknown as StatusWithUser,
+        } as unknown as Status,
     },
 )
 
