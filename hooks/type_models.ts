@@ -219,7 +219,6 @@ export interface User extends UserBase {
     /**
      * Username，用户的用户名
      */
-    username: string
     created_at: string
     last_login: string
     servers: Array<Array<number | string>>

@@ -43,7 +43,11 @@ watch(
                 <slot />
             </main>
         </div>
-        <a-float-button-group class="menu_button" shape="square" :style="{ right: '94px' }">
+        <a-float-button-group
+            class="menu_button"
+            shape="square"
+            :style="{ right: '20px' }"
+        >
             <a-float-button @click="isActive = !isActive">
                 <template #icon>
                     <MenuOutlined />

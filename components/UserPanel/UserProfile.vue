@@ -63,7 +63,7 @@ const goBack = () => router.go(-1)
                     />
                     <div class="header-info">
                         <h1 class="display-name">
-                            {{ data.display_name || data.username }}
+                            {{ data.display_name }}
                         </h1>
                         <a-space align="center">
                             <!-- 计划个性签名，或者创新的给自己贴标签 -->
