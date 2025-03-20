@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRequest } from 'alova/client'
-import { ServerAPI } from '../../hooks/api'
+import { ServerAPI_Token } from '../../hooks/api'
 import type { UserMe } from '../../hooks/type_models'
 import ServerCard from './ServerCard.vue'
 import IMG_noicon from '../../assets/noicon.svg'
@@ -14,7 +14,7 @@ const token_status = ref(false)
 const isUnauthorized = ref(false)
 const title = useState<string>('pageTitle')
 const { error, data, send, loading } = useRequest(
-    ServerAPI.Get<UserMe>('/v1/me'),
+    ServerAPI_Token.Get<UserMe>('/v1/me'),
     {
         immediate: true,
     },
