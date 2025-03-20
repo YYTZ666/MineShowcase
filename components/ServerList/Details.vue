@@ -282,7 +282,6 @@ const formatDelay = (delay?: number) => {
     padding: 20px;
     display: flex;
     flex-direction: column;
-
     .status-result {
         margin-top: 20vh;
         max-width: 500px;
@@ -468,32 +467,31 @@ const formatDelay = (delay?: number) => {
             }
         }
     }
-}
+    @media (max-width: 768px) {
+        .server-detail {
+            padding: 16px;
 
-@media (max-width: 768px) {
-    .server-detail {
-        padding: 16px;
-
-        .server-header {
-            flex-direction: column;
-            text-align: center;
-
-            .header-info {
+            .server-header {
                 flex-direction: column;
-                align-items: center;
+                text-align: center;
 
-                .header-left {
-                    text-align: center;
+                .header-info {
+                    align-items: center;
+                    flex-direction: column;
+
+                    .header-left {
+                        text-align: center;
+                    }
+
+                    .a-button {
+                        width: 100%;
+                        margin-top: 12px;
+                    }
                 }
 
-                .a-button {
-                    width: 100%;
-                    margin-top: 12px;
+                .server-name {
+                    font-size: 1.8rem;
                 }
-            }
-
-            .server-name {
-                font-size: 1.8rem;
             }
         }
     }
