@@ -60,7 +60,7 @@ const handleSubmit = async () => {
             duration: 4,
             description: '欢迎回来!',
         })
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        await new Promise((resolve) => setTimeout(resolve, 3000))
         localStorage.setItem('token', response.access_token)
         localStorage.setItem('token_type', response.token_type)
         window.location.href = '/'
