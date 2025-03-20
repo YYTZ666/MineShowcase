@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import lang from '../languages/index'
 import Logo from '../assets/logo.webp'
 import { ref, onMounted, computed, h } from 'vue'
 import { ServerAPI_Token } from '../hooks/api'
@@ -9,6 +8,11 @@ import { SolutionOutlined, UnlockOutlined } from '@ant-design/icons-vue'
 import type { User } from '../hooks/type_models'
 import { useThrottleFn, useEventListener } from '@vueuse/core'
 import GlobalSearch from './GlobalSearch/GlobalSearch.vue'
+
+const pageTitle = useState<string>('pageTitle')
+watch(useState<string>('pageTitle'), (newTitle) => {
+    pageTitle.value = newTitle
+})
 
 const username = ref('')
 const token_status = ref(false)
@@ -106,10 +110,12 @@ const handleMouseLeave = () => {
                     height="40"
                     :src="Logo"
                     class="logo-img"
-                    :alt="lang.NavBar.title + ' 标志 - 返回首页'"
+                    :alt="pageTitle + ' 标志 - 返回首页'"
                 />
             </NuxtLink>
-            <h2>{{ lang.NavBar.title }}</h2>
+            <transition name="title-swap" mode="out-in">
+                <h2 :key="pageTitle">{{ pageTitle }}</h2>
+            </transition>
         </div>
         <div class="search-container">
             <GlobalSearch />
@@ -233,6 +239,7 @@ const handleMouseLeave = () => {
             }
         }
         h2 {
+            position: relative;
             background: @background-light;
             -webkit-background-clip: text;
             background-clip: text;
@@ -320,6 +327,22 @@ const handleMouseLeave = () => {
                 color: #2c3e50;
             }
         }
+    }
+}
+.title-swap-enter-active {
+    animation: slideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px) rotateX(-30deg);
+        opacity: 0;
+        filter: blur(2px);
+    }
+    to {
+        transform: translateY(0) rotateX(0);
+        opacity: 1;
+        filter: blur(0);
     }
 }
 

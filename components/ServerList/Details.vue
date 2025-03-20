@@ -12,7 +12,11 @@ const { data: managers } = useRequest(
 )
 const route = useRoute()
 const serverId = route.params.id
-const { data: server, loading } = useRequest(
+const {
+    data: server,
+    loading,
+    onSuccess,
+} = useRequest(
     () =>
         ServerAPI_Token.Get<Status>(`/v1/servers/info/${serverId}`, {
             cacheFor: null,
@@ -21,6 +25,16 @@ const { data: server, loading } = useRequest(
         immediate: true,
     },
 )
+const title = useState<string>('pageTitle')
+onSuccess(() => {
+    if (server.value?.code === 200) {
+        title.value = server.value.name + ' - 服务器详情'
+        useHead({
+            title: title,
+        })
+    }
+})
+
 type ResultStatus = {
     type:
         | 'error'
@@ -35,9 +49,9 @@ type ResultStatus = {
     description: string
 }
 const resultStatus = computed<ResultStatus>(() => {
-    if (!server.value) return { type: '404', title: '', description: '' }
-
-    switch (server.value.code) {
+    if (server.value?.code === 200)
+        return { type: '404', title: '', description: '' }
+    switch (server.value?.code) {
         case 404:
             return {
                 type: '404',
@@ -60,8 +74,16 @@ const resultStatus = computed<ResultStatus>(() => {
             return {
                 type: 'error',
                 title: '发生错误',
-                description: server.value.detail || '未知错误',
+                description: server.value?.detail || '未知错误',
             }
+    }
+})
+watch(resultStatus, (newStatus) => {
+    if (newStatus.title) {
+        title.value = newStatus.title
+        useHead({
+            title: title,
+        })
     }
 })
 

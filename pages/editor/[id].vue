@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import Edit from '../../components/Edit/Edit.vue'
+const title = useState<string>('pageTitle')
+title.value = '编辑'
 useHead({
-    title: '编辑器',
+    title: title,
 })
 </script>
 

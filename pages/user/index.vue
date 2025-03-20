@@ -3,8 +3,10 @@ import UserPanel from '../../components/UserPanel/UserPanel.vue'
 definePageMeta({
     navbar: 'user',
 })
+const title = useState<string>('pageTitle')
+title.value = '用户页'
 useHead({
-    title: '用户页',
+    title: title,
 })
 </script>
 

@@ -12,7 +12,7 @@ const toggleAdvanced = () => (showAdvanced.value = !showAdvanced.value)
 const token_status = ref(false)
 
 const isUnauthorized = ref(false)
-
+const title = useState<string>('pageTitle')
 const { error, data, send, loading } = useRequest(
     ServerAPI_Token.Get<User>('/v1/me'),
     {
@@ -24,6 +24,8 @@ const { error, data, send, loading } = useRequest(
     }
     if (data.value.code === 200) {
         token_status.value = true
+        title.value = `个人信息 - ${data.value.display_name}`
+        document.title = title.value
     }
     if (data.value.code === 404) {
         isUnauthorized.value = true
