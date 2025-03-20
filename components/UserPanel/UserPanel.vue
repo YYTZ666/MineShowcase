@@ -123,9 +123,7 @@ const gotoLogin = () => router.push('/auth')
                 </div>
 
                 <div class="advanced-info" v-if="showAdvanced">
-                    <a-divider style="border-color: #a6c3ee" dashed>
-                        高级信息
-                    </a-divider>
+                    <a-divider dashed>高级信息</a-divider>
                     <div class="info-grid">
                         <div class="info-item">
                             <label>登录账号</label>
@@ -141,6 +139,7 @@ const gotoLogin = () => router.push('/auth')
                         </div>
                     </div>
                 </div>
+                <a-divider v-else />
 
                 <div class="action-bar">
                     <a-button type="primary" dashed @click="toggleAdvanced">
@@ -256,7 +255,6 @@ const gotoLogin = () => router.push('/auth')
         gap: 16px;
         margin-top: 32px;
         padding-top: 24px;
-        border-top: 1px solid #e5e7eb;
 
         .edit-btn {
             min-width: 120px;
