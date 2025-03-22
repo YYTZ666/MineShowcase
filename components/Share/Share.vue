@@ -18,14 +18,6 @@ const shareToWeibo = () => {
                 '&title=' +
                 title,
         )
-        window.open(
-            'https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=' +
-                encodeURIComponent(window.location.href) +
-                '&title=' +
-                title +
-                '&summary=' +
-                props.desc,
-        )
     }
 }
 

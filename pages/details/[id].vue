@@ -167,7 +167,6 @@ const tabs = ref('detail')
                             />
                         </a-col>
                     </a-row>
-
                     <!-- 标签 -->
                     <div class="tag-section">
                         <a-tag
@@ -179,6 +178,7 @@ const tabs = ref('detail')
                             {{ tag }}
                         </a-tag>
                     </div>
+                    <a-divider />
                     <div class="tabs">
                         <!-- Tab分页 -->
                         <div
@@ -452,18 +452,21 @@ const tabs = ref('detail')
             gap: 0.5rem;
             .tab {
                 flex-grow: 1;
-                background-color: @unactive;
                 height: 2rem;
                 border-radius: 1rem;
+                border: 1px solid @border-color;
                 text-align: center;
                 line-height: 2rem;
                 cursor: pointer;
                 transition: background 0.5s;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
                 @media (prefers-color-scheme: dark) {
+                    border: 0px;
                     color: @text-color-secondary-dark;
                     background-color: @background-dark;
                 }
                 &.active {
+                    border: 0px;
                     background-color: @active-primary;
                     color: white;
                 }
