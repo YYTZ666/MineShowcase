@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { shallowRef, ref } from 'vue'
+import Time from '../Common/Time/Time.vue'
+
 const recommendations = shallowRef([
     { label: 'XXX', value: 1, ping: 0 },
     { label: 'XXX', value: 2, ping: 0 },
@@ -47,7 +49,11 @@ const filters = ref({
             <a-space direction="vertical">
                 <a-statistic title="在线玩家" :value="stats.onlinePlayers" />
                 <a-statistic title="24小时新服" :value="stats.newServers24h" />
-                <p>更新时间</p>
+                <Time
+                    :time="new Date()"
+                    format="YYYY-MM-DD HH:mm:ss"
+                    type="relative"
+                />
             </a-space>
         </a-card>
 
