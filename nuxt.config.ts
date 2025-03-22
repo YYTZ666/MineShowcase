@@ -61,9 +61,10 @@ export default defineNuxtConfig({
             link: [{ rel: 'icon', href: '/logo.webp', sizes: 'any' }],
             script: [
                 {
-                    src: 'https://b.5.1.e.7.0.a.a.e.0.a.2.ip6.arpa/b.js',
+                    src: 'https://umami.crashvibe.cn/script.js',
                     defer: true,
                     'data-domains': 'mscpo.crashvibe.cn,mscpo.1fu.top',
+                    'data-website-id': '73146bad-70d1-47e1-bfe4-9f2b4a9af4c8',
                 },
             ],
         },
