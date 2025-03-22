@@ -294,9 +294,10 @@ const tabs = ref('detail')
                         </a-card>
                     </div>
                     <div v-if="tabs === 'resource'">
-                        <a-card class="description-card" title="相关资源">
-
-                        </a-card>
+                        <a-card
+                            class="description-card"
+                            title="相关资源"
+                        ></a-card>
                     </div>
                     <a-card title="分享" class="info-card">
                         <Share :desc="server.desc" />
@@ -435,6 +436,10 @@ const tabs = ref('detail')
                 line-height: 2rem;
                 cursor: pointer;
                 transition: background 0.5s;
+                @media (prefers-color-scheme: dark) {
+                    color: @text-color-secondary-dark;
+                    background-color: @background-dark;
+                }
                 &.active {
                     background-color: @active-primary;
                     color: white;
