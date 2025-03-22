@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, shallowRef } from 'vue'
-import DefaultNavBar from '~/components/NavBar/DefaultNavBar.vue'
-import IndexNavBar from '~/components/NavBar/IndexNavBar.vue'
-import Header from '~/components/Header.vue'
+import DefaultNavBar from '@/components/NavBar/DefaultNavBar.vue'
+import IndexNavBar from '@/components/NavBar/IndexNavBar.vue'
 
 const isActive = ref(false)
 const route = useRoute()

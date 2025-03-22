@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Login from '../../components/Authorization/Login.vue'
-import Register from '../../components/Authorization/Register.vue'
+import Login from '@/components/Authorization/Login.vue'
+import Register from '@/components/Authorization/Register.vue'
 import { ref, computed } from 'vue'
 useHead({
     title: '登录',
@@ -57,7 +57,7 @@ onMounted(() => {
     box-sizing: border-box;
     height: 100vh;
     /* 建议在 nuxt.config.ts 中预加载背景图片 */
-    background-image: url('../../assets/bg.webp');
+    background-image: url('@/assets/bg.webp');
     background-size: cover;
     background-position: center;
     display: flex;

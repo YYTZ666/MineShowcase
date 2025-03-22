@@ -95,7 +95,7 @@ const copyToClipboard = () => {
 </template>
 
 <style lang="less" scoped>
-@import '../assets/css/variables.less';
+@import '@/assets/css/variables.less';
 
 .share-box {
     display: flex;

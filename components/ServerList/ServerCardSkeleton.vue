@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IMG_noimage from '../../assets/noimage.webp'
+import IMG_noimage from '@/assets/noimage.webp'
 </script>
 
 <template>
@@ -28,7 +28,7 @@ import IMG_noimage from '../../assets/noimage.webp'
 </template>
 
 <style scoped lang="less">
-@import '../assets/css/variables.less';
+@import '@/assets/css/variables.less';
 
 @keyframes skeleton-loading {
     0% {

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import Logo from '../assets/logo.webp'
 import { ref, onMounted, computed, h } from 'vue'
-import { ServerAPI_Token } from '../api/index'
+import { ServerAPI_Token } from '@/api/index'
 import { useRequest } from 'alova/client'
 import { notification, Modal } from 'ant-design-vue'
 import { SolutionOutlined, UnlockOutlined } from '@ant-design/icons-vue'
-import type { UserMe } from '../api/models'
+import type { UserMe } from '@/api/models'
 import { useThrottleFn, useEventListener } from '@vueuse/core'
 import GlobalSearch from './GlobalSearch/GlobalSearch.vue'
 
@@ -160,7 +160,7 @@ const handleMouseLeave = () => {
 </template>
 
 <style scoped lang="less">
-@import '../assets/css/variables.less';
+@import '@/assets/css/variables.less';
 
 .c_header {
     display: flex;

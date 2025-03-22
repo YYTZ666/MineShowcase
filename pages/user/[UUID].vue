@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import UserPanel from '../../components/UserPanel/UserPanel.vue'
-import UserProfile from '../../components/UserPanel/UserProfile.vue'
+import UserPanel from '@/components/UserPanel/UserPanel.vue'
+import UserProfile from '@/components/UserPanel/UserProfile.vue'
 const route = useRoute()
 const UserType = route.params.UUID
 definePageMeta({

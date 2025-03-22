@@ -27,7 +27,7 @@ const stats = shallowRef({
 </template>
 
 <style scoped lang="less">
-@import '../assets/css/variables.less';
+@import '@/assets/css/variables.less';
 
 .content-wrapper {
     padding: 12px;

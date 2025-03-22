@@ -9,10 +9,10 @@ import {
     CloudDone,
 } from '@vicons/ionicons5'
 import { useRequest } from 'alova/client'
-import DynamicTags from '../../components/Common/DynamicTags/DynamicTags.vue'
-import { ServerAPI_Token, fetch_status } from '../../api'
-import type { Fetch_Status, StatusWithUser } from '../../api/models'
-import Img404 from '../../assets/error.webp'
+import DynamicTags from '@/components/Common/DynamicTags/DynamicTags.vue'
+import { ServerAPI_Token, fetch_status } from '@/api'
+import type { Fetch_Status, StatusWithUser } from '@/api/models'
+import Img404 from '@/assets/error.webp'
 import { useDebounceFn } from '@vueuse/core'
 
 const title = useState<string>('pageTitle')
@@ -443,7 +443,7 @@ const isDarkMode = useState<boolean>('isDarkMode')
 </template>
 
 <style scoped lang="less">
-@import '../assets/css/variables.less';
+@import '@/assets/css/variables.less';
 
 .edit {
     padding: 20px;

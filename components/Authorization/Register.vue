@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onBeforeUnmount, onMounted, nextTick } from 'vue'
-import { ServerAPI } from '../../api'
+import { ServerAPI } from '@/api'
 import { useRequest } from 'alova/client'
-import reCaptcha from '../../components/Recaptcha/ReCaptchaV3.vue'
+import reCaptcha from '../Recaptcha/ReCaptchaV3.vue'
 import type {
     SiteKey,
     Login,

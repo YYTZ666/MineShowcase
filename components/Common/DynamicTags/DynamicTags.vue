@@ -1,3 +1,89 @@
+<script lang="ts" setup>
+import { ref, reactive, nextTick, computed } from 'vue'
+import { PlusOutlined } from '@ant-design/icons-vue'
+// DynamicTagsOption 类型文件
+import type { DynamicTagsOption } from './types'
+
+const props = defineProps<{
+    color?: { color?: string; borderColor?: string; textColor?: string }
+    defaultValue?: string[] | DynamicTagsOption[]
+    disabled?: boolean
+    inputProps?: Record<string, any>
+    inputClass?: string
+    inputStyle?: string | Record<string, any>
+    max?: number
+    round?: boolean
+    renderTag?: (tag: string | DynamicTagsOption, index: number) => any
+    size?: 'small' | 'medium' | 'large'
+    tagClass?: string
+    tagStyle?: string | Record<string, any>
+    type?: 'default' | 'primary' | 'info' | 'success' | 'warning' | 'error'
+    value?: string[] | DynamicTagsOption[]
+    onCreate?: (label: string) => string | DynamicTagsOption
+}>()
+
+const emits = defineEmits<{
+    (event: 'update:value', value: string[] | DynamicTagsOption[]): void
+}>()
+
+const inputRef = ref<HTMLInputElement | null>(null)
+const state = reactive({
+    inputVisible: false,
+    inputValue: '',
+})
+
+const currentTags = computed(() => props.value || props.defaultValue || [])
+
+const getTagLabel = (tag: string | DynamicTagsOption) =>
+    typeof tag === 'string' ? tag : tag.label
+const getTagKey = (tag: string | DynamicTagsOption) =>
+    typeof tag === 'string' ? tag : tag.value
+
+const handleClose = (removedTag: string | DynamicTagsOption) => {
+    const tags = currentTags.value.filter(
+        (tag) => getTagKey(tag) !== getTagKey(removedTag),
+    )
+    emits(
+        'update:value',
+        Array.isArray(tags) && tags.every((tag) => typeof tag === 'string')
+            ? (tags as string[])
+            : (tags as DynamicTagsOption[]),
+    )
+}
+
+const activate = () => {
+    state.inputVisible = true
+    nextTick(() => {
+        inputRef.value?.focus()
+    })
+}
+
+const deactivate = () => {
+    state.inputVisible = false
+}
+
+const handleInputConfirm = (deactivate: () => void) => {
+    const inputValue = state.inputValue
+    let tags = currentTags.value
+    if (inputValue && !tags.some((tag) => getTagLabel(tag) === inputValue)) {
+        const newTag = props.onCreate ? props.onCreate(inputValue) : inputValue
+        if (!props.max || tags.length < props.max) {
+            tags =
+                Array.isArray(tags) &&
+                tags.every((tag) => typeof tag === 'string')
+                    ? [...tags, newTag as string]
+                    : [...tags, newTag as DynamicTagsOption]
+        }
+    }
+    emits('update:value', tags)
+    Object.assign(state, {
+        inputVisible: false,
+        inputValue: '',
+    })
+    deactivate()
+}
+</script>
+
 <template>
     <!-- 循环渲染当前标签列表 -->
     <template v-for="(tag, index) in currentTags" :key="getTagKey(tag)">
@@ -65,87 +151,6 @@
         </a-tag>
     </template>
 </template>
-
-<script lang="ts" setup>
-import { ref, reactive, nextTick, computed } from 'vue'
-import { PlusOutlined } from '@ant-design/icons-vue'
-// DynamicTagsOption 类型文件
-import type { DynamicTagsOption } from './types'
-
-const props = defineProps<{
-    color?: { color?: string; borderColor?: string; textColor?: string }
-    defaultValue?: string[] | DynamicTagsOption[]
-    disabled?: boolean
-    inputProps?: Record<string, any>
-    inputClass?: string
-    inputStyle?: string | Record<string, any>
-    max?: number
-    round?: boolean
-    renderTag?: (tag: string | DynamicTagsOption, index: number) => any
-    size?: 'small' | 'medium' | 'large'
-    tagClass?: string
-    tagStyle?: string | Record<string, any>
-    type?: 'default' | 'primary' | 'info' | 'success' | 'warning' | 'error'
-    value?: string[] | DynamicTagsOption[]
-    onCreate?: (label: string) => string | DynamicTagsOption
-}>()
-
-const emits = defineEmits<{
-    (event: 'update:value', value: string[] | DynamicTagsOption[]): void
-}>()
-
-const inputRef = ref<HTMLInputElement | null>(null)
-const state = reactive({
-    inputVisible: false,
-    inputValue: '',
-})
-
-const currentTags = computed(() => props.value || props.defaultValue || [])
-
-const getTagLabel = (tag: string | DynamicTagsOption) =>
-    typeof tag === 'string' ? tag : tag.label
-const getTagKey = (tag: string | DynamicTagsOption) =>
-    typeof tag === 'string' ? tag : tag.value
-
-const handleClose = (removedTag: string | DynamicTagsOption) => {
-    const tags = currentTags.value.filter(
-        (tag) => getTagKey(tag) !== getTagKey(removedTag),
-    )
-    emits('update:value', Array.isArray(tags) && tags.every(tag => typeof tag === 'string')
-        ? tags as string[]
-        : tags as DynamicTagsOption[])
-}
-
-const activate = () => {
-    state.inputVisible = true
-    nextTick(() => {
-        inputRef.value?.focus()
-    })
-}
-
-const deactivate = () => {
-    state.inputVisible = false
-}
-
-const handleInputConfirm = (deactivate: () => void) => {
-    const inputValue = state.inputValue
-    let tags = currentTags.value
-    if (inputValue && !tags.some((tag) => getTagLabel(tag) === inputValue)) {
-        const newTag = props.onCreate ? props.onCreate(inputValue) : inputValue
-        if (!props.max || tags.length < props.max) {
-            tags = Array.isArray(tags) && tags.every(tag => typeof tag === 'string')
-                ? [...tags, newTag as string]
-                : [...tags, newTag as DynamicTagsOption]
-        }
-    }
-    emits('update:value', tags)
-    Object.assign(state, {
-        inputVisible: false,
-        inputValue: '',
-    })
-    deactivate()
-}
-</script>
 
 <style scoped lang="less">
 .new-tag {

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ServerAPI_Token } from '../../api'
+import { ServerAPI_Token } from '@/api'
 import { MdPreview } from 'md-editor-v3'
 import { useRequest } from 'alova/client'
-import type { ServerManagers, Status } from '../../api/models'
-import IMG_noicon from '../../assets/noicon.svg'
-import Img404 from '../../assets/error.webp'
-import Share from '../../components/Share/Share.vue'
-import Comment from '../../components/Comment/Comment.vue'
+import type { ServerManagers, Status } from '@/api/models'
+import IMG_noicon from '@/assets/noicon.svg'
+import Img404 from '@/assets/error.webp'
+import Share from '@/components/Share/Share.vue'
+import Comment from '@/components/Comment/Comment.vue'
 const { data: managers } = useRequest(
     () =>
         ServerAPI_Token.Get<ServerManagers>(`/v1/servers/${serverId}/managers`),
@@ -334,7 +334,7 @@ const tabs = ref('detail')
 </template>
 
 <style scoped lang="less">
-@import '../assets/css/variables.less';
+@import '@/assets/css/variables.less';
 
 .slide-in-enter-active {
     animation: slideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;

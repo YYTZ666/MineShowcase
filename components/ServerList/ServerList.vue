@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed, defineAsyncComponent } from 'vue'
-import { ServerAPI } from '../../api'
-import type { List, Server, Status } from '../../api/models'
+import { ServerAPI } from '@/api'
+import type { List, Server, Status } from '@/api/models'
 
 const ServerCard = defineAsyncComponent(() => import('./ServerCard.vue'))
 
@@ -191,7 +191,7 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
 </template>
 
 <style scoped lang="less">
-@import '../assets/css/variables.less';
+@import '@/assets/css/variables.less';
 
 .ServerList {
     color: @text-color-light;

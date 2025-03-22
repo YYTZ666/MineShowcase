@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useDebounceFn, onClickOutside } from '@vueuse/core'
-import { ServerAPI } from '../../api'
+import { ServerAPI } from '@/api'
 
 const router = useRouter()
 const inputRef = ref(null)
@@ -117,7 +117,7 @@ const docResults = computed<SearchResult[]>(() => [])
 </template>
 
 <style scoped lang="less">
-@import '../../assets/css/variables.less';
+@import '@/assets/css/variables.less';
 
 .search-result {
     z-index: 9999;

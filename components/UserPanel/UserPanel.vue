@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useRequest } from 'alova/client'
-import { ServerAPI_Token } from '../../api'
-import type { UserMe } from '../../api/models'
+import { ServerAPI_Token } from '@/api'
+import type { UserMe } from '@/api/models'
 import ServerCard from './ServerCard.vue'
-import IMG_noicon from '../../assets/noicon.svg'
-import Img404 from '../../assets/error.webp'
+import IMG_noicon from '@/assets/noicon.svg'
+import Img404 from '@/assets/error.webp'
 
 const router = useRouter()
 const showAdvanced = ref(false)
@@ -189,7 +189,7 @@ const gotoLogin = () => router.push('/auth')
 </template>
 
 <style scoped lang="less">
-@import '../assets/css/variables.less';
+@import '@/assets/css/variables.less';
 
 .user-panel {
     padding: 20px;
