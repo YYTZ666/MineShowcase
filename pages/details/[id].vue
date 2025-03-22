@@ -6,6 +6,7 @@ import type { ServerManagers, Status } from '../../hooks/type_models'
 import IMG_noicon from '../../assets/noicon.svg'
 import Img404 from '../../assets/error.webp'
 import Share from '../../components/Share/Share.vue'
+import Comment from '../../components/Comment/Comment.vue'
 const { data: managers } = useRequest(
     () =>
         ServerAPI_Token.Get<ServerManagers>(`/v1/servers/${serverId}/managers`),
@@ -100,6 +101,8 @@ const formatDelay = (delay?: number) => {
     if (delay < 1) return '<1ms'
     return `${delay.toFixed(2)}ms`
 }
+
+const tabs = ref('detail')
 </script>
 
 <template>
@@ -177,82 +180,124 @@ const formatDelay = (delay?: number) => {
                             {{ tag }}
                         </a-tag>
                     </div>
-
-                    <!-- 描述和MOTD -->
-                    <a-card title="服务器描述" class="description-card">
-                        <MdPreview
-                            class="markdown-content"
-                            editor-id="preview-only"
-                            :modelValue="server.desc"
-                            noImgZoomIn
-                        />
-                        <div v-if="server.status?.motd" class="motd-section">
-                            <h3>MOTD</h3>
-                            <pre
-                                class="motd-text"
-                                v-html="server.status.motd.html"
-                            ></pre>
+                    <div class="tabs">
+                        <!-- Tab分页 -->
+                        <div
+                            class="tab"
+                            :class="{ active: tabs === 'detail' }"
+                            @click="tabs = 'detail'"
+                        >
+                            详情
                         </div>
-                    </a-card>
-                    <a-card class="info-card">
-                        <!-- 所有者部分 -->
-                        <div v-if="managers?.owners?.length">
-                            <h3 class="section-title">所有者</h3>
-                            <a-space>
-                                <NuxtLink
-                                    v-for="owner in managers.owners"
-                                    :key="owner.id"
-                                    :to="`/user/${owner.id}`"
-                                    class="user-item"
-                                >
-                                    <a-avatar
-                                        :src="owner.avatar_url || IMG_noicon"
-                                        round
-                                        size="small"
-                                    />
-                                    <span>
-                                        {{ owner.display_name }}
-                                    </span>
-                                </NuxtLink>
-                            </a-space>
+                        <div
+                            class="tab"
+                            :class="{ active: tabs === 'comment' }"
+                            @click="tabs = 'comment'"
+                        >
+                            评论
                         </div>
-
-                        <!-- 管理员部分 -->
-                        <div v-if="managers?.admins?.length">
-                            <h3 class="section-title">管理员</h3>
-                            <a-space>
-                                <NuxtLink
-                                    v-for="admin in managers.admins"
-                                    :key="admin.id"
-                                    :to="`/user/${admin.id}`"
-                                    class="user-item"
-                                >
-                                    <a-avatar
-                                        :src="admin.avatar_url || IMG_noicon"
-                                        round
-                                        size="small"
-                                    />
-                                    <span>
-                                        {{ admin.display_name }}
-                                    </span>
-                                </NuxtLink>
-                            </a-space>
+                        <div
+                            class="tab"
+                            :class="{ active: tabs === 'resource' }"
+                            @click="tabs = 'resource'"
+                        >
+                            资源
                         </div>
-
-                        <!-- 相关链接部分 -->
-                        <template v-if="server.link">
-                            <h3 class="section-title">相关链接</h3>
-                            <a
-                                :href="server.link"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="link-url"
+                    </div>
+                    <div class="desc" v-if="tabs === 'detail'">
+                        <!-- 描述和MOTD -->
+                        <a-card title="服务器描述" class="description-card">
+                            <MdPreview
+                                class="markdown-content"
+                                editor-id="preview-only"
+                                :modelValue="server.desc"
+                                noImgZoomIn
+                            />
+                            <div
+                                v-if="server.status?.motd"
+                                class="motd-section"
                             >
-                                {{ server.link }}
-                            </a>
-                        </template>
-                    </a-card>
+                                <h3>MOTD</h3>
+                                <pre
+                                    class="motd-text"
+                                    v-html="server.status.motd.html"
+                                ></pre>
+                            </div>
+                        </a-card>
+                        <a-card class="info-card">
+                            <!-- 所有者部分 -->
+                            <div v-if="managers?.owners?.length">
+                                <h3 class="section-title">所有者</h3>
+                                <a-space>
+                                    <NuxtLink
+                                        v-for="owner in managers.owners"
+                                        :key="owner.id"
+                                        :to="`/user/${owner.id}`"
+                                        class="user-item"
+                                    >
+                                        <a-avatar
+                                            :src="
+                                                owner.avatar_url || IMG_noicon
+                                            "
+                                            round
+                                            size="small"
+                                        />
+                                        <span>
+                                            {{ owner.display_name }}
+                                        </span>
+                                    </NuxtLink>
+                                </a-space>
+                            </div>
 
+                            <!-- 管理员部分 -->
+                            <div v-if="managers?.admins?.length">
+                                <h3 class="section-title">管理员</h3>
+                                <a-space>
+                                    <NuxtLink
+                                        v-for="admin in managers.admins"
+                                        :key="admin.id"
+                                        :to="`/user/${admin.id}`"
+                                        class="user-item"
+                                    >
+                                        <a-avatar
+                                            :src="
+                                                admin.avatar_url || IMG_noicon
+                                            "
+                                            round
+                                            size="small"
+                                        />
+                                        <span>
+                                            {{ admin.display_name }}
+                                        </span>
+                                    </NuxtLink>
+                                </a-space>
+                            </div>
+
+                            <!-- 相关链接部分 -->
+                            <template v-if="server.link">
+                                <h3 class="section-title">相关链接</h3>
+                                <a
+                                    :href="server.link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="link-url"
+                                >
+                                    {{ server.link }}
+                                </a>
+                            </template>
+                        </a-card>
+                    </div>
+
+                    <div v-if="tabs === 'comment'">
+                        <a-card class="description-card" title="评论">
+                            <Comment />
+                        </a-card>
+                    </div>
+                    <div v-if="tabs === 'resource'">
+                        <a-card class="description-card" title="相关资源">
+
+                        </a-card>
+                    </div>
                     <a-card title="分享" class="info-card">
                         <Share :desc="server.desc" />
                     </a-card>
@@ -376,6 +421,25 @@ const formatDelay = (delay?: number) => {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            .tab {
+                flex-grow: 1;
+                background-color: @unactive;
+                height: 2rem;
+                border-radius: 1rem;
+                text-align: center;
+                line-height: 2rem;
+                cursor: pointer;
+                transition: background 0.5s;
+                &.active {
+                    background-color: @active-primary;
+                    color: white;
+                }
+            }
         }
 
         .description-card {

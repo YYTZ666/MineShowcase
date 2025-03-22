@@ -39,6 +39,7 @@
         "@types/lozad": "^1.16.4",
         "@vicons/ionicons5": "^0.13.0",
         "@vite-pwa/nuxt": "0.10.6",
+        "dayjs": "^1.11.13",
         "less": "^4.2.2",
         "nuxt": "^3.16.1",
         "nuxt-link-checker": "^4.3.0",

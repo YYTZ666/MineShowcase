@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { shallowRef, ref, onMounted, onBeforeUnmount } from 'vue'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+dayjs.extend(relativeTime)
 
 const stats = shallowRef({
     onlinePlayers: 0,
@@ -17,7 +20,7 @@ const stats = shallowRef({
             <a-space direction="vertical">
                 <a-statistic title="在线玩家" :value="stats.onlinePlayers" />
                 <a-statistic title="24小时新服" :value="stats.newServers24h" />
-                <p>更新时间</p>
+                <span>更新时间: {{ dayjs().fromNow() }}</span>
             </a-space>
         </a-card>
     </div>
