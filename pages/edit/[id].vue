@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { reactive, onMounted, ref, watch, markRaw } from 'vue'
-import { useRoute } from 'vue-router'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { message, notification } from 'ant-design-vue'
@@ -10,16 +9,24 @@ import {
     CloudDone,
 } from '@vicons/ionicons5'
 import { useRequest } from 'alova/client'
-import DynamicTags from '../Common/DynamicTags/DynamicTags.vue'
+import DynamicTags from '../../components/Common/DynamicTags/DynamicTags.vue'
 import { ServerAPI_Token, fetch_status } from '../../hooks/api'
 import type { Fetch_Status, StatusWithUser } from '../../hooks/type_models'
 import Img404 from '../../assets/error.webp'
 import { useDebounceFn } from '@vueuse/core'
+
+const title = useState<string>('pageTitle')
+title.value = '编辑'
+useHead({
+    title: title,
+})
+
 // 路由和通知
 const route = useRoute()
 const ServerID = route.params.id
 const hasDraft = ref(false) // 新增草稿状态标记
 const hasPermission = ref(false) // 新增权限状态
+
 // 服务器信息状态
 const serverInfo = reactive({
     name: '',
