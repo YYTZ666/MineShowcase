@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Logo from '../assets/logo.webp'
-import { ref, onMounted, computed, h } from 'vue'
+import { ref, onMounted } from 'vue'
 import { ServerAPI_Token } from '@/api/index'
 import { useRequest } from 'alova/client'
 import { notification, Modal } from 'ant-design-vue'

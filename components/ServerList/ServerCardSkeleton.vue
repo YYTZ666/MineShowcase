@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import IMG_noimage from '@/assets/noimage.webp'
-</script>
-
 <template>
     <div class="card skeleton-card">
         <div class="card-cover">

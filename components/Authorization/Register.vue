@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onBeforeUnmount, onMounted, nextTick } from 'vue'
+import { ref, onBeforeUnmount, onMounted, computed } from 'vue'
 import { ServerAPI } from '@/api'
 import { useRequest } from 'alova/client'
 import reCaptcha from '../Recaptcha/ReCaptchaV3.vue'
@@ -8,10 +8,9 @@ import type {
     Login,
     ReturnResponse,
     ReturnResponse_Register,
-} from '../../api/models'
+} from '@/api/models'
 import { VueCropper } from 'vue-cropper'
 import 'vue-cropper/dist/index.css'
-import { computed } from 'vue'
 import { notification, message } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import type { FormInstance, UploadChangeParam } from 'ant-design-vue'

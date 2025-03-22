@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowRef, ref, onMounted, onBeforeUnmount } from 'vue'
+import { shallowRef, ref } from 'vue'
 const recommendations = shallowRef([
     { label: 'XXX', value: 1, ping: 0 },
     { label: 'XXX', value: 2, ping: 0 },
