@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { watchEffect } from 'vue'
-import { ServerAPI_Token } from '../../hooks/api'
-import type { Status } from '../../hooks/type_models'
+import { ServerAPI_Token } from '../../api'
+import type { Status } from '../../api/models'
 import { useRequest } from 'alova/client'
 import { useRouter } from 'vue-router'
 import { MdPreview } from 'md-editor-v3'

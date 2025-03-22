@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ServerAPI_Token } from '../../hooks/api'
+import { ServerAPI_Token } from '../../api'
 import { MdPreview } from 'md-editor-v3'
 import { useRequest } from 'alova/client'
-import type { ServerManagers, Status } from '../../hooks/type_models'
+import type { ServerManagers, Status } from '../../api/models'
 import IMG_noicon from '../../assets/noicon.svg'
 import Img404 from '../../assets/error.webp'
 import Share from '../../components/Share/Share.vue'

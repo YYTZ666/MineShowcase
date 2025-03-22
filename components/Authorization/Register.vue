@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onBeforeUnmount, onMounted, nextTick } from 'vue'
-import { ServerAPI } from '../../hooks/api'
+import { ServerAPI } from '../../api'
 import { useRequest } from 'alova/client'
 import reCaptcha from '../../components/Recaptcha/ReCaptchaV3.vue'
 import type {
@@ -8,7 +8,7 @@ import type {
     Login,
     ReturnResponse,
     ReturnResponse_Register,
-} from '../../hooks/type_models'
+} from '../../api/models'
 import { VueCropper } from 'vue-cropper'
 import 'vue-cropper/dist/index.css'
 import { computed } from 'vue'

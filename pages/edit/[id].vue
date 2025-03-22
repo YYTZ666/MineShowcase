@@ -10,8 +10,8 @@ import {
 } from '@vicons/ionicons5'
 import { useRequest } from 'alova/client'
 import DynamicTags from '../../components/Common/DynamicTags/DynamicTags.vue'
-import { ServerAPI_Token, fetch_status } from '../../hooks/api'
-import type { Fetch_Status, StatusWithUser } from '../../hooks/type_models'
+import { ServerAPI_Token, fetch_status } from '../../api'
+import type { Fetch_Status, StatusWithUser } from '../../api/models'
 import Img404 from '../../assets/error.webp'
 import { useDebounceFn } from '@vueuse/core'
 

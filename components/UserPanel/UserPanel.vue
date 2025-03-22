@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRequest } from 'alova/client'
-import { ServerAPI_Token } from '../../hooks/api'
-import type { UserMe } from '../../hooks/type_models'
+import { ServerAPI_Token } from '../../api'
+import type { UserMe } from '../../api/models'
 import ServerCard from './ServerCard.vue'
 import IMG_noicon from '../../assets/noicon.svg'
 import Img404 from '../../assets/error.webp'

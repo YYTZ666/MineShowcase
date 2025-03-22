@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ServerAPI } from '../../hooks/api'
+import { ServerAPI } from '../../api'
 import { useRequest } from 'alova/client'
 import reCaptcha from '../../components/Recaptcha/ReCaptchaV3.vue'
-import type { SiteKey, Login } from '../../hooks/type_models'
+import type { SiteKey, Login } from '../../api/models'
 import { notification } from 'ant-design-vue'
 import type { RuleObject } from 'ant-design-vue/lib/form/interface'
 

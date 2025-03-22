@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed, defineAsyncComponent } from 'vue'
-import { ServerAPI } from '../../hooks/api'
-import type { List, Server, Status } from '../../hooks/type_models'
+import { ServerAPI } from '../../api'
+import type { List, Server, Status } from '../../api/models'
 
 const ServerCard = defineAsyncComponent(() => import('./ServerCard.vue'))
 
