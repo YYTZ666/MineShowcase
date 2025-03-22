@@ -2,6 +2,8 @@
 import { shallowRef } from 'vue'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/zh-cn'
+dayjs.locale('zh-cn')
 dayjs.extend(relativeTime)
 
 const stats = shallowRef({
@@ -20,7 +22,9 @@ const stats = shallowRef({
             <a-space direction="vertical">
                 <a-statistic title="在线玩家" :value="stats.onlinePlayers" />
                 <a-statistic title="24小时新服" :value="stats.newServers24h" />
-                <span>更新时间: {{ dayjs().fromNow() }}</span>
+                <a-tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
+                    <span class="time">更新时间: {{ dayjs().fromNow() }}</span>
+                </a-tooltip>
             </a-space>
         </a-card>
     </div>
@@ -51,6 +55,12 @@ const stats = shallowRef({
             color: @text-color-dark;
         }
         padding: 5px 0;
+    }
+    .time {
+        color: @text-color-secondary;
+        @media (prefers-color-scheme: dark) {
+            color: @text-color-secondary-dark;
+        }
     }
 }
 .stats-section {

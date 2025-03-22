@@ -113,6 +113,7 @@ const copyToClipboard = () => {
             text-decoration: none;
             display: flex;
             justify-content: center;
+            cursor: pointer;
             align-items: center;
             font-size: 1.5rem;
             text-align: center;
