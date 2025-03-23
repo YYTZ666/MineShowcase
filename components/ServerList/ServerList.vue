@@ -125,7 +125,9 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
     <div class="ServerList">
         <div class="text">
             <h1>服务器列表</h1>
-            <p>轻松搜索并发现优质服务器。支持名称、拼音或首字母快速查询，提供随机推荐与分页浏览功能，助您快速找到符合需求的服务器资源。</p>
+            <p>
+                轻松搜索并发现优质服务器。支持名称、拼音或首字母快速查询，提供随机推荐与分页浏览功能，助您快速找到符合需求的服务器资源。
+            </p>
         </div>
         <a-divider />
         <div v-if="error">加载失败QAQ (code: {{ error.message }})</div>
@@ -214,6 +216,10 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
     p {
         font-size: 1.2rem;
         padding-inline: 2rem;
+        color: @text-color-secondary;
+        @media (prefers-color-scheme: dark) {
+            color: @text-color-secondary-dark;
+        }
     }
 }
 .search-box {
