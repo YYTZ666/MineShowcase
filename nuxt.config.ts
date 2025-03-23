@@ -92,17 +92,16 @@ export default defineNuxtConfig({
     devtools: {
         enabled: true,
     },
-    styleExtractor: {
-        minify: true, // 是否开启压缩
-        removeUnused: false,
-    },
+    // styleExtractor: {
+    //     minify: true, // 是否开启压缩
+    //     removeUnused: false,
+    // },
     modules: [
         '@nuxtjs/seo',
         '@nuxthub/core',
         '@pinia/nuxt',
-        'nuxt-og-image',
         '@ant-design-vue/nuxt',
-        'nuxt-style-extractor',
+        // 'nuxt-style-extractor',
         '@vite-pwa/nuxt',
     ],
     pwa,

@@ -1,8 +1,9 @@
 // composables/useNavBar.ts
 import { useNavBarStore } from '@/stores/NavBar'
+
 export function useNavBar(config?: {
     enable: boolean
-    component?: Array<any>
+    component?: Array<string>
 }) {
     const navBarStore = useNavBarStore()
     if (config) {

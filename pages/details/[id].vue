@@ -8,11 +8,9 @@ import Img404 from '@/assets/error.webp'
 import Share from '@/components/Share/Share.vue'
 import Comment from '@/components/Comment/Comment.vue'
 
-import Recommend from '@/components/NavBar/components/recommend.vue'
-import Stats from '@/components/NavBar/components/stats.vue'
 useNavBar({
     enable: true,
-    component: [Recommend, Stats],
+    component: ['Recommend', 'Stats'],
 })
 
 const { data: managers } = useRequest(

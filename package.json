@@ -12,6 +12,9 @@
         "prettier:check": "prettier --check .",
         "prettier:fix": "prettier --write . --fix"
     },
+    "overrides": {
+        "vue": "latest"
+    },
     "dependencies": {
         "@ant-design-vue/nuxt": "^1.4.6",
         "@ant-design/icons-vue": "^7.0.1",
@@ -44,7 +47,7 @@
         "less": "^4.2.2",
         "nuxt": "^3.16.1",
         "nuxt-link-checker": "^4.3.0",
-        "nuxt-og-image": "^5.0.4",
+        "pinia": "^3.0.1",
         "prettier": "^3.5.3",
         "typescript-plugin-toml": "^0.5.0",
         "unplugin-vue-components": "^28.4.1",

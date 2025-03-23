@@ -1,18 +1,40 @@
 <script setup lang="ts">
 import { useNavBarStore } from '@/stores/NavBar'
-import { watch, ref } from 'vue'
+import { watch, shallowRef } from 'vue'
+import { defineAsyncComponent } from 'vue'
 
 const navBarStore = useNavBarStore()
-const componentsToRender = ref<Record<string, any>>({})
+const componentsToRender = shallowRef<Record<string, any>>({})
+
+// 组件映射
+const componentMap: Record<string, any> = {
+    Stats: defineAsyncComponent(() => import('./components/stats.vue')),
+    Recommend: defineAsyncComponent(() => import('./components/recommend.vue')),
+    Filter: defineAsyncComponent(() => import('./components/filter.vue')),
+}
 
 watch(
     () => navBarStore.navbarComponents,
     (newComponents) => {
         console.log('NavBar  components updated:', newComponents)
-        componentsToRender.value = newComponents
+        const resolvedComponents: Record<string, any> = {}
+        for (const [key, compName] of Object.entries(newComponents)) {
+            const comp = getComponentByName(compName as string)
+            resolvedComponents[key] = comp
+        }
+        componentsToRender.value = resolvedComponents
     },
     { immediate: true },
 )
+
+function getComponentByName(name: string) {
+    const component = componentMap[name]
+    if (!component) {
+        console.error(`组件"${name}"未在 componentMap 中找到。`)
+        return null
+    }
+    return component
+}
 </script>
 
 <template>

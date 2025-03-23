@@ -1,30 +1,21 @@
-// stores/navBar.ts
+// stores/NavBar.ts
 import { ref } from 'vue'
+import { defineStore } from 'pinia'
 
 export const useNavBarStore = defineStore('navBar', () => {
     const isActive = ref(true)
-    const navbarComponents = ref<Record<string, any>>({})
-
-    // 解析异步组件
-    const resolveComponent = async (comp: any) => {
-        if (typeof comp === 'function') {
-            const module = await comp()
-            return module.default
-        }
-        return comp
-    }
+    const navbarComponents = ref<Record<string, string>>({})
 
     // 设置导航栏配置
-    const setNavBarConfig = async (config: {
+    const setNavBarConfig = (config: {
         enable: boolean
-        component?: Array<any>
+        component?: Array<string>
     }) => {
         isActive.value = config.enable
-        const resolvedComponents: Record<string, any> = {}
+        const resolvedComponents: Record<string, string> = {}
         if (config.component?.length) {
-            for (const [index, comp] of config.component.entries()) {
-                resolvedComponents[`custom-${index}`] =
-                    await resolveComponent(comp)
+            for (const [index, compName] of config.component.entries()) {
+                resolvedComponents[`custom-${index}`] = compName
             }
         }
         navbarComponents.value = resolvedComponents
