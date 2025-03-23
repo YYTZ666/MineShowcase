@@ -153,7 +153,7 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
             </a-input-group>
         </div>
         <a-divider />
-        <div v-if="currentPageData.length === 0" class="text">
+        <div v-if="currentPageData.length === 0 && isVisible" class="text">
             <p>这里是一片荒岛...换一个词搜索罢 QAQ</p>
         </div>
         <div v-else-if="error">加载失败 QAQ (code: {{ error.message }})</div>
