@@ -81,7 +81,6 @@ export default defineNuxtConfig({
     vite: {
         plugins: [content()],
         build: {
-            cssMinify: true,
             minify: true
         },
     },
