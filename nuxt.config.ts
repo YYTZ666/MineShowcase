@@ -1,6 +1,5 @@
 import content from '@originjs/vite-plugin-content'
 import { pwa } from './config/pwa'
-
 export default defineNuxtConfig({
     devServer: {
         host: '0.0.0.0',
@@ -23,7 +22,6 @@ export default defineNuxtConfig({
     nitro: {
         static: true,
         compressPublicAssets: true,
-        minify: true,
         prerender: {
             crawlLinks: true,
             routes: ['/robots.txt', '/sitemap.xml'],
@@ -81,7 +79,13 @@ export default defineNuxtConfig({
     vite: {
         plugins: [content()],
         build: {
-            minify: true
+            minify: 'terser',
+            terserOptions: {
+                compress: {
+                    drop_console: true,
+                    drop_debugger: true,
+                },
+            },
         },
     },
     compatibilityDate: '2025-03-19',
@@ -96,6 +100,7 @@ export default defineNuxtConfig({
         '@nuxtjs/seo',
         '@nuxthub/core',
         '@pinia/nuxt',
+        '@ant-design-vue/nuxt',
         'nuxt-style-extractor',
         '@vite-pwa/nuxt',
     ],
