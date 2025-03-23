@@ -243,7 +243,7 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
 .grid-list {
     display: grid;
     box-sizing: border-box;
-    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
     gap: 20px;
     will-change: transform, opacity;
     @media screen and (max-width: 768px) {

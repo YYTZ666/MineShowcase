@@ -51,6 +51,9 @@
     .skeleton-image {
         height: 100%;
         background: #f5f5f5;
+        @media (prefers-color-scheme: dark) {
+            background-color: #727171;
+        }
         animation: skeleton-loading 1.5s infinite;
     }
 
@@ -58,19 +61,29 @@
         height: 1.5rem;
         width: 6rem;
         background: #e8e8e8;
+        @media (prefers-color-scheme: dark) {
+            background-color: #727171;
+        }
         animation: skeleton-loading 1.5s infinite;
     }
 
     .skeleton-avatar {
-        background: #e8e8e8 !important;
+        background: #e8e8e8;
+        @media (prefers-color-scheme: dark) {
+            background-color: #727171;
+            border: 1px solid #727171;
+        }
         animation: skeleton-loading 1.5s infinite;
-        border: 1px solid #ebedf0 !important;
+        border: 1px solid #ebedf0;
     }
 
     .skeleton-title {
         height: 1.5rem;
         width: 60%;
         background: #e8e8e8;
+        @media (prefers-color-scheme: dark) {
+            background-color: #727171;
+        }
         animation: skeleton-loading 1.5s infinite;
     }
 
@@ -78,6 +91,9 @@
         height: 1rem;
         width: 30%;
         background: #e8e8e8;
+        @media (prefers-color-scheme: dark) {
+            background-color: #727171;
+        }
         margin-left: 8px;
         animation: skeleton-loading 1.5s infinite;
     }
@@ -86,7 +102,9 @@
         height: 24px;
         width: 60px;
         background: #e8e8e8;
-        // border-radius: 4px;
+        @media (prefers-color-scheme: dark) {
+            background-color: #727171;
+        }
         animation: skeleton-loading 1.5s infinite;
         margin: 2px;
     }
@@ -95,7 +113,9 @@
         height: 24px;
         width: 120px;
         background: #e8e8e8;
-        // border-radius: 4px;
+        @media (prefers-color-scheme: dark) {
+            background-color: #727171;
+        }
         animation: skeleton-loading 1.5s infinite;
     }
 

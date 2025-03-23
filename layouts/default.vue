@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import NavBar from '@/components/NavBar/NavBar.vue'
 
-const isActive = ref(useNavBar().isEnable)
+const isActive = ref(false)
 </script>
 <template>
     <div class="layout">
