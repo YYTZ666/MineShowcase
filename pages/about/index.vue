@@ -46,14 +46,14 @@ const commitHash = process.env.NUXT_PUBLIC_COMMIT_HASH
                             v-if="$pwa?.isPWAInstalled"
                             title="应用已安装"
                         >
-                            <a class="icon">
+                            <div class="icon">
                                 <AppstoreOutlined />
-                            </a>
+                            </div>
                         </a-tooltip>
                         <a-tooltip v-else title="安装此应用">
-                            <a @click="$pwa?.install;" class="icon">
+                            <div @click="$pwa?.install;" class="icon">
                                 <AppstoreAddOutlined />
-                            </a>
+                            </div>
                         </a-tooltip>
                     </ClientOnly>
                 </div>

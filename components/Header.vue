@@ -188,39 +188,39 @@ const MenuDisplay = ref(false)
                         <GlobalSearch v-model="MenuDisplay" />
                     </div>
                     <div @click="MenuDisplay = false">
-                        <a class="menu-item menu-btn" @click="router.push('/')">
+                        <div class="menu-item menu-btn" @click="router.push('/')">
                             <HomeOutlined />
                             首页
-                        </a>
-                        <a
+                        </div>
+                        <div
                             class="menu-item menu-btn"
                             @click="router.push('/about/')"
                         >
                             <InfoCircleOutlined />
                             关于
-                        </a>
+                        </div>
                     </div>
                     <div v-if="token_status" @click="MenuDisplay = false">
-                        <a
+                        <div
                             class="menu-item menu-btn"
                             @click="router.push('/user/me')"
                         >
                             <SolutionOutlined />
                             个人中心
-                        </a>
-                        <a class="menu-item menu-btn" @click="handleLogout()">
+                        </div>
+                        <div class="menu-item menu-btn" @click="handleLogout()">
                             <UnlockOutlined />
                             退出登录
-                        </a>
+                        </div>
                     </div>
                     <div v-else @click="MenuDisplay = false">
-                        <a
+                        <div
                             class="menu-item menu-btn"
                             @click="router.push('/auth')"
                         >
                             <SolutionOutlined />
                             登录账户
-                        </a>
+                        </div>
                     </div>
                 </div>
             </div>
