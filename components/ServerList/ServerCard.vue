@@ -329,14 +329,13 @@ const copyToClipboard = (event: MouseEvent) => {
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #fefefe;
             @media (prefers-color-scheme: dark) {
                 border: 1px solid @border-color-secondary-dark;
                 filter: brightness(60%);
             }
             img {
-                width: 100%;
-                height: 100%;
+                width: 90%;
+                height: 90%;
                 object-fit: contain;
             }
         }
