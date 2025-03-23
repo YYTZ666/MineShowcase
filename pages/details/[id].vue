@@ -573,7 +573,8 @@ const tabs = ref('detail')
             }
         }
     }
-    @media (max-width: 768px) {
+
+    @media screen and (max-width: 768px) {
         .server-detail {
             padding: 16px;
 

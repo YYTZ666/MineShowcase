@@ -5,11 +5,6 @@ import { ref, computed } from 'vue'
 useHead({
     title: '登录',
 })
-// 设置页面不使用默认布局
-definePageMeta({
-    layout: false,
-    pageTransition: false,
-})
 
 const router = useRouter()
 

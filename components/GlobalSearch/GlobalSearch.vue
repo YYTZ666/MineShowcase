@@ -130,7 +130,7 @@ const docResults = computed<SearchResult[]>(() => [])
     border: 1px solid @border-color;
     width: 100%;
     margin-top: 5px;
-    border-radius: 0.4rem;
+    border-radius: 2px;
     padding: 0.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
@@ -139,6 +139,9 @@ const docResults = computed<SearchResult[]>(() => [])
     text-align: center;
     padding: 1rem;
     color: @text-color-secondary;
+    @media (prefers-color-scheme: dark) {
+        color: @text-color-secondary-dark;
+    }
 }
 
 /* 列表动画 */
@@ -181,7 +184,7 @@ const docResults = computed<SearchResult[]>(() => [])
     @media (prefers-color-scheme: dark) {
         background: @border-color-secondary-dark;
     }
-    border-radius: 3px;
+    border-radius: 2px;
     margin-bottom: 0.3rem;
     transition: all 0.3s;
     cursor: pointer;

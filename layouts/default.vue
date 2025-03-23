@@ -24,7 +24,7 @@ const isActive = ref(false)
         >
             <a-float-button @click="isActive = !isActive">
                 <template #icon>
-                    <MenuOutlined />
+                    <MoreOutlined />
                 </template>
             </a-float-button>
         </a-float-button-group>

@@ -260,8 +260,7 @@ const gotoLogin = () => router.push('/auth')
             min-width: 120px;
         }
     }
-
-    @media (max-width: 768px) {
+    @media screen and (max-width: 768px) {
         .profile-header {
             flex-direction: column;
             text-align: center;

@@ -36,6 +36,22 @@ const commitHash = process.env.NUXT_PUBLIC_COMMIT_HASH
                             <QqOutlined />
                         </a>
                     </a-tooltip>
+
+                    <ClientOnly>
+                        <a-tooltip
+                            v-if="$pwa?.isPWAInstalled"
+                            title="应用已安装"
+                        >
+                            <a class="icon">
+                                <AppstoreOutlined />
+                            </a>
+                        </a-tooltip>
+                        <a-tooltip v-else title="安装此应用">
+                            <a @click="$pwa?.install;" class="icon">
+                                <AppstoreAddOutlined />
+                            </a>
+                        </a-tooltip>
+                    </ClientOnly>
                 </div>
             </div>
         </div>
@@ -62,7 +78,14 @@ const commitHash = process.env.NUXT_PUBLIC_COMMIT_HASH
     padding: 1rem;
     .logo-box {
         display: flex;
+        box-sizing: border-box;
         padding: 4rem;
+        @media screen and (max-width: 768px) {
+            padding: 0;
+            flex-direction: column;
+            align-items: center;
+            padding-block-end: 1rem;
+        }
         .logo-img {
             width: 8rem;
         }
