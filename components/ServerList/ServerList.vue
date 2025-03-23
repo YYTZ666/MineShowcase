@@ -128,30 +128,36 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
             <p>
                 轻松搜索并发现优质服务器。支持名称、拼音或首字母快速查询，提供随机推荐与分页浏览功能，助您快速找到符合需求的服务器资源。
             </p>
-        </div>
-        <a-divider />
-        <div v-if="error">加载失败QAQ (code: {{ error.message }})</div>
-        <div v-else>
-            <!-- 搜索框 -->
-            <div class="search-box">
+
+            <a-input-group class="input-line" compact>
                 <a-input
                     class="input"
+                    simple
                     v-model:value="searchQuery"
                     placeholder="输入服务器名称、拼音或拼音首字母搜索..."
                     allow-clear
                     @keyup.enter="page = 1"
-                />
-                <div class="page">
-                    <a-button @click="random">随机</a-button>
-                    <a-pagination
-                        class="pagin"
-                        v-model:current="page"
-                        :page-size="pageSize"
-                        :total="ServersTotal"
-                    />
-                </div>
-            </div>
-
+                >
+                    <template #prefix>
+                        <SearchOutlined v-if="isVisible" />
+                        <LoadingOutlined v-else />
+                    </template>
+                </a-input>
+                <a-button
+                    class="input-btn"
+                    @click="random"
+                    :disabled="!isVisible"
+                >
+                    随机
+                </a-button>
+            </a-input-group>
+        </div>
+        <a-divider />
+        <div v-if="currentPageData.length === 0" class="text">
+            <p>这里是一片荒岛...换一个词搜索罢 QAQ</p>
+        </div>
+        <div v-else-if="error">加载失败 QAQ (code: {{ error.message }})</div>
+        <div v-else>
             <TransitionGroup
                 tag="div"
                 name="fade"
@@ -209,34 +215,36 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
     padding: 20px;
 }
 .text {
-    text-align: center;
     h1 {
         font-weight: normal;
+        text-align: center;
     }
     p {
         font-size: 1.2rem;
+        text-align: center;
         padding-inline: 2rem;
         color: @text-color-secondary;
         @media (prefers-color-scheme: dark) {
             color: @text-color-secondary-dark;
         }
     }
-}
-.search-box {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    .input {
-        max-width: 15rem;
-    }
-    .page {
-        display: flex;
-        gap: 0.4rem;
-        align-items: center;
-        .pagin {
-            display: flex;
+    .input-line {
+        margin: 0 auto;
+        max-width: 20rem;
+        .input {
+            width: 80%;
         }
+        .input-btn {
+            width: 20%;
+        }
+    }
+}
+.page {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    .pagin {
+        display: flex;
     }
 }
 
