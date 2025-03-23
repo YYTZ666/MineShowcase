@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 export const useNavBarStore = defineStore('navBar', () => {
-    const isActive = ref(true)
+    const isEnable = ref(false)
     const navbarComponents = ref<Record<string, string>>({})
 
     // 设置导航栏配置
@@ -11,7 +11,7 @@ export const useNavBarStore = defineStore('navBar', () => {
         enable: boolean
         component?: Array<string>
     }) => {
-        isActive.value = config.enable
+        isEnable.value = config.enable
         const resolvedComponents: Record<string, string> = {}
         if (config.component?.length) {
             for (const [index, compName] of config.component.entries()) {
@@ -22,7 +22,7 @@ export const useNavBarStore = defineStore('navBar', () => {
     }
 
     return {
-        isActive,
+        isEnable,
         navbarComponents,
         setNavBarConfig,
     }

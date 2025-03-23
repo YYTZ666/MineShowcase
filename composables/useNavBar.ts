@@ -11,7 +11,7 @@ export function useNavBar(config?: {
         navBarStore.setNavBarConfig(config) // 更新配置
     }
     return {
-        isActive: navBarStore.isActive,
+        isEnable: navBarStore.isEnable,
         navbarComponents: navBarStore.navbarComponents,
     }
 }

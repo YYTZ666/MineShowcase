@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import NavBar from '@/components/NavBar/NavBar.vue'
 
-const { isActive } = useNavBar()
+const isActive = ref(useNavBar().isEnable)
 </script>
 <template>
     <div class="layout">
@@ -9,7 +9,7 @@ const { isActive } = useNavBar()
             <Header />
         </header>
         <div class="content">
-            <aside class="sidebar" :class="{ active: isActive }">
+            <aside v-if="useNavBar().isEnable" class="sidebar" :class="{ active: isActive }">
                 <NavBar />
             </aside>
             <main class="main-content">
@@ -17,6 +17,7 @@ const { isActive } = useNavBar()
             </main>
         </div>
         <a-float-button-group
+            v-if="useNavBar().isEnable"
             class="menu_button"
             shape="square"
             :style="{ right: '20px' }"
