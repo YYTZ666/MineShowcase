@@ -114,7 +114,7 @@ const handleMouseLeave = () => {
                 />
             </NuxtLink>
             <transition name="title-swap" mode="out-in">
-                <h2 :key="pageTitle">{{ pageTitle }}</h2>
+                <h3 :key="pageTitle">{{ pageTitle }}</h3>
             </transition>
         </div>
         <div class="search-container">
@@ -167,7 +167,7 @@ const handleMouseLeave = () => {
     align-items: center;
     height: 100%;
     justify-content: space-between;
-    padding: 0 1rem;
+    padding: 0 2rem;
     top: 0;
     left: 0;
     right: 0;
@@ -222,7 +222,7 @@ const handleMouseLeave = () => {
         &::before {
             opacity: 0 !important;
         }
-        .logo h2 {
+        .logo h3 {
             opacity: 1 !important;
             transform: scale(1) !important;
         }
@@ -238,8 +238,9 @@ const handleMouseLeave = () => {
                 transform: rotate(-15deg);
             }
         }
-        h2 {
+        h3 {
             position: relative;
+            font-weight: normal;
             background: @background-light;
             -webkit-background-clip: text;
             background-clip: text;

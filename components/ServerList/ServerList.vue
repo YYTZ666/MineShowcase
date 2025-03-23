@@ -123,27 +123,33 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
 
 <template>
     <div class="ServerList">
-        <h1>服务器列表</h1>
+        <div class="text">
+            <h1>服务器列表</h1>
+            <p>轻松搜索并发现优质服务器。支持名称、拼音或首字母快速查询，提供随机推荐与分页浏览功能，助您快速找到符合需求的服务器资源。</p>
+        </div>
+        <a-divider />
         <div v-if="error">加载失败QAQ (code: {{ error.message }})</div>
         <div v-else>
             <!-- 搜索框 -->
             <div class="search-box">
                 <a-input
+                    class="input"
                     v-model:value="searchQuery"
                     placeholder="输入服务器名称、拼音或拼音首字母搜索..."
                     allow-clear
                     @keyup.enter="page = 1"
                 />
+                <div class="page">
+                    <a-button @click="random">随机</a-button>
+                    <a-pagination
+                        class="pagin"
+                        v-model:current="page"
+                        :page-size="pageSize"
+                        :total="ServersTotal"
+                    />
+                </div>
             </div>
-            <div class="page">
-                <a-button @click="random">随机</a-button>
-                <a-pagination
-                    v-model:current="page"
-                    :page-size="pageSize"
-                    :total="ServersTotal"
-                />
-            </div>
-            <a-divider />
+
             <TransitionGroup
                 tag="div"
                 name="fade"
@@ -200,15 +206,34 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
     }
     padding: 20px;
 }
+.text {
+    text-align: center;
+    h1 {
+        font-weight: normal;
+    }
+    p {
+        font-size: 1.2rem;
+        padding-inline: 2rem;
+    }
+}
 .search-box {
-    margin-bottom: 20px;
-    max-width: 300px;
-}
-.page {
     display: flex;
-    gap: 0.4rem;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    .input {
+        max-width: 15rem;
+    }
+    .page {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+        .pagin {
+            display: flex;
+        }
+    }
 }
+
 .grid-list {
     display: grid;
     box-sizing: border-box;

@@ -32,17 +32,17 @@ const stats = shallowRef({
 @import '@/assets/css/variables.less';
 
 .content-wrapper {
-    padding: 12px;
+    padding: 0.5rem;
 }
 .section {
     width: 100%;
     border-radius: 8px;
+    border: 0px;
     background: #fff;
     @media (prefers-color-scheme: dark) {
         background: @card-dark;
         border: 2px solid @border-color-dark;
     }
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
 
     .card-title {

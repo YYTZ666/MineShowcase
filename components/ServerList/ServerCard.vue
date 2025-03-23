@@ -220,14 +220,14 @@ const copyToClipboard = (event: MouseEvent) => {
 
 .card {
     overflow: hidden;
-    height: 20rem;
+    height: 19rem;
     box-sizing: border-box;
-    border: 2px solid @border-color;
+    border: 1px solid @border-color;
     @media (prefers-color-scheme: dark) {
-        border: 2px solid @border-color-dark;
+        border: 1px solid @border-color-dark;
         background-color: @card-dark;
     }
-    border-radius: 8px;
+    border-radius: 2px;
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
     transition:
         transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
@@ -243,14 +243,13 @@ const copyToClipboard = (event: MouseEvent) => {
         height: 60%;
         overflow: hidden;
         box-sizing: border-box;
-        margin: 0.6rem;
-        border-radius: 4px;
+        margin-block-end: 0.6rem;
         background-color: #fff;
 
-        border: 2px dashed @border-color;
+        border-block-end: 1px dashed @border-color;
         @media (prefers-color-scheme: dark) {
             background-color: @border-color-dark;
-            border: 2px dashed @border-color-dark;
+            border-block-end: 1px dashed @border-color-dark;
         }
         position: relative;
 
@@ -273,8 +272,6 @@ const copyToClipboard = (event: MouseEvent) => {
                 background-color: @border-color-dark;
                 border: 1px solid @border-color-dark;
             }
-
-            border-radius: 5px;
         }
 
         img {
@@ -327,21 +324,20 @@ const copyToClipboard = (event: MouseEvent) => {
             min-height: 4rem;
             width: 4rem;
             min-width: 4rem;
-            border: 2px solid @border-color;
-            border-radius: 50%;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            border: 1px solid @border-color;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: center;
             align-items: center;
             background-color: #fefefe;
             @media (prefers-color-scheme: dark) {
-                border: 2px solid @border-color-secondary-dark;
+                border: 1px solid @border-color-secondary-dark;
+                filter: brightness(60%);
             }
             img {
-                width: 90%;
-                height: 90%;
+                width: 100%;
+                height: 100%;
                 object-fit: contain;
-                border-radius: 50%;
             }
         }
     }

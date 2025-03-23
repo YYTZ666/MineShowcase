@@ -39,12 +39,12 @@
 }
 
 .skeleton-card {
-    border: 2px solid #ebedf0;
-    border-radius: 8px;
-    height: 20rem;
+    border: 1px solid #ebedf0;
+    border-radius: 2px;
+    height: 19rem;
     overflow: hidden;
     @media (prefers-color-scheme: dark) {
-        border: 2px solid @border-color-dark;
+        border: 1px solid @border-color-dark;
         background-color: @card-dark;
     }
 
@@ -64,7 +64,7 @@
     .skeleton-avatar {
         background: #e8e8e8 !important;
         animation: skeleton-loading 1.5s infinite;
-        border: 2px solid #ebedf0 !important;
+        border: 1px solid #ebedf0 !important;
     }
 
     .skeleton-title {
@@ -86,7 +86,7 @@
         height: 24px;
         width: 60px;
         background: #e8e8e8;
-        border-radius: 4px;
+        // border-radius: 4px;
         animation: skeleton-loading 1.5s infinite;
         margin: 2px;
     }
@@ -95,17 +95,15 @@
         height: 24px;
         width: 120px;
         background: #e8e8e8;
-        border-radius: 4px;
+        // border-radius: 4px;
         animation: skeleton-loading 1.5s infinite;
     }
 
-    /* 保留原有布局结构 */
     .card-cover {
         height: 60%;
-        margin: 0.6rem;
-        border-radius: 4px;
         position: relative;
         overflow: hidden;
+        margin-block-end: 0.6rem;
     }
     .card-split {
         display: flex;
@@ -115,7 +113,6 @@
         .card-icon {
             height: 4rem;
             width: 4rem;
-            border-radius: 50%;
             margin-right: 0.6rem;
         }
 
