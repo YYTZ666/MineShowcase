@@ -3,8 +3,9 @@ import UserPanel from '@/components/UserPanel/UserPanel.vue'
 import UserProfile from '@/components/UserPanel/UserProfile.vue'
 const route = useRoute()
 const UserType = route.params.UUID
-definePageMeta({
-    navbar: 'user',
+useNavBar({
+    enable: true,
+    component: ['Stats']
 })
 useHead({
     title: '用户页',

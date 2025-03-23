@@ -9,9 +9,6 @@ title.value = 'MSCPO'
 useHead({
     title: title,
 })
-definePageMeta({
-    navbar: 'index',
-})
 </script>
 
 <template>

@@ -50,7 +50,7 @@ onMounted(() => {
 <style scoped lang="less">
 .layout {
     box-sizing: border-box;
-    height: 100vh;
+    height: 100%;
     /* 建议在 nuxt.config.ts 中预加载背景图片 */
     background-image: url('@/assets/bg.webp');
     background-size: cover;

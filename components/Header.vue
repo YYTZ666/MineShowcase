@@ -407,6 +407,14 @@ const MenuDisplay = ref(false)
         @media screen and (max-width: 768px) {
             display: none;
         }
+        color: @background-light;
+        @media (prefers-color-scheme: dark) {
+            color: @background-light;
+
+            &:hover {
+                background: @primary-dark !important;
+            }
+        }
     }
 
     .account {
