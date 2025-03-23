@@ -1,31 +1,7 @@
 <script setup lang="ts">
-import { ref, watch, shallowRef } from 'vue'
-import DefaultNavBar from '@/components/NavBar/DefaultNavBar.vue'
-import IndexNavBar from '@/components/NavBar/IndexNavBar.vue'
+import NavBar from '@/components/NavBar/NavBar.vue'
 
-const isActive = ref(false)
-const route = useRoute()
-const navbarComponents: Record<string, Component> = {
-    default: DefaultNavBar,
-    index: IndexNavBar,
-    user: DefaultNavBar,
-}
-let navbarType: string = (route.meta.navbar as string) || 'default'
-
-const NavBarComponent = shallowRef(
-    navbarComponents[navbarType] || navbarComponents['default'],
-)
-
-watch(
-    () => route.meta.navbar,
-    (newNavbarType) => {
-        console.log('Navbar type changed:', newNavbarType) // 调试日志
-        navbarType = (newNavbarType as string) || 'default'
-        NavBarComponent.value =
-            navbarComponents[navbarType] || navbarComponents['default']
-        console.log('New NavBarComponent:', NavBarComponent.value) // 调试日志
-    },
-)
+const { isActive } = useNavBar()
 </script>
 <template>
     <div class="layout">
@@ -34,9 +10,7 @@ watch(
         </header>
         <div class="content">
             <aside class="sidebar" :class="{ active: isActive }">
-                <transition name="slide" mode="out-in">
-                    <component :is="NavBarComponent"></component>
-                </transition>
+                <NavBar />
             </aside>
             <main class="main-content">
                 <slot />
@@ -58,17 +32,6 @@ watch(
 
 <style lang="less">
 @import '../assets/css/default.less';
-
-.slide-enter-active {
-    transition:
-        transform 0.5s ease,
-        opacity 1s ease;
-}
-.slide-leave-active {
-    transition:
-        transform 0.5s ease,
-        opacity 0.1s ease;
-}
 
 .slide-enter-from,
 .slide-leave-to {

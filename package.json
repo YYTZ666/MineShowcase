@@ -36,6 +36,7 @@
         "@nuxtjs/pwa": "^3.3.5",
         "@nuxtjs/seo": "^3.0.1",
         "@originjs/vite-plugin-content": "^1.0.5",
+        "@pinia/nuxt": "^0.10.1",
         "@types/lozad": "^1.16.4",
         "@vicons/ionicons5": "^0.13.0",
         "@vite-pwa/nuxt": "0.10.6",

@@ -99,6 +99,7 @@ export default defineNuxtConfig({
     modules: [
         '@nuxtjs/seo',
         '@nuxthub/core',
+        '@pinia/nuxt',
         'nuxt-og-image',
         '@ant-design-vue/nuxt',
         'nuxt-style-extractor',
