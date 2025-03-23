@@ -3,6 +3,9 @@ import { ref, computed } from 'vue'
 import { useDebounceFn, onClickOutside } from '@vueuse/core'
 import { ServerAPI } from '@/api'
 
+// Header 适配
+const emits = defineEmits(['update:modelValue', 'execute'])
+
 const router = useRouter()
 const inputRef = ref(null)
 const activeKey = ref(['1'])
@@ -84,7 +87,7 @@ const docResults = computed<SearchResult[]>(() => [])
                                     class="info-item"
                                     v-for="server in serverResults"
                                     :key="server.id"
-                                    @click="PushRouter(server.id)"
+                                    @click="PushRouter(server.id);emits('update:modelValue', false)"
                                 >
                                     {{ server.name }}
                                 </div>

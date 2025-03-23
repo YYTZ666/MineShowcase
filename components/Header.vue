@@ -185,7 +185,7 @@ const MenuDisplay = ref(false)
             <div class="mobile-menu" v-if="MenuDisplay">
                 <div class="menu-box">
                     <div class="menu-item">
-                        <GlobalSearch />
+                        <GlobalSearch v-model="MenuDisplay" />
                     </div>
                     <div @click="MenuDisplay = false">
                         <a class="menu-item menu-btn" @click="router.push('/')">
@@ -213,7 +213,7 @@ const MenuDisplay = ref(false)
                             退出登录
                         </a>
                     </div>
-                    <div v-else>
+                    <div v-else @click="MenuDisplay = false">
                         <a
                             class="menu-item menu-btn"
                             @click="router.push('/auth')"
