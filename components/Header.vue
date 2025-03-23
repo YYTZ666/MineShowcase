@@ -131,7 +131,9 @@ const MenuDisplay = ref(false)
             <div class="search-container">
                 <GlobalSearch />
             </div>
-            <a-button type="text" @click="router.push('/about/')">关于</a-button>
+            <a-button class="r-btn" type="text" @click="router.push('/about/')">
+                关于
+            </a-button>
             <div class="account">
                 <a-badge :badge="unreadCount" :max="99" v-if="token_status">
                     <NotificationFilled class="notify-icon" />
@@ -399,6 +401,11 @@ const MenuDisplay = ref(false)
         }
         @media screen and (max-width: 768px) {
             display: block;
+        }
+    }
+    .r-btn {
+        @media screen and (max-width: 768px) {
+            display: none;
         }
     }
 
