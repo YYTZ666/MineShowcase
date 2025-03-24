@@ -10,10 +10,7 @@ const recommendations = shallowRef([
 
 <template>
     <!-- 为您推荐 -->
-    <a-card class="section recommend-section">
-        <template #title>
-            <div class="card-title" role="heading">为您推荐</div>
-        </template>
+    <a-card title="为您推荐" class="section recommend-section">
         <a-space direction="vertical">
             <div
                 v-for="server in recommendations"

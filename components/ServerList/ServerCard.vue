@@ -151,6 +151,7 @@ const copyToClipboard = (event: MouseEvent) => {
                             @click.stop="copyToClipboard"
                             :value="StatusInfo.ip ?? '加载中...'"
                             readonly
+                            role="presentation"
                             size="small"
                             style="
                                 width: auto;

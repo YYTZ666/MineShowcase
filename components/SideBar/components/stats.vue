@@ -10,10 +10,7 @@ const stats = shallowRef({
 
 <template>
     <!-- 全站状态 -->
-    <a-card class="section stats-section">
-        <template #title>
-            <div class="card-title" role="heading">全站状态</div>
-        </template>
+    <a-card title="全站状态" class="section stats-section">
         <a-space direction="vertical">
             <a-statistic title="在线玩家" :value="stats.onlinePlayers" />
             <a-statistic title="24小时新服" :value="stats.newServers24h" />

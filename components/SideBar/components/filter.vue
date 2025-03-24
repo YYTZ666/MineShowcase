@@ -10,10 +10,7 @@ const filters = ref({
 
 <template>
     <!-- 精准筛选 -->
-    <a-card class="section filter-section">
-        <template #title>
-            <div class="card-title" role="heading">精准筛选</div>
-        </template>
+    <a-card title="精准筛选" class="section filter-section">
         <a-space direction="vertical">
             <div class="custom-sider">
                 <!-- 游戏模式筛选 -->
