@@ -8,9 +8,8 @@ import Img404 from '@/assets/error.webp'
 import Share from '@/components/Share/Share.vue'
 import Comment from '@/components/Comment/Comment.vue'
 
-useNavBar({
-    enable: true,
-    component: ['Recommend', 'Stats'],
+definePageMeta({
+    sidebar: ['Stats', 'Recommend'],
 })
 
 const { data: managers } = useRequest(

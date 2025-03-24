@@ -2,6 +2,11 @@
 import Login from '@/components/Authorization/Login.vue'
 import Register from '@/components/Authorization/Register.vue'
 import { ref, computed } from 'vue'
+
+definePageMeta({
+    layout: 'auth',
+})
+
 useHead({
     title: '登录',
 })
@@ -15,6 +20,7 @@ router.beforeEach((to, from, next) => {
         next()
     }
 })
+
 const route = useRoute()
 const RegToken = computed(() => (route.query.token as string) || undefined)
 

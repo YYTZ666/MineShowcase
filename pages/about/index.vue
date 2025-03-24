@@ -3,10 +3,7 @@ import config from '~/package.json'
 import Logo from '@/assets/logo.svg'
 const title = useState<string>('pageTitle')
 title.value = '关于 MineShowcase'
-useNavBar({
-    enable: true,
-    component: ['Stats']
-})
+
 useHead({
     title: title,
 })

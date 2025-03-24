@@ -3,10 +3,11 @@ import UserPanel from '@/components/UserPanel/UserPanel.vue'
 import UserProfile from '@/components/UserPanel/UserProfile.vue'
 const route = useRoute()
 const UserType = route.params.UUID
-useNavBar({
-    enable: true,
-    component: ['Stats']
+
+definePageMeta({
+    sidebar: ['Stats', 'Recommend'],
 })
+
 useHead({
     title: '用户页',
 })
@@ -14,5 +15,5 @@ useHead({
 
 <template>
     <UserPanel v-if="UserType === 'me'" />
-    <UserProfile v-else/>
+    <UserProfile v-else />
 </template>

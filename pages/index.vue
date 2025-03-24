@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import ServerList from '@/components/ServerList/ServerList.vue'
-useNavBar({
-    enable: true,
-    component: ['Recommend', 'Stats', 'Filter'],
+
+definePageMeta({
+    sidebar: ['Stats', 'Recommend', 'Filter'],
 })
+
 const title = useState<string>('pageTitle')
 title.value = 'MSCPO'
 useHead({
