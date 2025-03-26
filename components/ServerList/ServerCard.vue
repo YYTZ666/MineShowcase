@@ -119,6 +119,7 @@ const copyToClipboard = (event: MouseEvent) => {
                 :src="cover_url || IMG_noimage"
                 alt="无图片"
                 class="lozad"
+                :class="{ noimg: !cover_url }"
                 rel="preload"
                 as="image"
             />
@@ -268,6 +269,7 @@ const copyToClipboard = (event: MouseEvent) => {
             font-weight: bold;
             color: @text-color-light;
             background-color: @border-color;
+            opacity: 0.8;
             border: 1px solid @border-color;
             @media (prefers-color-scheme: dark) {
                 color: @text-color-dark;
@@ -283,6 +285,14 @@ const copyToClipboard = (event: MouseEvent) => {
             @media (prefers-color-scheme: dark) {
                 filter: brightness(0.5);
             }
+        }
+        .noimg {
+            width: 50%;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     }
 

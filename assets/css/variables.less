@@ -97,3 +97,13 @@
 @spacing-md: 16px; // 中等间距
 @spacing-lg: 24px; // 大间距
 @spacing-xl: 32px; // 超大间距
+
+
+// 文字处理函数
+.text-overflow(@line) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: @line;
+    -webkit-box-orient: vertical;
+}

@@ -70,8 +70,8 @@ const beforeUpload = (file: File) => {
         return false
     }
 
-    const isLt2M = file.size / 1024 / 1024 < 15
-    if (!isLt2M) {
+    const isLt15M = file.size / 1024 / 1024 < 15
+    if (!isLt15M) {
         message.error('  文件过大：请选择小于 15MB 的图片')
         return false
     }
@@ -204,7 +204,7 @@ const { send: PutServerInfo } = useRequest(
         formData.append('name', name)
         formData.append('ip', ip)
         formData.append('desc', desc)
-        tags.forEach((tag) => formData.append('tags', tag))
+        tags.forEach((tag) => formData.append('tags', tag)) // FormData不能传输数组，所以用此代替
         formData.append('version', version)
         formData.append('link', link)
 
@@ -258,9 +258,7 @@ const saveServerInfo = async () => {
 }
 
 const {
-    send: refreshServerInfo,
-    onSuccess,
-    onError,
+    send: refreshServerInfo
 } = useRequest(
     () =>
         ServerAPI_Token.Get<StatusWithUser>(`/v1/servers/${ServerID}/editor`, {
@@ -271,9 +269,7 @@ const {
         initialData: {},
         retry: 3,
     },
-)
-
-onSuccess(({ data }) => {
+).onSuccess(({ data }) => {
     // 更新表单为服务器最新数据
     serverInfo.name = data.name
     serverInfo.ip = data.ip
@@ -287,9 +283,7 @@ onSuccess(({ data }) => {
     localStorage.removeItem(`draft-${ServerID}`)
     hasDraft.value = false
     checkServerStatus(serverInfo.ip)
-})
-
-onError(() => {
+}).onError(() => {
     serverInfo.error = '网站的妈妈叫后端吃饭去了...请稍后再试'
     serverInfo.code = 502
     serverInfo.loading = false
