@@ -9,10 +9,10 @@ import {
     CloudDone,
 } from '@vicons/ionicons5'
 import { useRequest, useForm } from 'alova/client'
-import DynamicTags from '@/components/Common/DynamicTags/DynamicTags.vue'
-import { ServerAPI_Token, fetch_status } from '@/api'
+import DynamicTags from '~/components/Common/DynamicTags/DynamicTags.vue'
+import { ServerAPI_Token, fetch_status } from '~/api'
 import type { UploadChangeParam } from 'ant-design-vue'
-import type { Fetch_Status, StatusWithUser } from '@/api/models'
+import type { Fetch_Status, StatusWithUser } from '~/api/models'
 import Img404 from '@/assets/error.webp'
 import { useDebounceFn } from '@vueuse/core'
 import { VueCropper } from 'vue-cropper'
@@ -52,7 +52,7 @@ const serverStatus = reactive({
     loading: false,
 })
 
-const previewUrl = ref('')
+const previewUrl = ref<string | null>('')
 const showCropper = ref(false)
 const cropper = ref<InstanceType<typeof VueCropper>>()
 const uploadFile = ref<File>()
@@ -167,7 +167,7 @@ const clearDraft = async () => {
             serverInfo.version = response.version
             serverInfo.link = response.link
             serverInfo.cover = null
-            previewUrl.value = ''
+            previewUrl.value = response.cover_url
 
             message.success('  草稿已清除，恢复最新数据')
         } else {
@@ -204,7 +204,7 @@ const { send: PutServerInfo } = useRequest(
         formData.append('name', name)
         formData.append('ip', ip)
         formData.append('desc', desc)
-        formData.append('tags', JSON.stringify(tags))
+        tags.forEach((tag) => formData.append('tags', tag))
         formData.append('version', version)
         formData.append('link', link)
 
@@ -282,6 +282,7 @@ onSuccess(({ data }) => {
     serverInfo.loading = false
     serverInfo.version = data.version
     serverInfo.link = data.link
+    previewUrl.value = data.cover_url
     // 清除草稿缓存
     localStorage.removeItem(`draft-${ServerID}`)
     hasDraft.value = false
@@ -339,7 +340,9 @@ const autoSave = useDebounceFn(async () => {
             reader.onloadend = () => {
                 resolve(reader.result as string)
             }
-            reader.readAsDataURL(serverInfo.cover)
+            if (serverInfo.cover) {
+                reader.readAsDataURL(serverInfo.cover)
+            }
         })
     }
     const draftData = {
@@ -364,7 +367,9 @@ const manualSave = async () => {
             reader.onloadend = () => {
                 resolve(reader.result as string)
             }
-            reader.readAsDataURL(serverInfo.cover)
+            if (serverInfo.cover) {
+                reader.readAsDataURL(serverInfo.cover)
+            }
         })
     }
     const draftData = {
@@ -492,7 +497,7 @@ const isDarkMode = useState<boolean>('isDarkMode')
                             @change="handleChange"
                         >
                             <img
-                                v-if="serverInfo.cover"
+                                v-if="previewUrl"
                                 :src="previewUrl"
                                 alt="cover"
                                 style="width: 100%"
@@ -589,7 +594,7 @@ const isDarkMode = useState<boolean>('isDarkMode')
             v-model:open="showCropper"
             :maskClosable="false"
             preset="card"
-            style="width: 400px"
+            style="width: 600px"
             title="图片裁切"
             @ok="confirmCrop"
             @cancel="clearUploadList"
@@ -598,11 +603,10 @@ const isDarkMode = useState<boolean>('isDarkMode')
                 ref="cropper"
                 :img="previewUrl"
                 :full="true"
-                :fixed-box="true"
-                :fixed-number="[512,300]"
-                :auto-crop-height="300"
-                :enlarge="1"
+                :autoCrop="true"
+                :fixed="true"
                 :infoTrue="true"
+                :fixedNumber="[16, 9]"
                 :centerBox="true"
                 style="height: 400px; width: 100%"
             />

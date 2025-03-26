@@ -4,8 +4,8 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "build": "nuxt build",
-        "dev": "nuxt dev",
+        "build": "nuxt build --dotenv .env.production",
+        "dev": "nuxt dev --dotenv .env.development",
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
@@ -24,6 +24,7 @@
         "alova": "^3.2.10",
         "ant-design-vue": "^4.2.6",
         "babel-runtime": "^6.26.0",
+        "dotenv": "^16.4.7",
         "lozad": "^1.16.0",
         "md-editor-v3": "^5.4.2",
         "nuxt-style-extractor": "^0.1.3",
@@ -61,6 +62,7 @@
         "onlyBuiltDependencies": [
             "@parcel/watcher",
             "core-js",
+            "esbuild",
             "sharp",
             "workerd"
         ]

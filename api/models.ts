@@ -53,7 +53,7 @@ export interface Status extends Server {
     permission: 'owner' | 'admin' | 'guest' | undefined
     code?: number
     detail: string | undefined
-    cover_url: string
+    cover_url: string | null
 }
 
 /**

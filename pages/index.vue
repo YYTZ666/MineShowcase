@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ServerList from '@/components/ServerList/ServerList.vue'
+import ServerList from '~/components/ServerList/ServerList.vue'
 
 definePageMeta({
     sidebar: ['Stats', 'Recommend', 'Filter'],

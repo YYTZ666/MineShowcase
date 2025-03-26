@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed, defineAsyncComponent } from 'vue'
-import { ServerAPI } from '@/api'
-import type { List, Status } from '@/api/models'
+import { ServerAPI } from '~/api'
+import type { List, Status } from '~/api/models'
 
 const ServerCard = defineAsyncComponent(() => import('./ServerCard.vue'))
 
@@ -182,6 +182,7 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
                     :is_member="server.is_member"
                     :permission="server.permission"
                     :detail="server.detail"
+                    :cover_url="server.cover_url"
                 />
             </TransitionGroup>
 

@@ -49,6 +49,7 @@ const StatusInfo = ref<Status>({
     code: 200,
     detail: undefined,
     permission: undefined,
+    cover_url: null,
 })
 
 // 延迟加载：只有当卡片进入视口且未发起请求时再请求状态数据
@@ -115,7 +116,7 @@ const copyToClipboard = (event: MouseEvent) => {
     <div ref="cardRef" class="card" @click="handleCardClick">
         <div class="card-cover">
             <img
-                :src="IMG_noimage"
+                :src="cover_url || IMG_noimage"
                 alt="无图片"
                 class="lozad"
                 rel="preload"
@@ -276,11 +277,12 @@ const copyToClipboard = (event: MouseEvent) => {
         }
 
         img {
-            width: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            @media (prefers-color-scheme: dark) {
+                filter: brightness(0.5);
+            }
         }
     }
 
