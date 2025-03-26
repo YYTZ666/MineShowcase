@@ -8,12 +8,15 @@ import {
     CloudDownloadOutline,
     CloudDone,
 } from '@vicons/ionicons5'
-import { useRequest } from 'alova/client'
+import { useRequest, useForm } from 'alova/client'
 import DynamicTags from '@/components/Common/DynamicTags/DynamicTags.vue'
 import { ServerAPI_Token, fetch_status } from '@/api'
+import type { UploadChangeParam } from 'ant-design-vue'
 import type { Fetch_Status, StatusWithUser } from '@/api/models'
 import Img404 from '@/assets/error.webp'
 import { useDebounceFn } from '@vueuse/core'
+import { VueCropper } from 'vue-cropper'
+import 'vue-cropper/dist/index.css'
 
 const title = useState<string>('pageTitle')
 title.value = '编辑'
@@ -29,16 +32,18 @@ const hasPermission = ref(false) // 新增权限状态
 
 // 服务器信息状态
 const serverInfo = reactive({
+    cover: null as File | null,
     name: '',
-    ip: '',
     desc: '加载中...',
+    ip: '',
+    link: '',
     tags: [] as string[],
     version: '',
-    link: '',
     loading: true,
     error: undefined as string | undefined,
     code: 200,
 })
+
 // 服务器状态检测
 const serverStatus = reactive({
     color: 'processing',
@@ -46,6 +51,65 @@ const serverStatus = reactive({
     text: '检测中...',
     loading: false,
 })
+
+const previewUrl = ref('')
+const showCropper = ref(false)
+const cropper = ref<InstanceType<typeof VueCropper>>()
+const uploadFile = ref<File>()
+
+onBeforeUnmount(() => {
+    if (previewUrl.value) {
+        URL.revokeObjectURL(previewUrl.value)
+    }
+})
+
+const beforeUpload = (file: File) => {
+    const isImage = file.type.startsWith('image/')
+    if (!isImage) {
+        message.error('  文件格式错误：请选择图片文件')
+        return false
+    }
+
+    const isLt2M = file.size / 1024 / 1024 < 15
+    if (!isLt2M) {
+        message.error('  文件过大：请选择小于 15MB 的图片')
+        return false
+    }
+
+    // 显示裁切模态框
+    previewUrl.value = URL.createObjectURL(file)
+    uploadFile.value = file
+    showCropper.value = true
+    return false // 阻止自动上传
+}
+
+// 文件上传状态变化处理
+const handleChange = (info: UploadChangeParam) => {
+    if (info.file.status === 'error') {
+        message.error('  上传失败')
+    }
+}
+
+// 确认裁切
+const confirmCrop = () => {
+    cropper.value?.getCropBlob((blob: Blob) => {
+        if (blob) {
+            const ext = uploadFile.value?.name.split('.').pop() || 'png'
+            const newFile = new File([blob], `cover.${ext}`, {
+                type: blob.type,
+            })
+            previewUrl.value = URL.createObjectURL(newFile)
+            serverInfo.cover = newFile
+            showCropper.value = false
+        }
+    })
+}
+
+// 清空上传
+const clearUploadList = () => {
+    showCropper.value = false
+    serverInfo.cover = null
+}
 
 const loadDraft = async () => {
     const key = `draft-${ServerID}`
@@ -55,7 +119,6 @@ const loadDraft = async () => {
             const parsed = JSON.parse(draft)
             // 先验证权限
             const response = await refreshServerInfo()
-
             if (response.code === 200) {
                 // 有权限时才加载草稿
                 serverInfo.name = parsed.name || serverInfo.name
@@ -64,6 +127,18 @@ const loadDraft = async () => {
                 serverInfo.tags = parsed.tags || serverInfo.tags
                 serverInfo.version = parsed.version || serverInfo.version
                 serverInfo.link = parsed.link || serverInfo.link
+                if (parsed.cover) {
+                    const response = await fetch(parsed.cover)
+                    const blob = await response.blob()
+                    const ext = parsed.cover.split(';')[0].split('/')[1]
+                    serverInfo.cover = new File([blob], `cover.${ext}`, {
+                        type: blob.type,
+                    })
+                    previewUrl.value = URL.createObjectURL(serverInfo.cover)
+                } else {
+                    serverInfo.cover = null
+                    previewUrl.value = ''
+                }
                 hasDraft.value = true
                 hasPermission.value = true
             } else {
@@ -73,7 +148,7 @@ const loadDraft = async () => {
                 hasPermission.value = false
             }
         } catch (e) {
-            console.error('加载草稿失败:', e)
+            console.error('  加载草稿失败:', e)
             localStorage.removeItem(key)
         }
     }
@@ -91,13 +166,15 @@ const clearDraft = async () => {
             serverInfo.tags = response.tags
             serverInfo.version = response.version
             serverInfo.link = response.link
+            serverInfo.cover = null
+            previewUrl.value = ''
 
-            message.success('草稿已清除，恢复最新数据')
+            message.success('  草稿已清除，恢复最新数据')
         } else {
-            message.error('清除草稿失败：权限验证未通过')
+            message.error('  清除草稿失败：权限验证未通过')
         }
     } catch (error) {
-        message.error('清除草稿失败')
+        message.error('  清除草稿失败')
     }
 }
 
@@ -109,25 +186,44 @@ const { send: PutServerInfo } = useRequest(
         tags,
         version,
         link,
+        cover,
     }: {
-        name: string
-        ip: string
         desc: string
+        ip: string
+        link: string
+        name: string
         tags: string[]
         version: string
-        link: string
-    }) =>
-        ServerAPI_Token.Put<StatusWithUser>(`/v1/servers/${ServerID}`, {
-            name,
-            ip,
-            desc,
-            tags,
-            version,
-            link,
-        }),
+        cover: File | null
+    }) => {
+        const formData = new FormData()
+        if (cover) {
+            console.log('添加Cover')
+            formData.append('cover', cover)
+        }
+        formData.append('name', name)
+        formData.append('ip', ip)
+        formData.append('desc', desc)
+        formData.append('tags', JSON.stringify(tags))
+        formData.append('version', version)
+        formData.append('link', link)
+
+        return ServerAPI_Token.Put<StatusWithUser>(
+            `/v1/servers/${ServerID}`,
+            formData,
+        )
+    },
     {
         immediate: false, // 禁用自动请求
-        initialData: {},
+        initialData: {
+            name: '',
+            ip: '',
+            desc: '',
+            tags: [],
+            version: '',
+            link: '',
+            cover: null,
+        },
         retry: 3,
     },
 )
@@ -143,6 +239,7 @@ const saveServerInfo = async () => {
             tags: serverInfo.tags,
             version: serverInfo.version,
             link: serverInfo.link,
+            cover: serverInfo.cover,
         })
         if (response.code === 200) {
             await clearDraft()
@@ -175,6 +272,7 @@ const {
         retry: 3,
     },
 )
+
 onSuccess(({ data }) => {
     // 更新表单为服务器最新数据
     serverInfo.name = data.name
@@ -189,6 +287,7 @@ onSuccess(({ data }) => {
     hasDraft.value = false
     checkServerStatus(serverInfo.ip)
 })
+
 onError(() => {
     serverInfo.error = '网站的妈妈叫后端吃饭去了...请稍后再试'
     serverInfo.code = 502
@@ -224,7 +323,7 @@ const updateServerStatus = (data: Fetch_Status) => {
     if (data.online) {
         serverStatus.color = 'success'
         serverStatus.icon = markRaw(CloudDone) // 动态赋值时标记
-        serverStatus.text = `在线 - ${data.players.online}/${data.players.max} 玩家`
+        serverStatus.text = `在线 - ${data.players.online}/${data.players.max}  玩家`
     } else {
         serverStatus.color = 'error'
         serverStatus.icon = markRaw(CloudOffline) // 动态赋值时标记
@@ -232,7 +331,17 @@ const updateServerStatus = (data: Fetch_Status) => {
     }
 }
 
-const autoSave = useDebounceFn(() => {
+const autoSave = useDebounceFn(async () => {
+    let coverDataUrl = null
+    if (serverInfo.cover) {
+        coverDataUrl = await new Promise<string>((resolve) => {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                resolve(reader.result as string)
+            }
+            reader.readAsDataURL(serverInfo.cover)
+        })
+    }
     const draftData = {
         name: serverInfo.name,
         ip: serverInfo.ip,
@@ -240,13 +349,24 @@ const autoSave = useDebounceFn(() => {
         tags: serverInfo.tags,
         version: serverInfo.version,
         link: serverInfo.link,
+        cover: coverDataUrl,
     }
     localStorage.setItem(`draft-${ServerID}`, JSON.stringify(draftData))
-    message.success('草稿已自动保存', 2)
+    message.success('  草稿已自动保存', 2)
     hasDraft.value = true
 }, 3000)
 
-const manualSave = () => {
+const manualSave = async () => {
+    let coverDataUrl = null
+    if (serverInfo.cover) {
+        coverDataUrl = await new Promise<string>((resolve) => {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                resolve(reader.result as string)
+            }
+            reader.readAsDataURL(serverInfo.cover)
+        })
+    }
     const draftData = {
         name: serverInfo.name,
         ip: serverInfo.ip,
@@ -254,9 +374,10 @@ const manualSave = () => {
         tags: serverInfo.tags,
         version: serverInfo.version,
         link: serverInfo.link,
+        cover: coverDataUrl,
     }
     localStorage.setItem(`draft-${ServerID}`, JSON.stringify(draftData))
-    message.success('草稿已保存', 2)
+    message.success('  草稿已保存', 2)
 }
 
 onMounted(async () => {
@@ -294,6 +415,7 @@ onMounted(async () => {
                 () => serverInfo.tags,
                 () => serverInfo.version,
                 () => serverInfo.link,
+                () => serverInfo.cover,
             ],
             autoSave,
         )
@@ -358,6 +480,29 @@ const isDarkMode = useState<boolean>('isDarkMode')
                         </a-tag>
                     </div>
 
+                    <div class="form-item">
+                        <label>服务器封面</label>
+                        <a-upload
+                            name="cover"
+                            accept="image/*"
+                            list-type="picture-card"
+                            :show-upload-list="false"
+                            :before-upload="beforeUpload"
+                            :supportServerRender="true"
+                            @change="handleChange"
+                        >
+                            <img
+                                v-if="serverInfo.cover"
+                                :src="previewUrl"
+                                alt="cover"
+                                style="width: 100%"
+                            />
+                            <div v-else>
+                                <plus-outlined />
+                                <div class="ant-upload-text">Upload</div>
+                            </div>
+                        </a-upload>
+                    </div>
                     <div class="form-item">
                         <label>服务器名称</label>
                         <a-input
@@ -439,6 +584,37 @@ const isDarkMode = useState<boolean>('isDarkMode')
                 </div>
             </div>
         </a-spin>
+        <!-- 裁切模态框 -->
+        <a-modal
+            v-model:open="showCropper"
+            :maskClosable="false"
+            preset="card"
+            style="width: 400px"
+            title="图片裁切"
+            @ok="confirmCrop"
+            @cancel="clearUploadList"
+        >
+            <vue-cropper
+                ref="cropper"
+                :img="previewUrl"
+                :full="true"
+                :fixed-box="true"
+                :fixed-number="[512,300]"
+                :auto-crop-height="300"
+                :enlarge="1"
+                :infoTrue="true"
+                :centerBox="true"
+                style="height: 400px; width: 100%"
+            />
+            <template #footer>
+                <a-space justify="end">
+                    <a-button @click="clearUploadList">取消</a-button>
+                    <a-button type="primary" @click="confirmCrop">
+                        确认
+                    </a-button>
+                </a-space>
+            </template>
+        </a-modal>
     </div>
 </template>
 

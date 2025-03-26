@@ -101,7 +101,7 @@ export default defineNuxtConfig({
         '@nuxthub/core',
         '@pinia/nuxt',
         '@ant-design-vue/nuxt',
-        'nuxt-style-extractor',
+        // 'nuxt-style-extractor',
         '@vite-pwa/nuxt',
     ],
     pwa,

@@ -33,11 +33,11 @@ watch(
             // 当 route.meta.sidebar  为 false 时，清空导航栏组件数组
             SideBarComponents.value = []
             console.log(
-                'Navbar  is set to false, no components will be rendered.',
+                'Sidebar  is set to false, no components will be rendered.',
             )
         } else {
             // 打印调试日志，记录导航栏类型的变化
-            console.log('Navbar  types changed:', newSideBarTypes)
+            console.log('Sidebar  types changed:', newSideBarTypes)
             // 更新导航栏类型数组，若新值不存在则使用 ['default']
             sidebarTypes = (newSideBarTypes as string[]) || ['default']
             // 更新要显示的导航栏组件数组，将每个导航栏类型映射为对应的组件，若没有则使用默认组件

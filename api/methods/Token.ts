@@ -33,7 +33,6 @@ export const ServerAPI_Token = createAlova({
         if (token) {
             config.headers.Authorization = `Bearer ${token}`
         }
-        config.headers['Content-Type'] = 'application/json; charset=utf-8'
     },
     responded: async (response) => ({
         ...(await response.json()),
