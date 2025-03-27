@@ -1,19 +1,13 @@
-<script setup lang="ts">
-interface Photo {
-    title: string
-    description: string
-    image_url: string
-}
-
-const props = defineProps<{
-    photos: Photo[]
-}>()
-</script>
-
 <template>
     <div class="gallery-box">
+        <!-- 图片列表 -->
         <div class="items" dir="ltr">
-            <div v-for="photo in props.photos" class="item">
+            <div
+                v-for="(photo, index) in photos"
+                :key="index"
+                class="item"
+                @click="openModal(photo, index)"
+            >
                 <img :src="photo.image_url" />
                 <div class="info-overlay">
                     <div class="info-content">
@@ -23,8 +17,126 @@ const props = defineProps<{
                 </div>
             </div>
         </div>
+        <!-- 显示大图 -->
+        <div v-if="isModalOpen" class="modal" @click.self="closeModal">
+            <div class="modal-content">
+                <img :src="selectedPhoto?.image_url" />
+                <div class="modal-controls">
+                    <button
+                        class="prev-button"
+                        @click="prevPhoto"
+                        :disabled="currentPhotoIndex === 0"
+                    >
+                        &lt;
+                    </button>
+                    <button
+                        class="next-button"
+                        @click="nextPhoto"
+                        :disabled="currentPhotoIndex === photos.length - 1"
+                    >
+                        &gt;
+                    </button>
+                </div>
+                <div class="modal-info">
+                    <h3 class="title">{{ selectedPhoto?.title }}</h3>
+                    <p class="description">{{ selectedPhoto?.description }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import { ref, toRefs, defineProps } from 'vue'
+import { useThrottleFn } from '@vueuse/core'
+
+interface Photo {
+    title: string
+    description: string
+    image_url: string
+}
+
+const props = defineProps<{
+    photos: Photo[]
+}>()
+
+const isModalOpen = ref(false)
+const selectedPhoto = ref<Photo | null>(null)
+const currentPhotoIndex = ref<number | null>(null)
+const { photos } = toRefs(props)
+
+const openModal = (photo: Photo, index: number) => {
+    selectedPhoto.value = photo
+    currentPhotoIndex.value = index
+    isModalOpen.value = true
+}
+
+const closeModal = () => {
+    isModalOpen.value = false
+}
+
+const prevPhoto = () => {
+    if (currentPhotoIndex.value! > 0) {
+        currentPhotoIndex.value!--
+        selectedPhoto.value = photos.value[currentPhotoIndex.value!]
+    }
+}
+
+const nextPhoto = () => {
+    if (currentPhotoIndex.value! < photos.value.length - 1) {
+        currentPhotoIndex.value!++
+        selectedPhoto.value = photos.value[currentPhotoIndex.value!]
+    }
+}
+
+// 鼠标拖拽相关变量
+const isDragging = ref(false)
+const startX = ref(0)
+const scrollLeft = ref(0)
+
+const onMouseDown = (e: MouseEvent) => {
+    const target = e.currentTarget as HTMLElement
+    target.style.cursor = 'grabbing'
+    isDragging.value = true
+    startX.value = e.pageX
+    scrollLeft.value = target.scrollLeft
+}
+
+const onMouseMove = (e: MouseEvent) => {
+    if (isDragging.value) {
+        const x = e.pageX
+        const walk = (x - startX.value) * 3
+        const target = e.currentTarget as HTMLElement
+        target.scrollLeft = scrollLeft.value - walk
+    }
+}
+
+const scrollToSnapPoint = (target: HTMLElement) => {
+    const itemWidth = target.firstElementChild?.clientWidth || 0
+    const currentScroll = target.scrollLeft
+    const snapIndex = Math.round(currentScroll / itemWidth)
+    const snapPosition = snapIndex * itemWidth
+    target.scrollTo({
+        left: snapPosition,
+        behavior: 'smooth',
+    })
+}
+
+const onMouseUp = (e: MouseEvent) => {
+    isDragging.value = false
+    const target = e.currentTarget as HTMLElement
+    target.style.cursor = 'grab'
+    console.log('鼠标已经松开')
+    scrollToSnapPoint(target)
+}
+
+const onMouseLeave = (e: MouseEvent) => {
+    isDragging.value = false
+    const target = e.currentTarget as HTMLElement
+    target.style.cursor = 'grab'
+    scrollToSnapPoint(target)
+}
+</script>
 
 <style lang="less">
 @import '@/assets/css/variables.less';
@@ -40,6 +152,7 @@ const props = defineProps<{
         justify-content: flex-start;
         scroll-snap-type: x mandatory;
         scroll-behavior: smooth;
+        cursor: grab;
 
         .item {
             position: relative;
@@ -120,5 +233,46 @@ const props = defineProps<{
             }
         }
     }
+}
+
+/* 模态框样式 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    max-width: 90%;
+    max-height: 90%;
+    position: relative;
+}
+
+.modal-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.modal-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.6) 100%
+    );
+    color: white;
+    padding: 1rem;
+    box-sizing: border-box;
 }
 </style>
