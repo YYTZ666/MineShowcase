@@ -1,19 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ServerAPI } from '@/api'
-import { useRequest } from 'alova/client'
+import { useRequest, useForm } from 'alova/client'
 import reCaptcha from '../Recaptcha/ReCaptchaV3.vue'
-import type { SiteKey, Login } from '@/api/models'
+import type { SiteKey, Login, LoginData } from '@/api/models'
 import { notification } from 'ant-design-vue'
 import type { RuleObject } from 'ant-design-vue/lib/form/interface'
 
-const form = ref({
-    account: '',
-    password: '',
-})
-
 const rules = {
-    account: <RuleObject>[
+    username_or_email: <RuleObject>[
         {
             required: true,
             message: '请输入登录账号/邮箱',
@@ -29,49 +24,42 @@ const rules = {
     ],
 }
 
-const isLoaded = ref(false)
 const captchaKey = ref(0) // 用于强制刷新reCaptcha组件
 
-const getSiteKey = () => ServerAPI.Get<SiteKey>('/v1/reCAPTCHA_site_key')
-const { data } = useRequest(getSiteKey())
-
-const { send: login } = useRequest(
-    (username_or_email: string, password: string, captcha_response: string) =>
-        ServerAPI.Post<Login>('/v1/login', {
-            username_or_email,
-            password,
-            captcha_response,
-        }),
-    { immediate: false },
+const { data: SiteKey } = useRequest(
+    ServerAPI.Get<SiteKey>('/v1/reCAPTCHA_site_key'),
 )
 
-const token = ref('')
+const LoginInit = reactive<LoginData>({
+    username_or_email: '',
+    password: '',
+    captcha_response: '',
+})
 
-const handleSubmit = async () => {
-    const response = await login(
-        form.value.account,
-        form.value.password,
-        token.value,
-    )
-
-    if (response.code === 200) {
+const { form: data, send: login } = useForm(
+    (Data) => ServerAPI.Post<Login>('/v1/login', Data),
+    {
+        initialForm: LoginInit,
+    },
+).onSuccess(async (response) => {
+    if (response.data.code === 200) {
         notification.success({
             message: '登录成功',
             duration: 4,
             description: '欢迎回来!',
         })
         await new Promise((resolve) => setTimeout(resolve, 3000))
-        localStorage.setItem('token', response.access_token)
-        localStorage.setItem('token_type', response.token_type)
+        localStorage.setItem('token', response.data.access_token)
+        localStorage.setItem('token_type', response.data.token_type)
         window.location.href = '/'
-    } else if (response.code === 400) {
+    } else if (response.data.code === 400) {
         notification.error({
             message: 'reCAPTCHA 验证失败',
             duration: 4,
             description: '请重试',
         })
         captchaKey.value += 1
-    } else if (response.code === 401) {
+    } else if (response.data.code === 401) {
         notification.error({
             message: '登录失败',
             duration: 4,
@@ -79,23 +67,23 @@ const handleSubmit = async () => {
         })
     }
     captchaKey.value++
-    token.value = ''
-}
+    response.data.access_token = ''
+})
 </script>
 
 <template>
     <h2>登录</h2>
-    <a-form :model="form" @submit.prevent="handleSubmit">
-        <a-form-item :rules="rules.account" name="account" label="账号/邮箱">
+    <a-form :model="data" @submit.prevent="login">
+        <a-form-item :rules="rules.username_or_email" name="username_or_email" label="账号/邮箱">
             <a-input
-                v-model:value="form.account"
+                v-model:value="data.username_or_email"
                 @keydown.enter.prevent
                 placeholder="输入尊贵的邮箱 或 sexy的用户名"
             />
         </a-form-item>
         <a-form-item :rules="rules.password" name="password" label="密码">
             <a-input-password
-                v-model:value="form.password"
+                v-model:value="data.password"
                 @keydown.enter.prevent
                 placeholder="输入绚丽的密码"
             />
@@ -104,17 +92,16 @@ const handleSubmit = async () => {
             <a-col :span="24">
                 <div style="display: flex; justify-content: flex-end">
                     <reCaptcha
-                        v-if="data"
-                        v-model="token"
-                        @loaded="isLoaded"
-                        :siteKey="data.recapcha_sitekey"
+                        v-if="SiteKey"
+                        v-model="data.captcha_response"
+                        :siteKey="SiteKey.recapcha_sitekey"
                         action="submit"
                         :key="captchaKey"
                     >
                         <a-button
                             type="primary"
-                            :loading="token === ''"
-                            @click="handleSubmit()"
+                            :loading="data.captcha_response === ''"
+                            @click="login"
                         >
                             登录
                         </a-button>
