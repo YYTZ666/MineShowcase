@@ -115,6 +115,7 @@ const copyToClipboard = (event: MouseEvent) => {
     <!-- 为根节点绑定 ref 以供 Intersection Observer 监听 -->
     <div ref="cardRef" class="card" @click="handleCardClick">
         <div class="card-cover">
+            <canvas ref="canvas" style="display:none"></canvas>
             <img
                 :src="cover_url || IMG_noimage"
                 alt="无图片"
@@ -283,7 +284,7 @@ const copyToClipboard = (event: MouseEvent) => {
             height: 100%;
             object-fit: cover;
             @media (prefers-color-scheme: dark) {
-                filter: brightness(0.5);
+                filter: brightness(70%);
             }
         }
         .noimg {
@@ -344,7 +345,7 @@ const copyToClipboard = (event: MouseEvent) => {
             align-items: center;
             @media (prefers-color-scheme: dark) {
                 border: 1px solid @border-color-secondary-dark;
-                filter: brightness(60%);
+                filter: brightness(70%);
             }
             img {
                 width: 90%;
