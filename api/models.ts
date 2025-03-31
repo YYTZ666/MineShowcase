@@ -92,6 +92,21 @@ export interface SiteKey {
 
 /**
  * 登录数据模型
+ * 数据类型: 请求
+ */
+export interface LoginData {
+    /**
+     * 图像id
+     */
+    username_or_email: string
+    password: string
+    captcha_response: string
+}
+
+
+/**
+ * 登录数据模型
+ * 数据类型: 返回
  */
 export interface Login {
     detail: string | undefined
@@ -223,5 +238,45 @@ export interface User extends UserBase {
     created_at: string
     last_login: string
     servers: Array<Array<number | string>>
+    code?: number
+}
+
+
+
+/**
+ * (获取画廊 公有)
+ */
+export interface Gallerys {
+    code?: number
+    id: number
+    name: string
+    gallerys_url: gallerys_url[]
+}
+
+/**
+ * (获取画廊 公有)
+ * 子数组
+ */
+export interface gallerys_url {
+    /**
+     * 图像id
+     */
+    id: number
+    title: string
+    description: string
+    image_url: string
+}
+
+/**
+ * (添加画廊图片 私有)
+ */
+export interface add_gallery {
+    /**
+     * 图像id
+     */
+    id: number
+    title: string
+    description: string
+    image: File | null
     code?: number
 }
