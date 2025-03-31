@@ -2,12 +2,12 @@
 import { ServerAPI_Token } from '@/api'
 import { MdPreview } from 'md-editor-v3'
 import { useRequest } from 'alova/client'
-import type { ServerManagers, Status } from '@/api/models'
+import type { ServerManagers, Status, Gallerys } from '@/api/models'
 import IMG_noicon from '@/assets/noicon.svg'
 import Img404 from '@/assets/error.webp'
 import Share from '@/components/Share/Share.vue'
 import Comment from '@/components/Comment/Comment.vue'
-import Gallery from '@/components/Common/Gallery/Gallery.vue'
+import Gallery from '@/components/Gallery/Gallery.vue'
 
 definePageMeta({
     sidebar: ['Stats', 'Recommend'],
@@ -103,33 +103,13 @@ const formatDelay = (delay?: number) => {
     return `${delay.toFixed(2)}ms`
 }
 
-const photos = ref([
+const { data: photos } = useRequest(
+    () =>
+        ServerAPI_Token.Get<Gallerys>(`/v1/servers/${serverId}/gallerys`),
     {
-        title: '这是画廊标题1',
-        description: '这是一个画廊描述',
-        image_url: 'https://store-images.s-microsoft.com/image/apps.21125.14207443949651364.900423d3-62e6-4dd0-8cdd-25365bdf7a45.708345d5-3203-4224-b121-76c16f131bb7?h=253',
+        initialData: {}
     },
-    {
-        title: '这是画廊标题2',
-        description: '这是一个画廊描述',
-        image_url: 'https://cn-sy1.rains3.com/mscpo/uploads/b9eb22ba-29a0-45b6-8594-9188d655c3a1.webp',
-    },
-    {
-        title: '这是画廊标题3',
-        description: '这是一个画廊描述',
-        image_url: 'https://cn-sy1.rains3.com/mscpo/uploads/b9eb22ba-29a0-45b6-8594-9188d655c3a1.webp',
-    },
-    {
-        title: '这是画廊标题4',
-        description: '这是一个画廊描述',
-        image_url: 'https://images-eds-ssl.xboxlive.com/image?url=4rt9.lXDC4H_93laV1_eHHFT949fUipzkiFOBH3fAiZZUCdYojwUyX2aTonS1aIwMrx6NUIsHfUHSLzjGJFxxqVsdLbpDv4LNQ4nk3d9Q3O0A74qc_0kQY_4H0Cn6oCs2wxDL5e6IgyedcIaWq3jdqJp7zz3ttA30ZFs5orHmus-&format=source&h=253',
-    },
-    {
-        title: '这是画廊标题5',
-        description: '这是一个画廊描述',
-        image_url: 'https://store-images.s-microsoft.com/image/apps.39710.13510798886817818.e615ed6c-9c9f-4d33-8a74-1b82036de96a.dca2c92b-9512-4f41-bae9-1838a71e6b38?h=253',
-    }
-])
+)
 </script>
 <template>
     <div class="detail">
@@ -209,8 +189,8 @@ const photos = ref([
 
                     <div class="desc">
                         <!-- 画廊 -->
-                        <a-card title="服务器画廊" class="description-card">
-                            <Gallery :photos="photos" />
+                        <a-card v-if="photos.gallerys_url.length !== 0 || server.permission !== 'guest'" title="服务器画廊" class="description-card">
+                            <Gallery :photos="photos" :id="serverId" :permission="server.permission" />
                         </a-card>
                         <!-- 描述和MOTD -->
                         <a-card title="服务器描述" class="description-card">

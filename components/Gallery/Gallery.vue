@@ -1,0 +1,453 @@
+<script setup lang="ts">
+import { ref, toRefs, defineProps } from 'vue'
+import { VueCropper } from 'vue-cropper'
+import { useForm } from 'alova/client'
+import { ServerAPI_Token } from '~/api'
+import type { add_gallery } from '@/api/models'
+import 'vue-cropper/dist/index.css'
+
+interface Photo {
+    title: string
+    description: string
+    image_url: string
+}
+
+const props = defineProps<{
+    id: number
+    permission: string
+    photos: Photo[]
+}>()
+
+const isModalOpen = ref(false)
+const selectedPhoto = ref<Photo | null>(null)
+const currentPhotoIndex = ref<number | null>(null)
+const { photos } = toRefs(props)
+
+const openModal = (photo: Photo, index: number) => {
+    selectedPhoto.value = photo
+    currentPhotoIndex.value = index
+    isModalOpen.value = true
+}
+
+const closeModal = () => {
+    isModalOpen.value = false
+}
+
+const prevPhoto = () => {
+    if (currentPhotoIndex.value! > 0) {
+        currentPhotoIndex.value!--
+        selectedPhoto.value = photos.value[currentPhotoIndex.value!]
+    }
+}
+
+const nextPhoto = () => {
+    if (currentPhotoIndex.value! < photos.value.length - 1) {
+        currentPhotoIndex.value!++
+        selectedPhoto.value = photos.value[currentPhotoIndex.value!]
+    }
+}
+
+// 鼠标拖拽相关变量
+const isDragging = ref(false)
+const startX = ref(0)
+const scrollLeft = ref(0)
+
+const onMouseDown = (e: MouseEvent) => {
+    const target = e.currentTarget as HTMLElement
+    target.style.cursor = 'grabbing'
+    isDragging.value = true
+    startX.value = e.pageX
+    scrollLeft.value = target.scrollLeft
+}
+
+const onMouseMove = (e: MouseEvent) => {
+    if (isDragging.value) {
+        const x = e.pageX
+        const walk = (x - startX.value) * 3
+        const target = e.currentTarget as HTMLElement
+        target.scrollLeft = scrollLeft.value - walk
+    }
+}
+
+const scrollToSnapPoint = (target: HTMLElement) => {
+    const itemWidth = target.firstElementChild?.clientWidth || 0
+    const currentScroll = target.scrollLeft
+    const snapIndex = Math.round(currentScroll / itemWidth)
+    const snapPosition = snapIndex * itemWidth
+    target.scrollTo({
+        left: snapPosition,
+        behavior: 'smooth',
+    })
+}
+
+const onMouseUp = (e: MouseEvent) => {
+    isDragging.value = false
+    const target = e.currentTarget as HTMLElement
+    target.style.cursor = 'grab'
+    console.log('鼠标已经松开')
+    scrollToSnapPoint(target)
+}
+
+const onMouseLeave = (e: MouseEvent) => {
+    isDragging.value = false
+    const target = e.currentTarget as HTMLElement
+    target.style.cursor = 'grab'
+    scrollToSnapPoint(target)
+}
+
+const previewUrl = ref<string | null>('')
+const showCropper = ref(false)
+const cropper = ref<InstanceType<typeof VueCropper>>()
+const fileInput = ref<HTMLInputElement | null>(null)
+
+const GalleryInit = reactive<add_gallery>({
+    id: 0,
+    title: '',
+    description: '',
+    image: null,
+})
+
+const { form, send: submit } = useForm(
+    (Data) => {
+        // 转换表单数据并提交
+        const formData = new FormData()
+        if (Data.image) {
+            formData.append('title', Data.title)
+            formData.append('description', Data.description)
+            formData.append('image', Data.image)
+            console.log('FormData  内容:', [...formData.entries()])
+        }
+        console.log(Data.image)
+        return ServerAPI_Token.Post<add_gallery>(
+            `/v1/servers/${props.id}/gallerys`,
+            formData,
+        )
+    },
+    {
+        initialForm: GalleryInit,
+    },
+)
+
+const handleFileChange = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    if (target.files && target.files.length > 0) {
+        form.value.image = target.files[0]
+        // 生成预览图
+        const reader = new FileReader()
+        reader.onload = () => {
+            previewUrl.value = reader.result as string
+            showCropper.value = true // 显示裁剪框
+        }
+        reader.readAsDataURL(form.value.image)
+    }
+}
+
+// 打开文件选择框
+const openFileInput = () => {
+    if (fileInput.value) {
+        fileInput.value.click()
+    }
+}
+
+// 处理裁剪确认
+const handleCropOk = () => {
+    // 裁剪后图片的处理逻辑
+    cropper.value?.getCropBlob((blob: Blob) => {
+        if (blob) {
+            const ext = form.value.image?.name.split('.').pop() || 'png'
+            const newFile = new File([blob], `gallery.${ext}`, {
+                type: blob.type,
+            })
+            form.value.image = newFile
+            previewUrl.value = URL.createObjectURL(newFile)
+            showCropper.value = false
+            submit()
+        }
+    })
+}
+
+// 处理裁剪取消
+const handleCropCancel = () => {
+    showCropper.value = false
+    previewUrl.value = null
+    form.value.image = null
+}
+</script>
+
+<template>
+    <div class="gallery-box">
+        <!-- 图片列表 -->
+        <div class="items" dir="ltr">
+            <div
+                v-if="permission !== 'guest'"
+                class="item add-gallery"
+                @click="openFileInput"
+            >
+                <input
+                    type="file"
+                    ref="fileInput"
+                    style="display: none"
+                    accept="image/*"
+                    @change="handleFileChange"
+                />
+                <FileImageOutlined style="font-size: 5rem" />
+                <h2>增加图片</h2>
+            </div>
+            <div
+                v-for="(photo, index) in photos"
+                :key="index"
+                class="item"
+                @click="openModal(photo, index)"
+            >
+                <img :src="photo.image_url" />
+                <div class="info-overlay">
+                    <div class="info-content">
+                        <h3 class="title">{{ photo.title }}</h3>
+                        <p class="description">{{ photo.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 显示大图 -->
+        <div v-if="isModalOpen" class="modal" @click.self="closeModal">
+            <div class="modal-content">
+                <img :src="selectedPhoto?.image_url" />
+                <div class="modal-controls">
+                    <button
+                        class="prev-button"
+                        @click="prevPhoto"
+                        :disabled="currentPhotoIndex === 0"
+                    >
+                        &lt;
+                    </button>
+                    <button
+                        class="next-button"
+                        @click="nextPhoto"
+                        :disabled="currentPhotoIndex === photos.length - 1"
+                    >
+                        &gt;
+                    </button>
+                </div>
+                <div class="modal-info">
+                    <h3 class="title">{{ selectedPhoto?.title }}</h3>
+                    <p class="description">{{ selectedPhoto?.description }}</p>
+                </div>
+            </div>
+        </div>
+        <a-modal
+            v-model:open="showCropper"
+            :maskClosable="false"
+            preset="card"
+            style="width: 600px"
+            title="图片裁切"
+            @ok="handleCropOk"
+            @cancel="handleCropCancel"
+        >
+            <div class="form-item">
+                <label>图片标题</label>
+                <a-input
+                    v-model:value="form.title"
+                    placeholder="输入图片名称"
+                    :maxlength="32"
+                    allow-clear
+                />
+            </div>
+            <div class="form-item">
+                <label>图片描述</label>
+                <a-input
+                    v-model:value="form.description"
+                    placeholder="该如何描述这张图呢？"
+                    allow-clear
+                />
+            </div>
+            <vue-cropper
+                ref="cropper"
+                :img="previewUrl"
+                :full="true"
+                :autoCrop="true"
+                :fixed="true"
+                :infoTrue="true"
+                :fixedNumber="[16, 9]"
+                :centerBox="true"
+                style="height: 400px; width: 100%"
+            />
+            <template #footer>
+                <a-space justify="end">
+                    <a-button @click="handleCropCancel">取消</a-button>
+                    <a-button type="primary" @click="handleCropOk">
+                        确认
+                    </a-button>
+                </a-space>
+            </template>
+        </a-modal>
+    </div>
+</template>
+
+<style lang="less">
+@import '@/assets/css/variables.less';
+
+.gallery-box {
+    overflow: hidden;
+    .items {
+        border-radius: 4px;
+        display: flex;
+        overflow: auto;
+        column-gap: 1rem;
+        height: 20rem;
+        justify-content: flex-start;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+
+        .add-gallery {
+            display: flex;
+            width: 50%;
+            background-color: @surface-light;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+            &:hover {
+                background-color: @active-primary;
+            }
+            @media screen and (max-width: 768px) {
+                width: 100%;
+            }
+            @media (prefers-color-scheme: dark) {
+                background: @surface-dark;
+            }
+        }
+        .item {
+            position: relative;
+            scroll-snap-align: start;
+            flex-shrink: 0;
+            max-width: 100%;
+            max-height: 100%;
+            height: 100%;
+            border-radius: 2px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+            img {
+                height: 100%;
+                width: auto;
+                object-fit: cover;
+                border-radius: 4px;
+            }
+
+            &:hover {
+                .info-overlay {
+                    opacity: 1;
+                    .info-content {
+                        transform: translateY(0);
+                    }
+                }
+            }
+        }
+    }
+}
+
+.info-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.6) 0%,
+        rgba(0, 0, 0, 0.3) 100%
+    );
+    opacity: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: flex-end;
+    box-sizing: border-box;
+    padding: 1rem;
+    pointer-events: none;
+
+    .info-content {
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+        color: #fff;
+        width: 100%;
+
+        .title {
+            font-size: 1.2em;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            .text-overflow(2);
+            @media (prefers-color-scheme: dark) {
+                color: @text-color-dark;
+            }
+        }
+
+        .description {
+            font-size: 0.9em;
+            line-height: 1.4;
+            opacity: 0.9;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            @media (prefers-color-scheme: dark) {
+                color: @text-color-dark;
+            }
+        }
+    }
+}
+
+/* 模态框样式 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    .form-item {
+        margin-bottom: 24px;
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: @text-color-secondary;
+            @media (prefers-color-scheme: dark) {
+                color: @text-color-secondary-dark;
+            }
+        }
+    }
+}
+
+.modal-content {
+    max-width: 90%;
+    max-height: 90%;
+    position: relative;
+}
+
+.modal-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.modal-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.6) 100%
+    );
+    color: white;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+</style>
