@@ -50,7 +50,7 @@ export interface Status extends Server {
         }
         icon: string | null
     } | null
-    permission: 'owner' | 'admin' | 'guest' | undefined
+    permission: 'owner' | 'admin' | 'guest'
     code?: number
     detail: string | undefined
     cover_url: string | null
@@ -102,7 +102,6 @@ export interface LoginData {
     password: string
     captcha_response: string
 }
-
 
 /**
  * 登录数据模型
@@ -241,16 +240,14 @@ export interface User extends UserBase {
     code?: number
 }
 
-
-
 /**
  * (获取画廊 公有)
  */
 export interface Gallerys {
-    code?: number
     id: number
     name: string
     gallerys_url: gallerys_url[]
+    code?: number
 }
 
 /**

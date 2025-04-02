@@ -19,7 +19,7 @@ const { data: managers } = useRequest(
     { immediate: true },
 )
 const route = useRoute()
-const serverId = route.params.id
+const serverId = Number(route.params.id)
 const title = useState<string>('pageTitle')
 const { data: server, loading } = useRequest(
     () =>
@@ -104,10 +104,9 @@ const formatDelay = (delay?: number) => {
 }
 
 const { data: photos } = useRequest(
-    () =>
-        ServerAPI_Token.Get<Gallerys>(`/v1/servers/${serverId}/gallerys`),
+    () => ServerAPI_Token.Get<Gallerys>(`/v1/servers/${serverId}/gallerys`),
     {
-        initialData: {}
+        initialData: {},
     },
 )
 </script>
@@ -189,8 +188,19 @@ const { data: photos } = useRequest(
 
                     <div class="desc">
                         <!-- 画廊 -->
-                        <a-card v-if="photos.gallerys_url.length !== 0 || server.permission !== 'guest'" title="服务器画廊" class="description-card">
-                            <Gallery :photos="photos" :id="serverId" :permission="server.permission" />
+                        <a-card
+                            v-if="
+                                photos.gallerys_url.length !== 0 ||
+                                server.permission !== 'guest'
+                            "
+                            title="服务器画廊"
+                            class="description-card"
+                        >
+                            <Gallery
+                                :photos="photos.gallerys_url"
+                                :id="serverId"
+                                :permission="server.permission"
+                            />
                         </a-card>
                         <!-- 描述和MOTD -->
                         <a-card title="服务器描述" class="description-card">
@@ -426,7 +436,6 @@ const { data: photos } = useRequest(
                 --n-title-text-color: @text-color-dark;
                 color: @text-color-dark;
             }
-
             .markdown-content {
                 font-family: monospace;
                 padding: 12px;

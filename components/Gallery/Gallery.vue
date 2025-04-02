@@ -5,25 +5,20 @@ import { useForm } from 'alova/client'
 import { ServerAPI_Token } from '~/api'
 import type { add_gallery } from '@/api/models'
 import 'vue-cropper/dist/index.css'
-
-interface Photo {
-    title: string
-    description: string
-    image_url: string
-}
+import type { gallerys_url } from '@/api/models'
 
 const props = defineProps<{
     id: number
     permission: string
-    photos: Photo[]
+    photos: gallerys_url[]
 }>()
 
 const isModalOpen = ref(false)
-const selectedPhoto = ref<Photo | null>(null)
+const selectedPhoto = ref<gallerys_url | null>(null)
 const currentPhotoIndex = ref<number | null>(null)
 const { photos } = toRefs(props)
 
-const openModal = (photo: Photo, index: number) => {
+const openModal = (photo: gallerys_url, index: number) => {
     selectedPhoto.value = photo
     currentPhotoIndex.value = index
     isModalOpen.value = true
@@ -209,31 +204,41 @@ const handleCropCancel = () => {
             </div>
         </div>
         <!-- 显示大图 -->
-        <div v-if="isModalOpen" class="modal" @click.self="closeModal">
-            <div class="modal-content">
-                <img :src="selectedPhoto?.image_url" />
-                <div class="modal-controls">
-                    <button
-                        class="prev-button"
-                        @click="prevPhoto"
-                        :disabled="currentPhotoIndex === 0"
-                    >
-                        &lt;
-                    </button>
-                    <button
-                        class="next-button"
-                        @click="nextPhoto"
-                        :disabled="currentPhotoIndex === photos.length - 1"
-                    >
-                        &gt;
-                    </button>
-                </div>
-                <div class="modal-info">
-                    <h3 class="title">{{ selectedPhoto?.title }}</h3>
-                    <p class="description">{{ selectedPhoto?.description }}</p>
+        <transition name="modal">
+            <div v-if="isModalOpen" class="modal" @click.self="closeModal">
+                <div class="modal-content">
+                    <transition name="fade" mode="out-in">
+                        <img
+                            :key="selectedPhoto?.image_url"
+                            :src="selectedPhoto?.image_url"
+                            class="modal-image"
+                        />
+                    </transition>
+                    <div class="modal-controls">
+                        <button
+                            class="prev-button"
+                            @click="prevPhoto"
+                            :disabled="currentPhotoIndex === 0"
+                        >
+                            &lt;
+                        </button>
+                        <button
+                            class="next-button"
+                            @click="nextPhoto"
+                            :disabled="currentPhotoIndex === photos.length - 1"
+                        >
+                            &gt;
+                        </button>
+                    </div>
+                    <div class="modal-info">
+                        <h3 class="title">{{ selectedPhoto?.title }}</h3>
+                        <p class="description">
+                            {{ selectedPhoto?.description }}
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
+        </transition>
         <a-modal
             v-model:open="showCropper"
             :maskClosable="false"
@@ -300,7 +305,7 @@ const handleCropCancel = () => {
 
         .add-gallery {
             display: flex;
-            width: 50%;
+            width: 60%;
             background-color: @surface-light;
             flex-direction: column;
             align-items: center;
@@ -342,6 +347,15 @@ const handleCropCancel = () => {
                     }
                 }
             }
+        }
+        // 自定义滚动条
+        &::-webkit-scrollbar {
+            height: 8px;
+            background-color: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: #c1c1c1;
+            border-radius: 4px;
         }
     }
 }
@@ -425,15 +439,14 @@ const handleCropCancel = () => {
 }
 
 .modal-content {
-    max-width: 90%;
-    max-height: 90%;
     position: relative;
 }
 
 .modal-content img {
-    max-width: 100%;
-    max-height: 100%;
     object-fit: contain;
+    border-radius: 4px;
+    width: 140vh;
+    max-width: 80vw;
 }
 
 .modal-info {
@@ -449,5 +462,88 @@ const handleCropCancel = () => {
     color: white;
     padding: 1rem;
     box-sizing: border-box;
+}
+@keyframes zoomIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+.modal-enter-active,
+.modal-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+    opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: all 0.3s ease;
+}
+
+.fade-enter-from {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.fade-leave-to {
+    opacity: 0;
+    transform: scale(1.05);
+}
+.modal-image {
+    object-fit: contain;
+}
+.modal-controls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-sizing: border-box;
+
+    button {
+        background: rgba(0, 0, 0, 0.5);
+        border: none;
+        color: white;
+        padding: 15px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        // 自适应大小
+        width: 50px;
+        height: 50px;
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+
+        &:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+    }
 }
 </style>
