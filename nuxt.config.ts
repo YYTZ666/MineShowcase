@@ -109,4 +109,9 @@ export default defineNuxtConfig({
         extractStyle: true,
     },
     ssr: true,
+    runtimeConfig: {
+        public: {
+            commitHash: process.env.NUXT_PUBLIC_COMMIT_HASH || undefined,
+        },
+    },
 })

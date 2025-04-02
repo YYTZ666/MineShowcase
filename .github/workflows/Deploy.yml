@@ -13,7 +13,10 @@ jobs:
             id-token: write
 
         steps:
-            - uses: actions/checkout@v4
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
             - name: Install pnpm
               uses: pnpm/action-setup@v4
@@ -31,6 +34,8 @@ jobs:
               run: pnpx nuxthub@latest ensure
 
             - name: Build application
+              env:
+                  NUXT_PUBLIC_COMMIT_HASH: ${{ github.sha }}
               run: pnpm build
 
             - name: Deploy to NuxtHub

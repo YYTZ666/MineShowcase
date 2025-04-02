@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import config from '~/package.json'
+import commit_hash from '@/assets/commit-hash.svg'
 import Logo from '@/assets/logo.svg'
 const title = useState<string>('pageTitle')
 title.value = '关于 MineShowcase'
@@ -7,10 +7,15 @@ title.value = '关于 MineShowcase'
 useHead({
     title: title,
 })
-
-const commitHash = process.env.NUXT_PUBLIC_COMMIT_HASH
-    ? process.env.NUXT_PUBLIC_COMMIT_HASH.slice(0, 8)
+const runtimeConfig = useRuntimeConfig()
+const commitHash = runtimeConfig.public.commitHash
+    ? runtimeConfig.public.commitHash.slice(0, 8)
     : 'dev build'
+const githubCommitUrl = computed(() =>
+    runtimeConfig.public.commitHash
+        ? `https://github.com/MSCPO/MineShowcase/commit/${process.env.NUXT_PUBLIC_COMMIT_HASH}`
+        : 'https://github.com/MSCPO/MineShowcase',
+)
 </script>
 
 <template>
@@ -20,7 +25,16 @@ const commitHash = process.env.NUXT_PUBLIC_COMMIT_HASH
             <div class="logo-title">
                 <h1>MineShowcase</h1>
                 <div class="ver">
-                    Version: {{ config.version }} ({{ commitHash }})
+                    Commit: (
+                    <img :src="commit_hash" alt="commit 图标" />
+                    <a
+                        :href="githubCommitUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {{ commitHash }}
+                    </a>
+                    )
                 </div>
                 <div class="icons">
                     <a-tooltip title="项目 Github 仓库">
@@ -48,7 +62,7 @@ const commitHash = process.env.NUXT_PUBLIC_COMMIT_HASH
                             </div>
                         </a-tooltip>
                         <a-tooltip v-else title="安装此应用">
-                            <div @click="$pwa?.install;" class="icon">
+                            <div @click="$pwa?.install" class="icon">
                                 <AppstoreAddOutlined />
                             </div>
                         </a-tooltip>
@@ -98,6 +112,31 @@ const commitHash = process.env.NUXT_PUBLIC_COMMIT_HASH
             padding-inline: 1rem;
             @media (prefers-color-scheme: dark) {
                 color: @text-color-dark;
+            }
+            .ver {
+                font-size: 0.8rem;
+                color: @text-color-light;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                @media (prefers-color-scheme: dark) {
+                    color: @text-color-dark;
+                }
+                img {
+                    width: 1rem;
+                    height: 1rem;
+                    filter: invert(1);
+                }
+            }
+            .ver a {
+                color: inherit;
+                text-decoration: none;
+                transition: color 0.3s ease;
+
+                &:hover {
+                    color: @hover-primary;
+                    text-decoration: underline;
+                }
             }
             .icons {
                 width: 100%;
