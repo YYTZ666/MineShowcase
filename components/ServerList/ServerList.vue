@@ -125,9 +125,7 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
     <div class="ServerList">
         <div class="text">
             <h1>服务器列表</h1>
-            <p>
-                轻松搜索并发现优质服务器。支持名称、拼音或首字母快速查询，提供随机推荐与分页浏览功能，助您快速找到符合需求的服务器资源。
-            </p>
+            <p>搜索服务器，支持名称、拼音、首字母查询，随机推荐与分页浏览。</p>
 
             <a-input-group class="input-line" compact>
                 <a-input
@@ -252,11 +250,12 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
 .grid-list {
     display: grid;
     box-sizing: border-box;
-    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
     gap: 20px;
     will-change: transform, opacity;
+    justify-content: center;
     @media screen and (max-width: 768px) {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
     }
 }
 

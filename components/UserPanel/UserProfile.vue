@@ -178,10 +178,8 @@ const goBack = () => router.go(-1)
 
         label {
             font-size: 0.9rem;
-            color: #6b7280;
         }
     }
-
     .action-bar {
         display: flex;
         justify-content: flex-end;

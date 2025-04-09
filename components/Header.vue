@@ -24,7 +24,7 @@ watch(useState<string>('pageTitle'), (newTitle) => {
 const username = ref('')
 const token_status = ref(false)
 const unreadCount = ref(0)
-const avatar_url = ref<string | undefined | null>('')
+const avatar_url = ref<string | null>('')
 const router = useRouter()
 
 // Token 过期处理
@@ -142,7 +142,7 @@ const MenuDisplay = ref(false)
                     <div class="avatar-wrapper">
                         <a-avatar
                             size="default"
-                            :src="avatar_url"
+                            :src="avatar_url ?? undefined"
                             :alt="username + ' 的头像'"
                             role="img"
                             aria-labelledby="avatar-label"
@@ -171,7 +171,7 @@ const MenuDisplay = ref(false)
                 <NuxtLink v-else class="login" to="/auth">
                     <a-avatar
                         :size="32"
-                        :src="avatar_url"
+                        :src="avatar_url ?? undefined"
                         :alt="username + ' 的头像'"
                         role="img"
                     >
@@ -188,7 +188,10 @@ const MenuDisplay = ref(false)
                         <GlobalSearch v-model="MenuDisplay" />
                     </div>
                     <div @click="MenuDisplay = false">
-                        <div class="menu-item menu-btn" @click="router.push('/')">
+                        <div
+                            class="menu-item menu-btn"
+                            @click="router.push('/')"
+                        >
                             <HomeOutlined />
                             首页
                         </div>

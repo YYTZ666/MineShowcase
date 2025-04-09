@@ -177,7 +177,7 @@ export interface UserBase {
     /**
      * Avatar Url，用户的头像URL
      */
-    avatar_url?: null | string
+    avatar_url: null | string
     /**
      * Display Name，用户的显示名称
      */
