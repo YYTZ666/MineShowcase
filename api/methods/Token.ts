@@ -38,4 +38,5 @@ export const ServerAPI_Token = createAlova({
         ...(await response.json()),
         code: response.status,
     }),
+    cacheFor: null,
 })

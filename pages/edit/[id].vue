@@ -257,43 +257,37 @@ const saveServerInfo = async () => {
     }
 }
 
-const {
-    send: refreshServerInfo
-} = useRequest(
-    () =>
-        ServerAPI_Token.Get<StatusWithUser>(`/v1/servers/${ServerID}/editor`, {
-            cacheFor: null,
-        }),
+const { send: refreshServerInfo } = useRequest(
+    () => ServerAPI_Token.Get<StatusWithUser>(`/v1/servers/${ServerID}/editor`),
     {
         immediate: false, // 禁用自动请求
         initialData: {},
         retry: 3,
     },
-).onSuccess(({ data }) => {
-    // 更新表单为服务器最新数据
-    serverInfo.name = data.name
-    serverInfo.ip = data.ip
-    serverInfo.desc = data.desc
-    serverInfo.tags = data.tags
-    serverInfo.loading = false
-    serverInfo.version = data.version
-    serverInfo.link = data.link
-    previewUrl.value = data.cover_url
-    // 清除草稿缓存
-    localStorage.removeItem(`draft-${ServerID}`)
-    hasDraft.value = false
-    checkServerStatus(serverInfo.ip)
-}).onError(() => {
-    serverInfo.error = '网站的妈妈叫后端吃饭去了...请稍后再试'
-    serverInfo.code = 502
-    serverInfo.loading = false
-})
+)
+    .onSuccess(({ data }) => {
+        // 更新表单为服务器最新数据
+        serverInfo.name = data.name
+        serverInfo.ip = data.ip
+        serverInfo.desc = data.desc
+        serverInfo.tags = data.tags
+        serverInfo.loading = false
+        serverInfo.version = data.version
+        serverInfo.link = data.link
+        previewUrl.value = data.cover_url
+        // 清除草稿缓存
+        localStorage.removeItem(`draft-${ServerID}`)
+        hasDraft.value = false
+        checkServerStatus(serverInfo.ip)
+    })
+    .onError(() => {
+        serverInfo.error = '网站的妈妈叫后端吃饭去了...请稍后再试'
+        serverInfo.code = 502
+        serverInfo.loading = false
+    })
 
 const { send: statusResponse } = useRequest(
-    (ip) =>
-        fetch_status.Get<Fetch_Status>(`?ip=${ip}`, {
-            cacheFor: null,
-        }),
+    (ip) => fetch_status.Get<Fetch_Status>(`?ip=${ip}`),
     { immediate: false },
 )
 

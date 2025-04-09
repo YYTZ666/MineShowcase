@@ -10,4 +10,5 @@ export const ServerAPI = createAlova({
         ...(await response.json()),
         code: response.status,
     }),
+    cacheFor: null,
 })

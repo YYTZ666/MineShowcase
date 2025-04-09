@@ -22,10 +22,7 @@ const route = useRoute()
 const serverId = Number(route.params.id)
 const title = useState<string>('pageTitle')
 const { data: server, loading } = useRequest(
-    () =>
-        ServerAPI_Token.Get<Status>(`/v1/servers/info/${serverId}`, {
-            cacheFor: null,
-        }),
+    () => ServerAPI_Token.Get<Status>(`/v1/servers/info/${serverId}`),
     {
         immediate: true,
     },

@@ -13,10 +13,7 @@ const props = defineProps<{
 
 // 使用 useRequest 获取服务器详情
 const { data, loading, error, send } = useRequest(
-    () =>
-        ServerAPI_Token.Get<Status>(`/v1/servers/info/${props.serverId}`, {
-            cacheFor: null,
-        }),
+    () => ServerAPI_Token.Get<Status>(`/v1/servers/info/${props.serverId}`),
     {
         immediate: false,
         initialData: {

@@ -8,4 +8,5 @@ export const fetch_status = createAlova({
     requestAdapter: adapterFetch(),
     responded: (response) => response.json(),
     id: 'status',
+    cacheFor: null,
 })
