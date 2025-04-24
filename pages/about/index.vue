@@ -52,7 +52,7 @@ const githubCommitUrl = computed(() =>
                         </a>
                     </a-tooltip>
 
-                    <ClientOnly>
+                    <!-- <ClientOnly>
                         <a-tooltip
                             v-if="$pwa?.isPWAInstalled"
                             title="应用已安装"
@@ -66,7 +66,7 @@ const githubCommitUrl = computed(() =>
                                 <AppstoreAddOutlined />
                             </div>
                         </a-tooltip>
-                    </ClientOnly>
+                    </ClientOnly> -->
                 </div>
             </div>
         </div>

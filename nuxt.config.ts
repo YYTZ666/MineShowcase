@@ -1,5 +1,5 @@
 import content from '@originjs/vite-plugin-content'
-import { pwa } from './config/pwa'
+// import { pwa } from './config/pwa'
 export default defineNuxtConfig({
     devServer: {
         host: '0.0.0.0',
@@ -102,9 +102,9 @@ export default defineNuxtConfig({
         '@pinia/nuxt',
         '@ant-design-vue/nuxt',
         'nuxt-style-extractor',
-        '@vite-pwa/nuxt',
+        // '@vite-pwa/nuxt',
     ],
-    pwa,
+    // pwa,
     antd: {
         extractStyle: true,
     },

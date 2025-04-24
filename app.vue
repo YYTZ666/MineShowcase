@@ -29,7 +29,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <NuxtPwaManifest />
+    <!-- <NuxtPwaManifest /> -->
     <a-extract-style>
         <a-config-provider
             :theme="{
