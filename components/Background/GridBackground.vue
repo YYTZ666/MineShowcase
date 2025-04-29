@@ -1,142 +1,173 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import throttle from 'lodash/throttle'
-const { $anime } = useNuxtApp()
 
-const gridContainer = ref<HTMLElement | null>(null)
-const gridCellsData = ref<
-    { el: HTMLElement; x: number; y: number; radius: number }[]
->([])
+interface GridCell {
+    x: number
+    y: number
+    baseX: number
+    baseY: number
+    scale: number
+    targetScale: number
+    translateX: number
+    translateY: number
+    targetTranslateX: number
+    targetTranslateY: number
+    rotation: number
+    targetRotation: number
+    color: string
+}
+
+const canvasRef = ref<HTMLCanvasElement | null>(null)
 const gridSize = 80
-const gridGap = 16
-const lastActiveCells = ref<HTMLElement[]>([])
+const gridGap = 20
+const cells = ref<GridCell[]>([])
+const mousePos = ref<{ x: number; y: number }>({ x: -1000, y: -1000 })
+const isMouseDown = ref(false)
+const animationFrame = ref(0)
 
 const createGrid = throttle(() => {
-    if (!gridContainer.value) return
+    if (!canvasRef.value) return
 
-    const container = gridContainer.value
-    const width = container.clientWidth
-    const height = container.clientHeight
+    const canvas = canvasRef.value
+    const ctx = canvas.getContext('2d')!
+    const width = window.innerWidth
+    const height = window.innerHeight
+
+    canvas.width = width
+    canvas.height = height
 
     const columns = Math.ceil(width / gridSize)
     const rows = Math.ceil(height / gridSize)
-    const fragment = document.createDocumentFragment()
 
-    container.innerHTML = ''
+    const newCells: GridCell[] = []
 
-    for (let i = 0; i < rows * columns; i++) {
-        const cell = document.createElement('div')
-        cell.className = 'grid-cell'
-        fragment.appendChild(cell)
-    }
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < columns; col++) {
+            const x = col * (gridSize + gridGap) + gridSize / 2
+            const y = row * (gridSize + gridGap) + gridSize / 2
 
-    container.appendChild(fragment)
-
-    const cellsData: {
-        el: HTMLElement
-        x: number
-        y: number
-        radius: number
-    }[] = []
-    const cells = container.querySelectorAll('.grid-cell')
-
-    cells.forEach((cell, index) => {
-        const cellEl = cell as HTMLElement
-        const col = index % columns
-        const row = Math.floor(index / columns)
-
-        cellsData.push({
-            el: cellEl,
-            x: col * (gridSize + gridGap) + gridSize / 2,
-            y: row * (gridSize + gridGap) + gridSize / 2,
-            radius: (gridSize / 2) * 1.414,
-        })
-    })
-
-    gridCellsData.value = cellsData
-    container.style.gridTemplateColumns = `repeat(${columns}, ${gridSize}px)`
-    container.style.gridTemplateRows = `repeat(${rows}, ${gridSize}px)`
-}, 100)
-
-const handleMouseMove = throttle((e: MouseEvent) => {
-    if (!gridContainer.value || !gridCellsData.value.length) return
-
-    const rect = gridContainer.value.getBoundingClientRect()
-    const mouseX = e.clientX - rect.left
-    const mouseY = e.clientY - rect.top
-    const activeCells: HTMLElement[] = []
-
-    gridCellsData.value.forEach((cell) => {
-        const dx = mouseX - cell.x
-        const dy = mouseY - cell.y
-        const distance = Math.sqrt(dx * dx + dy * dy)
-
-        if (distance < 80 + cell.radius) {
-            activeCells.push(cell.el)
-        }
-    })
-
-    // 恢复上次活跃但这次不活跃的单元格
-    lastActiveCells.value.forEach((cell) => {
-        if (!activeCells.includes(cell)) {
-            $anime({
-                targets: cell,
+            newCells.push({
+                x,
+                y,
+                baseX: x,
+                baseY: y,
                 scale: 1,
+                targetScale: 1,
                 translateX: 0,
                 translateY: 0,
-                background: 'hsla(200, 65%, 80%, 0.226)',
-                duration: 1000,
-                easing: 'easeOutExpo',
+                targetTranslateX: 0,
+                targetTranslateY: 0,
+                rotation: 0,
+                targetRotation: 0,
+                color: 'hsla(200, 65%, 80%, 0.226)',
             })
         }
+    }
+
+    cells.value = newCells
+}, 100)
+
+const drawCell = (ctx: CanvasRenderingContext2D, cell: GridCell) => {
+    const size = gridSize / 2
+    const translateX = cell.translateX * 0.01
+    const translateY = cell.translateY * 0.01
+
+    ctx.save()
+    ctx.translate(cell.baseX + translateX, cell.baseY + translateY)
+    ctx.rotate(cell.rotation)
+    ctx.scale(cell.scale, cell.scale)
+
+    // 绘制背景
+    ctx.beginPath()
+    ctx.roundRect(-size, -size, gridSize, gridSize, 5)
+    ctx.fillStyle = cell.color
+    ctx.fill()
+
+    // 绘制边框
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)'
+    ctx.lineWidth = 1
+    ctx.stroke()
+
+    // 绘制内发光
+    const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, size)
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.01)')
+    gradient.addColorStop(0.7, 'transparent')
+    ctx.fillStyle = gradient
+    ctx.fill()
+
+    ctx.restore()
+}
+
+const animate = () => {
+    const canvas = canvasRef.value!
+    const ctx = canvas.getContext('2d')!
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    // 绘制渐变背景
+    const bgGradient = ctx.createLinearGradient(
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+    )
+    bgGradient.addColorStop(0, '#0f172a')
+    bgGradient.addColorStop(1, '#1e293b')
+    ctx.fillStyle = bgGradient
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    cells.value.forEach((cell) => {
+        // 计算与鼠标的距离
+        const dx = mousePos.value.x - cell.x
+        const dy = mousePos.value.y - cell.y
+        const distance = Math.sqrt(dx * dx + dy * dy)
+
+        // 根据鼠标状态设置不同的目标值
+        if (isMouseDown.value && distance < 200) {
+            // 鼠标按下时的效果
+            const intensity = 1 - Math.min(distance / 200, 1)
+            cell.targetScale = 1 + intensity * 0.5 // 更大的放大效果
+            cell.targetRotation = (intensity * Math.PI) / 4 // 旋转效果
+            cell.targetTranslateX = dx * 2.5 // 更强的位移
+            cell.targetTranslateY = dy * 2.5
+        } else {
+            // 普通悬停效果
+            const isActive = distance < 150
+            cell.targetScale = isActive ? 1.15 : 1
+            cell.targetRotation = 0
+            cell.targetTranslateX = isActive ? dx : 0
+            cell.targetTranslateY = isActive ? dy : 0
+        }
+
+        // 平滑过渡
+        cell.scale += (cell.targetScale - cell.scale) * 0.1
+        cell.rotation += (cell.targetRotation - cell.rotation) * 0.1
+        cell.translateX += (cell.targetTranslateX - cell.translateX) * 0.1
+        cell.translateY += (cell.targetTranslateY - cell.translateY) * 0.1
+
+        // 计算颜色强度
+        const intensity = 0.2 - Math.min(distance / 150, 1)
+
+        cell.color = `hsla(200, ${65 + intensity * 30}%, ${80 + intensity * 15}%, ${0.6 + intensity * 0.4})`
+
+        drawCell(ctx, cell)
     })
 
-    // 动画新活跃的单元格
-    $anime({
-        targets: activeCells,
-        scale: [1, 1.15],
-        translateX: (el: HTMLElement) => {
-            const cell = gridCellsData.value.find((c) => c.el === el)!
-            return (mouseX - cell.x) * 0.05
-        },
-        translateY: (el: HTMLElement) => {
-            const cell = gridCellsData.value.find((c) => c.el === el)!
-            return (mouseY - cell.y) * 0.05
-        },
-        duration: 800,
-        easing: 'easeOutExpo',
-        update: (anim) => {
-            anim.animatables.forEach((animatable) => {
-                const target = animatable.target as HTMLElement
-                const intensity =
-                    1 -
-                    Math.sqrt(
-                        Math.pow(
-                            parseFloat(
-                                target.style.transform.match(
-                                    /translateX\(([^)]+)px\)/,
-                                )?.[1] || '0',
-                            ) / 0.05,
-                            2,
-                        ) +
-                            Math.pow(
-                                parseFloat(
-                                    target.style.transform.match(
-                                        /translateY\(([^)]+)px\)/,
-                                    )?.[1] || '0',
-                                ) / 0.05,
-                                2,
-                            ),
-                    ) /
-                        150
+    animationFrame.value = requestAnimationFrame(animate)
+}
 
-                target.style.background = `hsla(200, ${65 + intensity * 30}%, ${80 + intensity * 15}%, ${0.5 + intensity * 0.3})`
-            })
-        },
-    })
-
-    lastActiveCells.value = activeCells
+const handleMouseMove = throttle((e: MouseEvent) => {
+    mousePos.value = { x: e.clientX, y: e.clientY }
 }, 32)
+
+const handleMouseDown = () => {
+    isMouseDown.value = true
+}
+
+const handleMouseUp = () => {
+    isMouseDown.value = false
+}
 
 const handleResize = throttle(() => {
     createGrid()
@@ -144,95 +175,34 @@ const handleResize = throttle(() => {
 
 onMounted(() => {
     createGrid()
+    animate()
     window.addEventListener('resize', handleResize)
     window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousedown', handleMouseDown)
+    window.addEventListener('mouseup', handleMouseUp)
 })
 
 onUnmounted(() => {
-    gridCellsData.value.forEach((cell) => {
-        $anime.remove(cell.el)
-    })
-    gridCellsData.value = []
+    cancelAnimationFrame(animationFrame.value)
     window.removeEventListener('resize', handleResize)
     window.removeEventListener('mousemove', handleMouseMove)
+    window.removeEventListener('mousedown', handleMouseDown)
+    window.removeEventListener('mouseup', handleMouseUp)
 })
 </script>
 
 <template>
-    <div ref="gridContainer" class="grid-background"></div>
+    <canvas ref="canvasRef" class="canvas-background"></canvas>
 </template>
 
 <style scoped>
-.grid-background {
+.canvas-background {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    display: grid;
-    gap: v-bind(gridGap + 'px');
-    background: linear-gradient(45deg, #0f172a, #1e293b);
     z-index: 0;
     pointer-events: none;
-    filter: contrast(120%);
-}
-
-:global(.grid-cell) {
-    position: relative;
-    background: hsla(200, 65%, 80%, 0.226);
-    border-radius: 6px;
-    transition:
-        transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
-        background 0.6s ease;
-    transform-origin: center;
-    will-change: transform, background;
-    backdrop-filter: blur(2px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    mix-blend-mode: screen;
-    box-shadow: 0 0 8px -5px rgba(255, 255, 255, 0.3);
-}
-
-:global(.grid-cell::before) {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(
-        circle at 50% 50%,
-        rgba(255, 255, 255, 0.1) 0%,
-        transparent 70%
-    );
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-:global(.grid-cell:hover::before) {
-    opacity: 1;
-}
-
-:global(.grid-cell::after) {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(
-        from 0deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.1) 30%,
-        transparent 70%
-    );
-    animation: rotate 20s linear infinite;
-    opacity: 0.1;
-    transform: translateZ(0);
-}
-
-@keyframes rotate {
-    to {
-        transform: rotate(1turn);
-    }
 }
 </style>
