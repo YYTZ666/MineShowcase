@@ -164,10 +164,13 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
 
             <div class="filter-options">
                 <a-tooltip
-                    title="认证服务器经过审核，非认证服务器可能存在安全隐患"
+                    title="MSCPO 认证服务器更稳定、体验更佳。此选项会显示包括未认证在内的所有服务器"
                     placement="bottom"
                 >
-                    <a-checkbox v-model:checked="showAllServers" @change="page = 1">
+                    <a-checkbox
+                        v-model:checked="showAllServers"
+                        @change="page = 1"
+                    >
                         显示未认证服务器
                     </a-checkbox>
                 </a-tooltip>
