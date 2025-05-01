@@ -14,6 +14,7 @@ const pageSize = 12
 const ServersTotal = ref(0)
 const isVisible = ref(false)
 const searchQuery = ref('')
+const showAllServers = ref(false)
 interface ServerWithPinyin extends Status {
     pinyin?: string // 全拼
     initials?: string // 拼音首字母
@@ -36,19 +37,30 @@ const initPinyinData = async (data: Status[]) => {
 }
 
 const filteredData = computed(() => {
-    if (!searchQuery.value) return serverDataWithPinyin.value
-    const query = searchQuery.value.toLowerCase()
-    return serverDataWithPinyin.value.filter((server) => {
-        // 若拼音数据还未加载，则仅匹配中文名称
-        if (!server.pinyin || !server.initials) {
-            return server.name.toLowerCase().includes(query)
-        }
-        return (
-            server.name.toLowerCase().includes(query) ||
-            server.pinyin.includes(query) ||
-            server.initials.includes(query)
-        )
-    })
+    let result = serverDataWithPinyin.value
+
+    // 先根据搜索查询过滤
+    if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase()
+        result = result.filter((server) => {
+            // 若拼音数据还未加载，则仅匹配中文名称
+            if (!server.pinyin || !server.initials) {
+                return server.name.toLowerCase().includes(query)
+            }
+            return (
+                server.name.toLowerCase().includes(query) ||
+                server.pinyin.includes(query) ||
+                server.initials.includes(query)
+            )
+        })
+    }
+
+    // 如果不显示所有服务器，则只显示已认证的服务器
+    if (!showAllServers.value) {
+        result = result.filter((server) => server.is_member === true)
+    }
+
+    return result
 })
 
 const fetchAllData = async () => {
@@ -149,6 +161,17 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
                     随机
                 </a-button>
             </a-input-group>
+
+            <div class="filter-options">
+                <a-tooltip
+                    title="认证服务器经过审核，非认证服务器可能存在安全隐患"
+                    placement="bottom"
+                >
+                    <a-checkbox v-model:checked="showAllServers" @change="page = 1">
+                        显示未认证服务器
+                    </a-checkbox>
+                </a-tooltip>
+            </div>
         </div>
         <a-divider />
         <div v-if="currentPageData.length === 0 && isVisible" class="text">
@@ -184,7 +207,6 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
                 />
             </TransitionGroup>
 
-            <!-- 修改加载状态部分 -->
             <div v-else class="grid-list">
                 <ServerCardSkeleton
                     v-for="n in pageSize"
@@ -237,6 +259,10 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
             width: 20%;
         }
     }
+    .filter-options {
+        margin-top: 0.8rem;
+        text-align: center;
+    }
 }
 .page {
     display: flex;
@@ -259,7 +285,6 @@ import ServerCardSkeleton from './ServerCardSkeleton.vue'
     }
 }
 
-/* 定义卡片进入与离开的动画 */
 .fade-enter-active {
     animation: card-enter 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
 }
