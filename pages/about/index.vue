@@ -13,7 +13,7 @@ const commitHash = runtimeConfig.public.commitHash
     : 'dev build'
 const githubCommitUrl = computed(() =>
     runtimeConfig.public.commitHash
-        ? `https://github.com/MSCPO/MineShowcase/commit/${process.env.NUXT_PUBLIC_COMMIT_HASH}`
+        ? `https://github.com/MSCPO/MineShowcase/commit/${runtimeConfig.public.commitHash}`
         : 'https://github.com/MSCPO/MineShowcase',
 )
 </script>
