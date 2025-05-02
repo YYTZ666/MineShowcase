@@ -4,10 +4,10 @@ import { ServerAPI } from '@/api'
 import type { List, Server } from '@/api/models'
 
 interface RecommendServer {
-    label: string;
-    value: number;
-    ping: number;
-    id: string;
+    label: string
+    value: number
+    ping: number
+    id: number | undefined
 }
 
 const recommendations = shallowRef<RecommendServer[]>([])
@@ -21,62 +21,70 @@ const fetchRecommendations = async () => {
         const response = await ServerAPI.Get<List>('/v1/servers', {})
 
         // 筛选有效的服务器（延迟大于0ms就认为在线）
-        const validServers = response.server_list.filter(server =>
-            server.status &&
-            server.status.delay !== undefined &&
-            server.status.delay > 0
+        const validServers = response.server_list.filter(
+            (server) =>
+                server.status &&
+                server.status.delay !== undefined &&
+                server.status.delay > 0,
         )
 
         // 分离成员服务器和非成员服务器
-        const memberServers = validServers.filter(server => server.is_member)
-        const nonMemberServers = validServers.filter(server => !server.is_member)
+        const memberServers = validServers.filter((server) => server.is_member)
+        const nonMemberServers = validServers.filter(
+            (server) => !server.is_member,
+        )
 
         // 随机打乱数组顺序
-        const shuffleMemberServers = [...memberServers].sort(() => Math.random() - 0.5)
-        const shuffleNonMemberServers = [...nonMemberServers].sort(() => Math.random() - 0.5)
+        const shuffleMemberServers = [...memberServers].sort(
+            () => Math.random() - 0.5,
+        )
+        const shuffleNonMemberServers = [...nonMemberServers].sort(
+            () => Math.random() - 0.5,
+        )
 
         // 优先选择成员服务器，如果不足再选择非成员服务器
         let selectedServers = [...shuffleMemberServers]
 
         // 如果成员服务器不足3个，添加非成员服务器
         if (selectedServers.length < 3) {
-            selectedServers = selectedServers.concat(shuffleNonMemberServers.slice(0, 3 - selectedServers.length))
+            selectedServers = selectedServers.concat(
+                shuffleNonMemberServers.slice(0, 3 - selectedServers.length),
+            )
         } else {
             // 如果成员服务器超过3个，只取前3个
             selectedServers = selectedServers.slice(0, 3)
         }
 
-        // 转换为推荐格式
-        const topRecommendations = selectedServers.map((server, index) => ({
+        // 转换为推荐格式并确保始终有3个服务器
+        recommendations.value = selectedServers.map((server, index) => ({
             label: server.name || '未命名服务器',
             value: index + 1,
             ping: Math.round(server.status?.delay || 0),
-            id: server.id
-        }))
+            id: server.id,
+        }));
 
-        // 如果没有足够的推荐，填充一些默认值
-        while (topRecommendations.length < 3) {
-            topRecommendations.push({
-                label: '暂无推荐',
-                value: topRecommendations.length + 1,
-                ping: 0,
-                id: ''
-            })
+        // 如果没有足够的推荐，填充默认值
+        const defaultRecommendation = { label: '暂无推荐', ping: 0, id: undefined };
+        while (recommendations.value.length < 3) {
+            recommendations.value.push({
+            ...defaultRecommendation,
+            value: recommendations.value.length + 1
+            });
         }
-
-        recommendations.value = topRecommendations
-    } catch (error) {
-        console.error('获取推荐服务器失败:', error)
+        } catch (error) {
+        console.error('获取推荐服务器失败:', error);
         // 设置默认值
-        recommendations.value = [
-            { label: '暂无推荐', value: 1, ping: 0, id: '' },
-            { label: '暂无推荐', value: 2, ping: 0, id: '' },
-            { label: '暂无推荐', value: 3, ping: 0, id: '' },
-        ]
-    } finally {
-        loading.value = false
+        recommendations.value = Array(3).fill(null).map((_, i) => ({
+            label: '暂无推荐',
+            value: i + 1,
+            ping: 0,
+            id: undefined
+        }));
+        } finally {
+        loading.value = false;
+        }
     }
-}
+
 
 // 组件挂载时获取数据
 onMounted(() => {
@@ -99,9 +107,18 @@ onMounted(() => {
             <a-spin :spinning="loading" size="small" />
         </template>
         <a-space direction="vertical" style="width: 100%">
-            <div v-for="server in recommendations" :key="server.value" class="server-item"
-                :class="{ 'no-recommend': !server.id }" @click="server.id && $router.push(`/details/${server.id}`)">
-                <a-tag :bordered="false" :type="server.ping > 0 ? 'success' : 'default'" size="small">
+            <div
+                v-for="server in recommendations"
+                :key="server.value"
+                class="server-item"
+                :class="{ 'no-recommend': !server.id }"
+                @click="server.id && $router.push(`/details/${server.id}`)"
+            >
+                <a-tag
+                    :bordered="false"
+                    :type="server.ping > 0 ? 'success' : 'default'"
+                    size="small"
+                >
                     {{ server.ping > 0 ? `${server.ping}ms` : '暂无数据' }}
                 </a-tag>
                 <span class="server-name">{{ server.label }}</span>
