@@ -100,7 +100,7 @@ onMounted(() => {
         </template>
         <a-space direction="vertical" style="width: 100%">
             <div v-for="server in recommendations" :key="server.value" class="server-item"
-                :class="{ 'no-recommend': !server.id }" @click="server.id && $router.push(`/server/${server.id}`)">
+                :class="{ 'no-recommend': !server.id }" @click="server.id && $router.push(`/details/${server.id}`)">
                 <a-tag :bordered="false" :type="server.ping > 0 ? 'success' : 'default'" size="small">
                     {{ server.ping > 0 ? `${server.ping}ms` : '暂无数据' }}
                 </a-tag>
