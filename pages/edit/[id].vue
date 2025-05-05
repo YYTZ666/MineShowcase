@@ -501,7 +501,7 @@ const isDarkMode = useState<boolean>('isDarkMode')
                         <a-input
                             v-model:value="serverInfo.name"
                             placeholder="输入服务器名称"
-                            :maxlength="32"
+                            :maxlength="20"
                             allow-clear
                         />
                     </div>
@@ -510,7 +510,7 @@ const isDarkMode = useState<boolean>('isDarkMode')
                         <a-input
                             v-model:value="serverInfo.link"
                             placeholder="可留空"
-                            :maxlength="25"
+                            :maxlength="225"
                             allow-clear
                         />
                     </div>
@@ -534,7 +534,7 @@ const isDarkMode = useState<boolean>('isDarkMode')
                         <a-input
                             v-model:value="serverInfo.version"
                             placeholder="输入服务器版本（如 1.20.1）"
-                            :maxlength="32"
+                            :maxlength="20"
                             allow-clear
                         />
                     </div>
