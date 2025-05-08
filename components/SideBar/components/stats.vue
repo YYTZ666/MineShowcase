@@ -6,7 +6,6 @@ import type { List } from '@/api/models'
 
 const stats = shallowRef({
     onlinePlayers: 0,
-    newServers24h: 0,
 })
 
 const loading = ref(false)
@@ -23,28 +22,16 @@ const fetchStats = async () => {
         const now = new Date()
         let newServersCount = 0
 
-        response.server_list.forEach(server => {
+        response.server_list.forEach((server) => {
             // 累加在线玩家数
             if (server.status && server.status.players) {
                 totalOnlinePlayers += server.status.players.online || 0
-            }
-
-            // 计算24小时内新增服务器数
-            if (server.create_time) {
-                const createTime = new Date(server.create_time)
-                const timeDiff = now.getTime() - createTime.getTime()
-                const hoursDiff = timeDiff / (1000 * 60 * 60)
-
-                if (hoursDiff <= 24) {
-                    newServersCount++
-                }
             }
         })
 
         // 更新统计数据
         stats.value = {
             onlinePlayers: totalOnlinePlayers,
-            newServers24h: newServersCount
         }
     } catch (error) {
         console.error('获取统计数据失败:', error)
@@ -67,7 +54,8 @@ onMounted(() => {
 })
 </script>
 
-1<template>
+1
+<template>
     <!-- 全站统计 -->
     <a-card title="全站统计" class="section stats-section">
         <template #extra>
@@ -76,14 +64,11 @@ onMounted(() => {
         <a-space direction="vertical" style="width: 100%">
             <div class="stat-item">
                 <span class="stat-label">在线玩家</span>
-                <span class="stat-value" :class="{ 'pulse': stats.onlinePlayers > 0 }">
+                <span
+                    class="stat-value"
+                    :class="{ pulse: stats.onlinePlayers > 0 }"
+                >
                     {{ stats.onlinePlayers.toLocaleString() }}
-                </span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">24小时新增服务器</span>
-                <span class="stat-value" :class="{ 'pulse': stats.newServers24h > 0 }">
-                    {{ stats.newServers24h }}
                 </span>
             </div>
             <div class="stat-item">

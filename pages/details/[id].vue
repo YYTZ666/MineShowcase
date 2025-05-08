@@ -281,9 +281,9 @@ const { data: photos } = useRequest(
                             </template>
                         </a-card>
                     </div>
-                    <a-card class="description-card" title="评论">
+                    <!-- <a-card class="description-card" title="评论">
                         <Comment />
-                    </a-card>
+                    </a-card> -->
                     <a-card class="description-card" title="相关资源"></a-card>
                     <a-card title="分享" class="info-card">
                         <Share :desc="server.desc" />

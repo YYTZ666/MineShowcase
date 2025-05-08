@@ -402,6 +402,7 @@ const handleCropCancel = () => {
             opacity: 0.9;
             display: -webkit-box;
             -webkit-line-clamp: 3;
+            line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
             @media (prefers-color-scheme: dark) {

@@ -17,7 +17,6 @@ const isLoaded = ref(false)
 const showContent = ref(false)
 
 onMounted(() => {
-    // 添加加载动画效果
     setTimeout(() => {
         isLoaded.value = true
         setTimeout(() => {
@@ -68,7 +67,8 @@ onMounted(() => {
         </div>
     </div>
 </template>
-<style scoped>
+
+<style scoped lang="less">
 .home-container {
     min-height: 85vh;
     display: flex;
@@ -130,6 +130,7 @@ onMounted(() => {
                 line-height: 1.2;
                 background: linear-gradient(135deg, #619787 0%, #00a8e8 100%);
                 -webkit-background-clip: text;
+                background-clip: text;
                 -webkit-text-fill-color: transparent;
 
                 span {

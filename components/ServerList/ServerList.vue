@@ -44,7 +44,14 @@ const handleFilterChange = (options: any) => {
 }
 
 // 接收从布局组件提供的筛选条件
-const injectedFilterOptions = inject('filterOptions', null)
+const injectedFilterOptions = inject<{ value: typeof filterOptions.value }>('filterOptions', {
+  value: {
+    playerRange: [0, 500],
+    modes: [],
+    authModes: [],
+    tags: []
+  }
+})
 
 // 监听注入的筛选选项变化
 if (injectedFilterOptions) {

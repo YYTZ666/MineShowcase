@@ -1,5 +1,6 @@
 import content from '@originjs/vite-plugin-content'
 // import { pwa } from './config/pwa'
+
 export default defineNuxtConfig({
     vue: {
         compilerOptions: {},
@@ -16,27 +17,40 @@ export default defineNuxtConfig({
         defaultLocale: 'zh-cn',
         cacheMaxAgeSeconds: 24 * 3600,
         autoLastmod: true,
+        indexable: true,
     },
     experimental: {
         buildCache: true,
         asyncEntry: true,
         writeEarlyHints: true,
+        payloadExtraction: true,
+        componentIslands: true,
     },
     nitro: {
         static: true,
-        compressPublicAssets: true,
+        compressPublicAssets: {
+            gzip: true,
+            brotli: true,
+        },
         prerender: {
             crawlLinks: true,
             routes: ['/robots.txt', '/sitemap.xml'],
+            failOnError: false,
         },
         esbuild: {
             options: {
                 target: 'esnext',
+                minify: true,
             },
         },
+        minify: true,
     },
     build: {
-        analyze: { analyzerMode: 'static' },
+        analyze: {
+            analyzerMode: 'static',
+            openAnalyzer: false,
+        },
+        transpile: ['ant-design-vue'],
     },
     features: {
         inlineStyles: true,
@@ -46,7 +60,7 @@ export default defineNuxtConfig({
             title: 'Minecraft集体宣传组织(MSCPO)',
             titleTemplate: '%s | MSCPO',
             viewport:
-                'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"',
+                'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0',
             meta: [
                 { charset: 'utf-8' },
                 {
@@ -75,7 +89,9 @@ export default defineNuxtConfig({
             name: 'page',
             mode: 'out-in',
         },
+        buildAssetsDir: '_nuxt', // 优化构建资源目录
     },
+
     hub: {
         cache: true,
     },
@@ -83,15 +99,28 @@ export default defineNuxtConfig({
         plugins: [content()],
         build: {
             minify: 'terser',
+            cssCodeSplit: true, // CSS 代码分割
+            chunkSizeWarningLimit: 1500, // 提高 chunk 大小限制
             terserOptions: {
                 compress: {
                     drop_console: true,
                     drop_debugger: true,
+                    pure_funcs: ['console.log'], // 移除所有 console.log
+                },
+                format: {
+                    comments: false, // 移除注释
+                },
+            },
+        },
+        css: {
+            preprocessorOptions: {
+                less: {
+                    javascriptEnabled: true, // Ant Design 需要
                 },
             },
         },
     },
-    compatibilityDate: '2025-03-19',
+
     devtools: {
         enabled: true,
     },
@@ -105,10 +134,8 @@ export default defineNuxtConfig({
         '@pinia/nuxt',
         '@ant-design-vue/nuxt',
         'nuxt-style-extractor',
-        // '@vite-pwa/nuxt',
         '@hypernym/nuxt-anime',
     ],
-    // pwa,
     antd: {
         extractStyle: true,
     },

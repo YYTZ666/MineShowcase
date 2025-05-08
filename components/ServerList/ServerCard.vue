@@ -48,7 +48,7 @@ const StatusInfo = ref<Status>({
     status: null,
     code: 200,
     detail: undefined,
-    permission: undefined,
+    permission: 'guest',
     cover_url: null,
 })
 
@@ -115,7 +115,7 @@ const copyToClipboard = (event: MouseEvent) => {
     <!-- 为根节点绑定 ref 以供 Intersection Observer 监听 -->
     <div ref="cardRef" class="card" @click="handleCardClick">
         <div class="card-cover">
-            <canvas ref="canvas" style="display:none"></canvas>
+            <canvas ref="canvas" style="display: none"></canvas>
             <img
                 :src="cover_url || IMG_noimage"
                 alt="无图片"
