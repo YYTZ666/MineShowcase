@@ -51,7 +51,8 @@ watch(
             sidebarTypes = (newSideBarTypes as string[]) || ['default']
             // 更新要显示的导航栏组件数组，将每个导航栏类型映射为对应的组件，若没有则使用默认组件
             SideBarComponents.value = sidebarTypes.map(
-                (type) => sidebarComponents[type] || sidebarComponents['default'],
+                (type) =>
+                    sidebarComponents[type] || sidebarComponents['default'],
             )
             // 打印调试日志，记录新的导航栏组件数组
             console.log('New  SideBarComponents:', SideBarComponents.value)
@@ -63,8 +64,12 @@ watch(
 <template>
     <div class="content-wrapper">
         <transition-group name="slide" tag="div">
-            <component v-for="(component, index) in SideBarComponents" :is="component" :key="index"
-                @filter-change="handleFilterChange" />
+            <component
+                v-for="(component, index) in SideBarComponents"
+                :is="component"
+                :key="index"
+                @filter-change="handleFilterChange"
+            />
         </transition-group>
     </div>
 </template>
@@ -75,7 +80,6 @@ watch(
     padding: 0.75rem;
     max-height: 100%;
     overflow-y: auto;
-    scrollbar-width: thin;
 
     &::-webkit-scrollbar {
         width: 4px;
