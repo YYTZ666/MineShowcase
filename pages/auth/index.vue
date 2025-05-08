@@ -37,7 +37,7 @@ onMounted(() => {
 <template>
     <div class="layout">
         <div class="l_body">
-            <h1>MineShowcase</h1>
+            <h1>MSCPO</h1>
             <h2>管理实用程序</h2>
         </div>
         <div class="r_body">
