@@ -2,11 +2,10 @@
 import { ref, toRefs, defineProps } from 'vue'
 import { VueCropper } from 'vue-cropper'
 import { useForm } from 'alova/client'
-import { ServerAPI_Token } from '~/api'
 import type { add_gallery } from '@/api/models'
 import 'vue-cropper/dist/index.css'
 import type { gallerys_url } from '@/api/models'
-
+const { $serverAPI_Token } = useNuxtApp()
 const props = defineProps<{
     id: number
     permission: string
@@ -113,7 +112,7 @@ const { form, send: submit } = useForm(
             console.log('FormData  内容:', [...formData.entries()])
         }
         console.log(Data.image)
-        return ServerAPI_Token.Post<add_gallery>(
+        return $serverAPI_Token.Post<add_gallery>(
             `/v1/servers/${props.id}/gallerys`,
             formData,
         )

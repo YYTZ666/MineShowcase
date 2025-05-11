@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { useRequest } from 'alova/client'
-import { ServerAPI_Token } from '@/api'
 import type { User } from '@/api/models'
 import ServerCard from './ServerCard.vue'
 import IMG_noicon from '@/assets/noicon.svg'
 import Img404 from '@/assets/error.webp'
-
+const { $serverAPI_Token } = useNuxtApp()
 const router = useRouter()
 const route = useRoute()
 const title = useState<string>('pageTitle')
@@ -14,7 +13,7 @@ const user_status = ref(false)
 const UUID = route.params.UUID
 
 const { error, data, send, loading } = useRequest(
-    ServerAPI_Token.Get<User>(`/v1/user/${UUID}/public`),
+    $serverAPI_Token.Get<User>(`/v1/user/${UUID}/public`),
     {
         immediate: true,
     },

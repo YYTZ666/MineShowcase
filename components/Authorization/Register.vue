@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onBeforeUnmount, onMounted, computed } from 'vue'
-import { ServerAPI } from '@/api'
+
 import { useRequest } from 'alova/client'
 import reCaptcha from '../Recaptcha/ReCaptchaV3.vue'
 import type {
@@ -14,6 +14,7 @@ import 'vue-cropper/dist/index.css'
 import { notification, message } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import type { FormInstance, UploadChangeParam } from 'ant-design-vue'
+const { $serverAPI } = useNuxtApp()
 
 const options = computed(() => {
     const prefix = form.value.email.split('@')[0]
@@ -95,7 +96,7 @@ const rules: Record<string, Rule[]> = {
 // reCAPTCHA逻辑
 const isLoaded = ref(false)
 const site_key = ref('')
-const { data } = useRequest(ServerAPI.Get<SiteKey>('/v1/reCAPTCHA_site_key'), {
+const { data } = useRequest($serverAPI.Get<SiteKey>('/v1/reCAPTCHA_site_key'), {
     immediate: true,
 })
 
@@ -108,7 +109,7 @@ const VerifyEmail = ref({
 
 // 优化3: 使用正确的请求处理方式
 const { send: verifyToken } = useRequest(
-    (token: string) => ServerAPI.Post<ReturnResponse>(`/v1/verify/${token}`),
+    (token: string) => $serverAPI.Post<ReturnResponse>(`/v1/verify/${token}`),
     { immediate: false },
 )
 
@@ -187,7 +188,7 @@ const RegRules: Record<string, Rule[]> = {
 
 const { send: registerUser } = useRequest(
     (formData: FormData) =>
-        ServerAPI.Post<ReturnResponse_Register>('/v1/register', formData),
+        $serverAPI.Post<ReturnResponse_Register>('/v1/register', formData),
     { immediate: false },
 )
 
@@ -280,7 +281,7 @@ const handleRegSubmit = async () => {
 // 邮箱验证请求处理
 const { send: verifyEmail } = useRequest(
     () =>
-        ServerAPI.Post<Login>('/v1/verifyemail', {
+        $serverAPI.Post<Login>('/v1/verifyemail', {
             email: form.value.email,
             captcha_response: site_key.value,
         }),

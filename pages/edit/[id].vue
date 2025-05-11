@@ -10,7 +10,7 @@ import {
 } from '@vicons/ionicons5'
 import { useRequest, useForm } from 'alova/client'
 import DynamicTags from '~/components/Common/DynamicTags/DynamicTags.vue'
-import { ServerAPI_Token, fetch_status } from '~/api'
+import { fetch_status } from '~/api'
 import type { UploadChangeParam } from 'ant-design-vue'
 import type { Fetch_Status, StatusWithUser } from '~/api/models'
 import Img404 from '@/assets/error.webp'
@@ -18,6 +18,7 @@ import { useDebounceFn } from '@vueuse/core'
 import { VueCropper } from 'vue-cropper'
 import 'vue-cropper/dist/index.css'
 
+const { $serverAPI_Token } = useNuxtApp()
 const title = useState<string>('pageTitle')
 title.value = '编辑'
 useHead({
@@ -208,7 +209,7 @@ const { send: PutServerInfo } = useRequest(
         formData.append('version', version)
         formData.append('link', link)
 
-        return ServerAPI_Token.Put<StatusWithUser>(
+        return $serverAPI_Token.Put<StatusWithUser>(
             `/v1/servers/${ServerID}`,
             formData,
         )
@@ -258,7 +259,8 @@ const saveServerInfo = async () => {
 }
 
 const { send: refreshServerInfo } = useRequest(
-    () => ServerAPI_Token.Get<StatusWithUser>(`/v1/servers/${ServerID}/editor`),
+    () =>
+        $serverAPI_Token.Get<StatusWithUser>(`/v1/servers/${ServerID}/editor`),
     {
         immediate: false, // 禁用自动请求
         initialData: {},

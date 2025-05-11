@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { shallowRef, ref, onMounted, onUnmounted } from 'vue'
 import Time from '../../Common/Time/Time.vue'
-import { ServerAPI } from '@/api'
 import type { List } from '@/api/models'
 
 const stats = shallowRef({
     onlinePlayers: 0,
 })
+const { $serverAPI } = useNuxtApp()
 
 const loading = ref(false)
 
@@ -15,7 +15,7 @@ const fetchStats = async () => {
     try {
         loading.value = true
         // 获取服务器列表
-        const response = await ServerAPI.Get<List>('/v1/servers', {})
+        const response = await $serverAPI.Get<List>('/v1/servers', {})
 
         // 计算在线玩家总数
         let totalOnlinePlayers = 0

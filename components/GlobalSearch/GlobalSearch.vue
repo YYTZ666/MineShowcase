@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useDebounceFn, onClickOutside } from '@vueuse/core'
-import { ServerAPI } from '@/api'
+const { $serverAPI } = useNuxtApp()
 
 // Header 适配
 const emits = defineEmits(['update:modelValue', 'execute'])
@@ -30,7 +30,7 @@ const performSearch = useDebounceFn(async () => {
     }
     try {
         searchLoading.value = true
-        const response = await ServerAPI.Get<{ results: SearchResult[] }>(
+        const response = await $serverAPI.Get<{ results: SearchResult[] }>(
             '/v1/search',
             {
                 params: {
@@ -87,7 +87,12 @@ const docResults = computed<SearchResult[]>(() => [])
                                     class="info-item"
                                     v-for="server in serverResults"
                                     :key="server.id"
-                                    @click="PushRouter(server.id);emits('update:modelValue', false)"
+                                    @click="
+                                        () => {
+                                            PushRouter(server.id)
+                                            emits('update:modelValue', false)
+                                        }
+                                    "
                                 >
                                     {{ server.name }}
                                 </div>

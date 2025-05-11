@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { shallowRef, ref, onMounted, onUnmounted } from 'vue'
-import { ServerAPI } from '@/api'
 import type { List, Server } from '@/api/models'
 
 interface RecommendServer {
@@ -9,6 +8,7 @@ interface RecommendServer {
     ping: number
     id: number | undefined
 }
+const { $serverAPI } = useNuxtApp()
 
 const recommendations = shallowRef<RecommendServer[]>([])
 const loading = ref(false)
@@ -18,7 +18,7 @@ const fetchRecommendations = async () => {
     try {
         loading.value = true
         // 获取服务器列表
-        const response = await ServerAPI.Get<List>('/v1/servers', {})
+        const response = await $serverAPI.Get<List>('/v1/servers', {})
 
         // 筛选有效的服务器（延迟大于0ms就认为在线）
         const validServers = response.server_list.filter(
@@ -61,30 +61,35 @@ const fetchRecommendations = async () => {
             value: index + 1,
             ping: Math.round(server.status?.delay || 0),
             id: server.id,
-        }));
+        }))
 
         // 如果没有足够的推荐，填充默认值
-        const defaultRecommendation = { label: '暂无推荐', ping: 0, id: undefined };
+        const defaultRecommendation = {
+            label: '暂无推荐',
+            ping: 0,
+            id: undefined,
+        }
         while (recommendations.value.length < 3) {
             recommendations.value.push({
-            ...defaultRecommendation,
-            value: recommendations.value.length + 1
-            });
+                ...defaultRecommendation,
+                value: recommendations.value.length + 1,
+            })
         }
-        } catch (error) {
-        console.error('获取推荐服务器失败:', error);
+    } catch (error) {
+        console.error('获取推荐服务器失败:', error)
         // 设置默认值
-        recommendations.value = Array(3).fill(null).map((_, i) => ({
-            label: '暂无推荐',
-            value: i + 1,
-            ping: 0,
-            id: undefined
-        }));
-        } finally {
-        loading.value = false;
-        }
+        recommendations.value = Array(3)
+            .fill(null)
+            .map((_, i) => ({
+                label: '暂无推荐',
+                value: i + 1,
+                ping: 0,
+                id: undefined,
+            }))
+    } finally {
+        loading.value = false
     }
-
+}
 
 // 组件挂载时获取数据
 onMounted(() => {

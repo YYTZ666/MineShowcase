@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import SideBar from '@/components/SideBar/SideBar.vue'
 import { ref, provide, reactive } from 'vue'
+import { defaultFilterOptions } from '~/components/SideBar/components/filter_type'
 
 const isActive = ref(false)
 
 // 创建响应式的筛选选项对象
 const filterOptionsData = reactive({
     value: {
-        playerRange: [0, 500] as [number, number],
-        modes: [] as string[],
-        authModes: [] as string[],
-        tags: [] as string[]
-    }
+        defaultFilterOptions,
+    },
 })
 
 // 提供筛选选项给子组件
@@ -36,7 +34,11 @@ const handleFilterChange = (options: any) => {
                 <slot />
             </main>
         </div>
-        <a-float-button-group class="menu_button" shape="square" :style="{ right: '20px' }">
+        <a-float-button-group
+            class="menu_button"
+            shape="square"
+            :style="{ right: '20px' }"
+        >
             <a-float-button @click="isActive = !isActive">
                 <template #icon>
                     <MoreOutlined />

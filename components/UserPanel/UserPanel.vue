@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useRequest } from 'alova/client'
-import { ServerAPI_Token } from '@/api'
 import type { UserMe } from '@/api/models'
 import ServerCard from './ServerCard.vue'
 import IMG_noicon from '@/assets/noicon.svg'
@@ -10,11 +9,11 @@ const router = useRouter()
 const showAdvanced = ref(false)
 const toggleAdvanced = () => (showAdvanced.value = !showAdvanced.value)
 const token_status = ref(false)
-
+const { $serverAPI_Token } = useNuxtApp()
 const isUnauthorized = ref(false)
 const title = useState<string>('pageTitle')
 const { error, data, send, loading } = useRequest(
-    ServerAPI_Token.Get<UserMe>('/v1/me'),
+    $serverAPI_Token.Get<UserMe>('/v1/me'),
     {
         immediate: true,
     },

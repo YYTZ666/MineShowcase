@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import throttle from 'lodash/throttle'
+import throttle from 'lodash-es/throttle'
 
 interface GridCell {
     x: number

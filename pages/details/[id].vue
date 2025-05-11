@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import { ServerAPI_Token } from '@/api'
 import { MdPreview } from 'md-editor-v3'
 import { useRequest } from 'alova/client'
 import type { ServerManagers, Status, Gallerys } from '@/api/models'
 import IMG_noicon from '@/assets/noicon.svg'
 import Img404 from '@/assets/error.webp'
 import Share from '@/components/Share/Share.vue'
-import Comment from '@/components/Comment/Comment.vue'
 import Gallery from '@/components/Gallery/Gallery.vue'
-
+const { $serverAPI_Token } = useNuxtApp()
 definePageMeta({
     sidebar: ['Stats', 'Recommend'],
 })
 
 const { data: managers } = useRequest(
     () =>
-        ServerAPI_Token.Get<ServerManagers>(`/v1/servers/${serverId}/managers`),
+        $serverAPI_Token.Get<ServerManagers>(
+            `/v1/servers/${serverId}/managers`,
+        ),
     { immediate: true },
 )
 const route = useRoute()
 const serverId = Number(route.params.id)
 const title = useState<string>('pageTitle')
 const { data: server, loading } = useRequest(
-    () => ServerAPI_Token.Get<Status>(`/v1/servers/info/${serverId}`),
+    () => $serverAPI_Token.Get<Status>(`/v1/servers/info/${serverId}`),
     {
         immediate: true,
     },
@@ -101,7 +101,7 @@ const formatDelay = (delay?: number) => {
 }
 
 const { data: photos } = useRequest(
-    () => ServerAPI_Token.Get<Gallerys>(`/v1/servers/${serverId}/gallerys`),
+    () => $serverAPI_Token.Get<Gallerys>(`/v1/servers/${serverId}/gallerys`),
     {
         initialData: {},
     },

@@ -125,16 +125,11 @@ export default defineNuxtConfig({
     devtools: {
         enabled: true,
     },
-    styleExtractor: {
-        minify: true, // 是否开启压缩
-        removeUnused: false,
-    },
     modules: [
         '@nuxtjs/seo',
         '@nuxthub/core',
         '@pinia/nuxt',
         '@ant-design-vue/nuxt',
-        'nuxt-style-extractor',
         '@hypernym/nuxt-anime',
         '@nuxt/content',
     ],
@@ -145,6 +140,8 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             commitHash: process.env.NUXT_PUBLIC_COMMIT_HASH || undefined,
+            api_backend_url:
+                process.env.API_BACKEND_URL || 'https://mscpoapi.crashvibe.cn/',
         },
     },
 })

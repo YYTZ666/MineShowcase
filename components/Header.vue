@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Logo from '../assets/logo.webp'
 import { ref, onMounted } from 'vue'
-import { ServerAPI_Token } from '@/api/index'
 import { useRequest } from 'alova/client'
 import { notification, Modal } from 'ant-design-vue'
 import {
@@ -14,6 +13,7 @@ import type { UserMe } from '@/api/models'
 import { useThrottleFn, useEventListener } from '@vueuse/core'
 import GlobalSearch from './GlobalSearch/GlobalSearch.vue'
 
+const { $serverAPI_Token } = useNuxtApp()
 // 页面标题
 const pageTitle = useState<string>('pageTitle')
 watch(useState<string>('pageTitle'), (newTitle) => {
@@ -43,7 +43,7 @@ onMounted(async () => {
     const token = localStorage.getItem('token')
     if (!token) return
 
-    const { send } = useRequest(ServerAPI_Token.Get<UserMe>('/v1/me'), {
+    const { send } = useRequest($serverAPI_Token.Get<UserMe>('/v1/me'), {
         immediate: false,
     })
 

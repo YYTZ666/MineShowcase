@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ServerAPI } from '@/api'
 import { useRequest, useForm } from 'alova/client'
 import reCaptcha from '../Recaptcha/ReCaptchaV3.vue'
 import type { SiteKey, Login, LoginData } from '@/api/models'
 import { notification } from 'ant-design-vue'
 import type { RuleObject } from 'ant-design-vue/lib/form/interface'
 
+const { $serverAPI } = useNuxtApp()
 const rules = {
     username_or_email: <RuleObject>[
         {
@@ -27,7 +27,7 @@ const rules = {
 const captchaKey = ref(0) // 用于强制刷新reCaptcha组件
 
 const { data: SiteKey } = useRequest(
-    ServerAPI.Get<SiteKey>('/v1/reCAPTCHA_site_key'),
+    $serverAPI.Get<SiteKey>('/v1/reCAPTCHA_site_key'),
 )
 
 const LoginInit = reactive<LoginData>({
@@ -37,7 +37,7 @@ const LoginInit = reactive<LoginData>({
 })
 
 const { form: data, send: login } = useForm(
-    (Data) => ServerAPI.Post<Login>('/v1/login', Data),
+    (Data) => $serverAPI.Post<Login>('/v1/login', Data),
     {
         initialForm: LoginInit,
     },
@@ -74,7 +74,11 @@ const { form: data, send: login } = useForm(
 <template>
     <h2>登录</h2>
     <a-form :model="data" @submit.prevent="login">
-        <a-form-item :rules="rules.username_or_email" name="username_or_email" label="账号/邮箱">
+        <a-form-item
+            :rules="rules.username_or_email"
+            name="username_or_email"
+            label="账号/邮箱"
+        >
             <a-input
                 v-model:value="data.username_or_email"
                 @keydown.enter.prevent

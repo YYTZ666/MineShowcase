@@ -10,6 +10,7 @@ export interface List {
     server_list: Status[]
     total_member: number
     total: number
+    random_seed: null | number
 }
 
 export interface ListItem {

@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { ServerAPI } from '@/api'
 import type { List, Status } from '@/api/models'
+import { defaultFilterOptions, type FilterOptions } from './filter_type'
 
 // 筛选相关状态
-const playerRange = ref<[number, number]>([0, 500])
-const selectedModes = ref<string[]>([])
-const selectedTags = ref<string[]>([])
-const selectedAuthMode = ref<string[]>([])
+const { $serverAPI } = useNuxtApp()
 
 // 服务器数据
 const serverList = ref<Status[]>([])
@@ -16,24 +13,32 @@ const loading = ref(true)
 // 从API获取的筛选选项
 const filters = computed(() => {
     // 游戏类型选项
-    const modes = Array.from(new Set(serverList.value.map(server => server.type)))
+    const modes = ['JAVA', 'BEDROCK']
 
     // 认证模式选项
-    const authModes = Array.from(new Set(serverList.value.map(server => server.auth_mode)))
+    const authModes = ['OFFLINE', 'YGGDRASIL', 'OFFICIAL']
 
     // 标签选项 - 收集所有服务器的所有标签并去重
-    const allTags = serverList.value.flatMap(server => server.tags || [])
+    const allTags = serverList.value.flatMap((server) => server.tags || [])
     const tags = Array.from(new Set(allTags))
 
     return {
-        modes: modes.map(mode => ({ label: mode === 'JAVA' ? 'Java版' : 'Bedrock版', value: mode })),
-        authModes: authModes.map(mode => ({
-            label: mode === 'OFFLINE' ? '离线模式' :
-                mode === 'OFFICIAL' ? '正版验证' :
-                    mode === 'YGGDRASIL' ? '外置登录' : '未知',
-            value: mode
+        modes: modes.map((mode) => ({
+            label: mode === 'JAVA' ? 'Java 版' : '基岩版',
+            value: mode,
         })),
-        tags: tags
+        authModes: authModes.map((mode) => ({
+            label:
+                mode === 'OFFLINE'
+                    ? '离线模式'
+                    : mode === 'OFFICIAL'
+                      ? '正版验证'
+                      : mode === 'YGGDRASIL'
+                        ? '外置登录'
+                        : '未知',
+            value: mode,
+        })),
+        tags: tags,
     }
 })
 
@@ -41,8 +46,6 @@ const filters = computed(() => {
 const fetchServerList = async () => {
     try {
         loading.value = true
-        const response = await ServerAPI.Get<List>('/v1/servers', {})
-        serverList.value = response.server_list
     } catch (error) {
         console.error('获取服务器列表失败:', error)
     } finally {
@@ -50,16 +53,12 @@ const fetchServerList = async () => {
     }
 }
 
+const filterOptions = ref<FilterOptions>(defaultFilterOptions)
+
 // 发送筛选事件
 const emitFilterChange = () => {
-    const filterOptions = {
-        playerRange: playerRange.value,
-        modes: selectedModes.value,
-        authModes: selectedAuthMode.value,
-        tags: selectedTags.value
-    }
-
     // 使用自定义事件将筛选条件发送给父组件
+    console.log('筛选条件:', filterOptions.value)
     emit('filter-change', filterOptions)
 }
 
@@ -68,10 +67,7 @@ const emit = defineEmits(['filter-change'])
 
 // 重置筛选条件
 const resetFilters = () => {
-    playerRange.value = [0, 500]
-    selectedModes.value = []
-    selectedAuthMode.value = []
-    selectedTags.value = []
+    filterOptions.value = defaultFilterOptions
     emitFilterChange()
 }
 
@@ -89,44 +85,76 @@ onMounted(() => {
                 <div class="custom-sider">
                     <!-- 游戏版本筛选 -->
                     <div class="filter-item">
-                        <div class="filter-label">游戏版本</div>
-                        <a-select v-model:value="selectedModes" :options="filters.modes" multiple placeholder="选择游戏版本"
-                            style="width: 100%" @change="emitFilterChange" />
+                        <div class="filter-label">服务器类型</div>
+                        <a-select
+                            v-model:value="filterOptions.modes"
+                            :options="filters.modes"
+                            multiple
+                            allow-clear
+                            placeholder="选择游戏版本"
+                            style="width: 100%"
+                            @change="emitFilterChange"
+                        />
                     </div>
 
                     <!-- 认证模式筛选 -->
                     <div class="filter-item">
                         <div class="filter-label">认证模式</div>
-                        <a-select v-model:value="selectedAuthMode" :options="filters.authModes" multiple
-                            placeholder="选择认证模式" style="width: 100%" @change="emitFilterChange" />
-                    </div>
-
-                    <!-- 玩家数量范围筛选 -->
-                    <div class="filter-item">
-                        <div class="filter-label">玩家数量</div>
-                        <a-slider :step="10" v-model:value="playerRange" range :tip-formatter="(v?: number) => (v !== undefined ? `${v}人` : '')
-                            " @change="emitFilterChange" />
+                        <a-select
+                            v-model:value="filterOptions.authModes"
+                            :options="filters.authModes"
+                            mode="multiple"
+                            placeholder="选择认证模式"
+                            style="width: 100%"
+                            @change="emitFilterChange"
+                        />
                     </div>
 
                     <!-- 标签筛选 -->
                     <div class="filter-item">
                         <div class="filter-label">服务器标签</div>
                         <div class="tag-cloud">
-                            <a-tag v-for="tag in filters.tags" :key="tag"
-                                :color="selectedTags.includes(tag) ? 'blue' : undefined"
-                                style="cursor: pointer; margin-bottom: 5px;" @click="
-                                    selectedTags.includes(tag)
-                                        ? selectedTags = selectedTags.filter(t => t !== tag)
-                                        : selectedTags.push(tag);
-                                emitFilterChange();
-                                ">
+                            <a-tag
+                                v-for="tag in filters.tags"
+                                :key="tag"
+                                :color="
+                                    (filterOptions.tags || []).includes(tag)
+                                        ? 'blue'
+                                        : undefined
+                                "
+                                style="cursor: pointer; margin-bottom: 5px"
+                                @click="
+                                    () => {
+                                        if (
+                                            (filterOptions.tags || []).includes(
+                                                tag,
+                                            )
+                                        ) {
+                                            filterOptions.tags = (
+                                                filterOptions.tags || []
+                                            ).filter((t) => t !== tag)
+                                        } else {
+                                            filterOptions.tags = [
+                                                ...(filterOptions.tags || []),
+                                                tag,
+                                            ]
+                                        }
+                                        emitFilterChange()
+                                    }
+                                "
+                            >
                                 {{ tag }}
                             </a-tag>
                         </div>
                     </div>
 
                     <!-- 重置按钮 -->
-                    <a-button type="primary" block @click="resetFilters" style="margin-top: 16px">
+                    <a-button
+                        type="primary"
+                        block
+                        @click="resetFilters"
+                        style="margin-top: 16px"
+                    >
                         重置筛选
                     </a-button>
                 </div>
@@ -139,7 +167,6 @@ onMounted(() => {
 @import '@/assets/css/variables.less';
 
 .filter-section {
-
     .a-select,
     .a-slider {
         width: 100%;
