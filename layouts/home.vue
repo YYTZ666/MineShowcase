@@ -7,17 +7,16 @@
         <header class="header">
             <Header />
         </header>
-        <div class="main">
-            <div class="home-layout">
-                <slot />
-            </div>
-        </div>
+        <main class="main-content">
+            <slot />
+        </main>
     </div>
 </template>
 
 <style lang="less" scoped>
 @import '../assets/css/default.less';
-.home-layout {
-    width: 100%;
+
+main-content {
+    overflow-y: auto !important;
 }
 </style>

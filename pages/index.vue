@@ -33,36 +33,32 @@ onMounted(() => {
             <div class="logo-container">
                 <img :src="Logo" alt="MSCPO Logo" class="logo" />
                 <h1 class="main-title">
-                    MINECRAFT
-                    <br />
-                    <span>集体宣传组织</span>
+                    <span class="gradient-text">MSCPO</span>
+                    <span class="sub-title">集体宣传组织</span>
                 </h1>
             </div>
 
             <div class="description">
-                <p>Minecraft 服务器宣传与技术交流平台</p>
-                <p>提供服务器列表、教程和集体宣传</p>
+                <p class="slogan">打造专业的 Minecraft 社区平台</p>
+                <div class="divider"></div>
+                <p class="features-text">
+                    <span class="highlight">服务器宣传</span>
+                    ·
+                    <span class="highlight">技术交流</span>
+                    ·
+                    <span class="highlight">资源共享</span>
+                </p>
             </div>
 
             <div class="cta-container">
                 <NuxtLink to="/serverlist" class="cta-button primary">
-                    <span>浏览服务器列表</span>
+                    <span>探索服务器宇宙</span>
+                    <div class="hover-effect"></div>
                 </NuxtLink>
                 <NuxtLink to="/about" class="cta-button secondary">
-                    <span>关于我们</span>
+                    <span>了解我们的使命</span>
+                    <div class="hover-effect"></div>
                 </NuxtLink>
-            </div>
-
-            <div class="features">
-                <div class="feature-item">
-                    <a-badge status="processing" text="服务器宣传" />
-                </div>
-                <div class="feature-item">
-                    <a-badge status="processing" text="技术交流" />
-                </div>
-                <div class="feature-item">
-                    <a-badge status="processing" text="资源分享" />
-                </div>
             </div>
         </div>
     </div>
@@ -70,125 +66,90 @@ onMounted(() => {
 
 <style scoped lang="less">
 .home-container {
-    min-height: 85vh;
+    padding-top: 15vh;
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
     position: relative;
+    color: #fff;
     overflow: hidden;
-    padding: 1rem;
-    color: #333;
-    transition:
-        opacity 0.8s ease,
-        background-color 0.3s ease;
-    opacity: 0;
-    background-color: transparent;
-
-    &.loaded {
-        opacity: 1;
-    }
 
     .content-wrapper {
         position: relative;
-        max-width: 500px;
-        width: 100%;
-        transform: translateY(30px);
-        opacity: 0;
-        transition: all 0.8s ease;
-        margin-left: max(5%, 1rem);
-        user-select: none;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        padding: 1.5rem;
-        border-radius: 8px;
-
-        &.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
+        max-width: 800px;
+        text-align: center;
 
         .logo-container {
-            margin-bottom: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-
             .logo {
-                width: clamp(80px, 15vw, 120px);
-                height: clamp(80px, 15vw, 120px);
-                margin-bottom: 1rem;
-                filter: drop-shadow(0 0 10px rgba(0, 168, 232, 0.7));
-                animation: pulse 3s infinite ease-in-out;
+                width: 160px;
+                height: 160px;
+                margin: 0 auto 2rem;
+                filter: drop-shadow(0 0 20px rgba(0, 168, 232, 0.5));
+                animation: float 6s ease-in-out infinite;
             }
-
             .main-title {
-                font-size: clamp(1.8rem, 6vw, 3rem);
-                font-weight: 800;
-                letter-spacing: 1px;
-                margin: 0;
-                line-height: 1.2;
-                background: linear-gradient(135deg, #619787 0%, #00a8e8 100%);
-                -webkit-background-clip: text;
-                background-clip: text;
-                -webkit-text-fill-color: transparent;
-
-                span {
-                    font-size: clamp(1.2rem, 3.5vw, 2rem);
+                font-size: 4rem;
+                font-weight: 900;
+                letter-spacing: 2px;
+                margin: 0 0 1rem;
+                line-height: 1.1;
+                .gradient-text {
+                    background: linear-gradient(
+                        135deg,
+                        #6adaff 0%,
+                        #0077cc 100%
+                    );
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                }
+                .sub-title {
+                    display: block;
+                    font-size: 2.2rem;
                     font-weight: 600;
+                    margin-top: 1rem;
+                    color: rgba(255, 255, 255, 0.9);
                 }
             }
         }
 
         .description {
-            margin-bottom: 2rem;
-            font-size: clamp(0.95rem, 3vw, 1.2rem);
-            line-height: 1.5;
-            color: rgba(255, 255, 255, 0.85);
-
-            p {
-                margin: 0.5rem 0;
+            margin-bottom: 3rem;
+            .slogan {
+                font-size: 1.8rem;
+                font-weight: 300;
+                margin-bottom: 2rem;
+                letter-spacing: 1px;
+            }
+            .divider {
+                width: 200px;
+                height: 2px;
+                background: #ffffff;
+                margin: 2rem auto;
+            }
+            .features-text {
+                font-size: 1.4rem;
+                .highlight {
+                    color: #6adaff;
+                    font-weight: 500;
+                    padding: 0 0.5rem;
+                }
             }
         }
 
         .cta-container {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-
+            gap: 2rem;
+            justify-content: center;
             .cta-button {
-                display: inline-flex;
-                justify-content: center;
-                padding: 0.8rem 1.5rem;
-                border-radius: 8px;
-                text-decoration: none;
-                font-weight: 600;
-                font-size: clamp(0.9rem, 3.5vw, 1.1rem);
-                letter-spacing: 1px;
                 position: relative;
+                padding: 0.9rem 2rem;
+                border-radius: 20px;
+                font-size: 1.1rem;
+                font-weight: 600;
+                text-decoration: none;
+                transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
                 overflow: hidden;
-                transition: all 0.3s ease;
-                box-shadow: 0 4px 15px rgba(110, 110, 110, 0.3);
-                min-width: 140px;
-                text-align: center;
-
-                &::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(255, 255, 255, 0.1);
-                    transform: translateX(-100%);
-                    transition: all 0.3s ease;
-                }
-
-                &:hover::before {
-                    transform: translateX(0);
-                }
-
+                border: 2px solid transparent;
                 &.primary {
                     background: linear-gradient(
                         135deg,
@@ -196,114 +157,69 @@ onMounted(() => {
                         #0077cc 100%
                     );
                     color: white;
-                    border: none;
-
-                    &:hover {
-                        transform: translateY(-3px);
-                        box-shadow: 0 7px 20px rgba(0, 168, 232, 0.4);
-                    }
+                    box-shadow: 0 8px 30px rgba(0, 168, 232, 0.3);
                 }
-
                 &.secondary {
-                    background: transparent;
+                    background: rgba(255, 255, 255, 0.1);
                     color: white;
-                    border: 2px solid rgba(0, 168, 232, 0.7);
-
-                    &:hover {
-                        background: rgba(255, 255, 255, 0.1);
-                        transform: translateY(-3px);
-                    }
+                    border-color: rgba(255, 255, 255, 0.3);
+                    backdrop-filter: blur(8px);
                 }
-            }
-        }
-
-        .features {
-            display: flex;
-            gap: 1rem;
-            width: 100%;
-
-            .feature-item {
-                padding: 0.4rem 1.2rem;
-                background: rgba(0, 168, 232, 0.15);
-                border-radius: 3px;
-                backdrop-filter: blur(5px);
-                border: 1px solid rgba(0, 168, 232, 0.3);
-                transition: all 0.3s ease;
-                font-size: 0.95rem;
-
+                .hover-effect {
+                    position: absolute;
+                    background: rgba(255, 255, 255, 0.15);
+                    width: 120%;
+                    height: 100%;
+                    left: -10%;
+                    top: 0;
+                    transform: skewX(-30deg) scaleX(0);
+                    transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+                }
                 &:hover {
-                    background: rgba(0, 168, 232, 0.25);
-                    transform: translateY(-2px);
+                    transform: translateY(-3px);
+                    .hover-effect {
+                        transform: skewX(-30deg) scaleX(1);
+                    }
                 }
             }
         }
     }
 
-    @keyframes pulse {
-        0% {
-            transform: scale(1);
+    @keyframes float {
+        0%,
+        100% {
+            transform: translateY(0);
         }
         50% {
-            transform: scale(1.05);
-        }
-        100% {
-            transform: scale(1);
+            transform: translateY(-20px);
         }
     }
 
-    /* 响应式设计 */
     @media (max-width: 768px) {
-        padding: 1rem;
-
         .content-wrapper {
-            margin: 0 auto;
-            padding: 1.5rem;
-            width: 90%;
-            max-width: none;
-            backdrop-filter: blur(8px);
-
-            .cta-container {
-                flex-direction: column;
-
-                .cta-button {
-                    min-width: auto;
-                    padding: 1rem;
-                }
-            }
-
-            .features {
-                flex-direction: column;
-                gap: 0.8rem;
-
-                .feature-item {
-                    text-align: center;
-                    padding: 0.8rem;
-                }
-            }
-        }
-    }
-
-    @media (max-width: 480px) {
-        .content-wrapper {
-            padding: 1rem;
-
             .logo-container {
+                .logo {
+                    width: 120px;
+                    height: 120px;
+                }
                 .main-title {
-                    font-size: clamp(1.5rem, 7vw, 2rem);
-
-                    span {
-                        font-size: clamp(1rem, 4.5vw, 1.2rem);
+                    font-size: 2.5rem;
+                    .sub-title {
+                        font-size: 1.5rem;
                     }
                 }
             }
-
             .description {
-                font-size: 0.9rem;
-                margin-bottom: 1.5rem;
+                .slogan {
+                    font-size: 1.2rem;
+                }
+                .features-text {
+                    font-size: 1.1rem;
+                }
             }
-
-            .cta-container .cta-button {
-                font-size: 0.95rem;
+            .cta-container {
+                flex-direction: column;
+                gap: 1rem;
             }
         }
     }

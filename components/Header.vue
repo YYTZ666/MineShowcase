@@ -245,7 +245,7 @@ const MenuDisplay = ref(false)
     left: 0;
     right: 0;
     z-index: 1000;
-    background: @primary;
+    background: @primary-light;
     backdrop-filter: blur(2px);
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -283,8 +283,6 @@ const MenuDisplay = ref(false)
     }
 
     &:hover {
-        background: @primary !important;
-
         &::before {
             opacity: 0 !important;
         }
@@ -297,10 +295,6 @@ const MenuDisplay = ref(false)
 
     @media (prefers-color-scheme: dark) {
         background: @primary-dark;
-
-        &:hover {
-            background: @primary-dark !important;
-        }
     }
 
     @media (max-width: 1200px) {
