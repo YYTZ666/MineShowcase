@@ -3,11 +3,9 @@
         <header class="header">
             <Header />
         </header>
-        <div class="content">
-            <main class="main-content">
-                <slot />
-            </main>
-        </div>
+        <main class="main-content">
+            <slot />
+        </main>
     </div>
 </template>
 

@@ -56,14 +56,13 @@ onMounted(() => {
 <style scoped lang="less">
 .layout {
     box-sizing: border-box;
-    height: 100%;
     /* 建议在 nuxt.config.ts 中预加载背景图片 */
     background-image: url('@/assets/bg.webp');
     background-size: cover;
     background-position: center;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     flex-direction: row;
 
     /* 优化重绘提示 */
@@ -71,7 +70,6 @@ onMounted(() => {
 
     .l_body {
         box-sizing: border-box;
-        flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -108,7 +106,6 @@ onMounted(() => {
         background-color: rgba(255, 255, 255, 0.6);
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-right: 8rem;
         opacity: 0;
         animation: fadeIn 2s forwards;
         will-change: opacity, transform;
@@ -126,9 +123,10 @@ onMounted(() => {
     }
 
     @media screen and (max-width: 768px) {
+        padding: 24px;
+        padding-top: 7vh;
         flex-direction: column;
-        padding: 20px;
-
+        justify-content: flex-start;
         .l_body {
             padding-bottom: 20px;
         }
