@@ -90,6 +90,7 @@ const getRequestParams = (pageNum: number) => {
 }
 const fetchPageData = async (pageNum: number) => {
     try {
+        isVisible.value = false
         loading.value = true
         const response = await $serverAPI.Get<{
             server_list: Status[]
@@ -109,10 +110,7 @@ const fetchPageData = async (pageNum: number) => {
 
         currentPageData.value = response.server_list
         ServersTotal.value = response.total
-
-        // 显示渐变动画
-        isVisible.value = false
-        setTimeout(() => (isVisible.value = true), 300)
+        isVisible.value = true
     } catch (err) {
         error.value = err as Error
         console.error('Error fetching page data:', err)
