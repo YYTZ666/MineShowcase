@@ -88,11 +88,11 @@ const handleLogout = () => {
 // 滚动事件处理
 const isScrolled = ref(false)
 const isHovered = ref(false)
-const handleScroll = useThrottleFn(() => {
-    isScrolled.value = window.scrollY > 21
-}, 100)
+// const handleScroll = useThrottleFn(() => {
+//     isScrolled.value = window.scrollY > 21
+// }, 100)
 
-useEventListener(window, 'scroll', handleScroll, { passive: true })
+// useEventListener(window, 'scroll', handleScroll, { passive: true })
 
 const handleMouseEnter = () => {
     isHovered.value = true
@@ -269,7 +269,7 @@ const MenuDisplay = ref(false)
     }
 
     &.scrolled {
-        background: rgba(255, 255, 255, 0.637) !important;
+        background: rgba(255, 255, 255, 0.233) !important;
         box-shadow: none;
 
         &::before {
