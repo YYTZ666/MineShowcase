@@ -122,23 +122,25 @@ import debounce from 'lodash-es/debounce'
 
 // 监听页码和过滤数据变化，添加防抖
 const debouncedFetchPageData = debounce(() => {
-    fetchPageData(page.value)
+    handleFilterChange(filterOptions.value)
 }, 300)
 
+watch([page, showAllServers], () => {
+    fetchPageData(page.value)
+})
+watch([injectedFilterOptions], () => {
+    debouncedFetchPageData()
+})
+
+onMounted(() => {
+    handleFilterChange(filterOptions.value)
+})
 // 处理页面大小变化
 const handlePageSizeChange = (current: number, size: number) => {
     page.value = current
     pageSize.value = size
     fetchPageData(current)
 }
-
-watch([page, injectedFilterOptions, showAllServers], () => {
-    debouncedFetchPageData()
-})
-
-onMounted(() => {
-    fetchPageData(1)
-})
 </script>
 
 <template>
