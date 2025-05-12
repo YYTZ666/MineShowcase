@@ -30,16 +30,15 @@ jobs:
             - name: Install dependencies
               run: pnpm install
 
-            - name: Ensure NuxtHub module is installed
-              run: pnpx nuxthub@latest ensure
-
             - name: Build application
               env:
                   NUXT_PUBLIC_COMMIT_HASH: ${{ github.sha }}
               run: pnpm build
 
-            - name: Deploy to NuxtHub
-              uses: nuxt-hub/action@v1
-              id: deploy
+            - name: Publish
+              uses: cloudflare/pages-action@v1
               with:
-                  project-key: mine-showcase-bqdh
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  projectName: mine-showcase
+                  directory: dist

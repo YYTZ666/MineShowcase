@@ -127,7 +127,6 @@ export default defineNuxtConfig({
     },
     modules: [
         '@nuxtjs/seo',
-        '@nuxthub/core',
         '@pinia/nuxt',
         '@ant-design-vue/nuxt',
         '@hypernym/nuxt-anime',
