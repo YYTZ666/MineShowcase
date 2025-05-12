@@ -123,10 +123,11 @@ export default defineNuxtConfig({
     },
     modules: [
         '@nuxtjs/seo',
-        '@pinia/nuxt',
         '@ant-design-vue/nuxt',
         '@hypernym/nuxt-anime',
         '@nuxt/content',
+        '@nuxtjs/critters',
+        'nuxt-link-checker',
     ],
     antd: {
         extractStyle: true,

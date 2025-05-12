@@ -17,12 +17,10 @@
         "@ant-design/icons-vue": "^7.0.1",
         "@nuxt/content": "^3.5.1",
         "@nuxtjs/critters": "^0.9.0",
-        "@unhead/vue": "2.0.8",
         "@vueuse/core": "^13.1.0",
         "alova": "^3.2.10",
         "ant-design-vue": "^4.2.6",
         "babel-runtime": "^6.26.0",
-        "dotenv": "^16.5.0",
         "lodash-es": "^4.17.21",
         "lozad": "^1.16.0",
         "md-editor-v3": "^5.5.1",
@@ -33,13 +31,10 @@
         "vue-cropper": "1.1.4"
     },
     "devDependencies": {
-        "@alova/mock": "^2.0.14",
         "@hypernym/nuxt-anime": "^2.1.1",
         "@nuxt/image": "1.10.0",
-        "@nuxtjs/pwa": "^3.3.5",
         "@nuxtjs/seo": "^3.0.3",
         "@originjs/vite-plugin-content": "^1.0.5",
-        "@pinia/nuxt": "^0.11.0",
         "@types/lodash-es": "^4.17.12",
         "@types/lozad": "^1.16.4",
         "@types/qs": "^6.9.18",
@@ -49,14 +44,12 @@
         "less": "^4.3.0",
         "nuxt": "^3.17.2",
         "nuxt-link-checker": "^4.3.0",
-        "pinia": "^3.0.2",
         "prettier": "^3.5.3",
         "typescript": "latest",
         "typescript-plugin-toml": "^0.5.0",
         "unplugin-vue-components": "^28.5.0",
         "vue": "^3.5.13",
-        "vue-router": "^4.5.1",
-        "wrangler": "^4.14.4"
+        "vue-router": "^4.5.1"
     },
     "packageManager": "pnpm@10.9.0",
     "pnpm": {

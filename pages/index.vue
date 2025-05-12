@@ -39,23 +39,31 @@ onMounted(() => {
             </div>
 
             <div class="description">
-                <p class="slogan">打造专业的 Minecraft 社区平台</p>
+                <div class="slogan">打造专业的 Minecraft 社区平台</div>
                 <div class="divider"></div>
-                <p class="features-text">
+                <div class="features-text">
                     <span class="highlight">服务器宣传</span>
                     ·
                     <span class="highlight">技术交流</span>
                     ·
                     <span class="highlight">资源共享</span>
-                </p>
+                </div>
             </div>
 
             <div class="cta-container">
-                <NuxtLink to="/serverlist" class="cta-button primary">
+                <NuxtLink
+                    to="/serverlist"
+                    class="cta-button primary"
+                    aria-label="探索服务器宇宙"
+                >
                     <span>探索服务器宇宙</span>
                     <div class="hover-effect"></div>
                 </NuxtLink>
-                <NuxtLink to="/about" class="cta-button secondary">
+                <NuxtLink
+                    to="/about"
+                    class="cta-button secondary"
+                    aria-label="了解我们的使命"
+                >
                     <span>了解我们的使命</span>
                     <div class="hover-effect"></div>
                 </NuxtLink>

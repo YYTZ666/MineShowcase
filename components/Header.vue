@@ -88,11 +88,6 @@ const handleLogout = () => {
 // 滚动事件处理
 const isScrolled = ref(false)
 const isHovered = ref(false)
-// const handleScroll = useThrottleFn(() => {
-//     isScrolled.value = window.scrollY > 21
-// }, 100)
-
-// useEventListener(window, 'scroll', handleScroll, { passive: true })
 
 const handleMouseEnter = () => {
     isHovered.value = true
@@ -113,7 +108,7 @@ const MenuDisplay = ref(false)
         @mouseleave="handleMouseLeave"
     >
         <div class="logo">
-            <NuxtLink to="/">
+            <NuxtLink to="/" aria-label="返回主页">
                 <img
                     width="40"
                     height="40"
@@ -127,7 +122,11 @@ const MenuDisplay = ref(false)
             </transition>
         </div>
         <div class="r_header">
-            <MenuOutlined @click="MenuDisplay = !MenuDisplay" class="menubtn" />
+            <MenuOutlined
+                @click="MenuDisplay = !MenuDisplay"
+                class="menubtn"
+                aria-label="展开菜单"
+            />
             <div class="search-container">
                 <GlobalSearch />
             </div>
