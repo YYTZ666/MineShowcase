@@ -8,7 +8,7 @@ import {
     CloudDownloadOutline,
     CloudDone,
 } from '@vicons/ionicons5'
-import { useRequest, useForm } from 'alova/client'
+import { useRequest } from 'alova/client'
 import DynamicTags from '~/components/Common/DynamicTags/DynamicTags.vue'
 import { fetch_status } from '~/api'
 import type { UploadChangeParam } from 'ant-design-vue'
