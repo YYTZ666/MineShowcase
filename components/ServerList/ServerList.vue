@@ -22,14 +22,13 @@ const currentPageData = ref<Status[]>([])
 const loading = ref(true)
 const error = ref<Error | null>(null)
 const page = ref(1)
-const pageSize = 12
 const ServersTotal = ref(0)
 const isVisible = ref(false)
 const showAllServers = ref(false)
 const seed = ref<number | null>(null)
+const pageSize = ref(12)
 // 筛选条件
 const filterOptions = ref<FilterOptions>(defaultFilterOptions)
-
 // 处理筛选组件发出的筛选事件
 const handleFilterChange = (options: any) => {
     filterOptions.value = options
@@ -59,8 +58,8 @@ if (injectedFilterOptions) {
 // 请求参数生成器
 const getRequestParams = (pageNum: number) => {
     const params: Record<string, any> = {
-        limit: pageSize,
-        offset: (pageNum - 1) * pageSize,
+        limit: pageSize.value,
+        offset: (pageNum - 1) * pageSize.value,
     }
 
     if (seed.value !== null) {
@@ -125,6 +124,13 @@ import debounce from 'lodash-es/debounce'
 const debouncedFetchPageData = debounce(() => {
     fetchPageData(page.value)
 }, 300)
+
+// 处理页面大小变化
+const handlePageSizeChange = (current: number, size: number) => {
+    page.value = current
+    pageSize.value = size
+    fetchPageData(current)
+}
 
 watch([page, injectedFilterOptions, showAllServers], () => {
     debouncedFetchPageData()
@@ -203,14 +209,21 @@ onMounted(() => {
                     :key="'skeleton-' + n"
                 />
             </div>
-
             <a-divider />
             <a-pagination
+                show-size-changer
                 v-model:current="page"
-                :page-size="pageSize"
+                :pageSize="pageSize"
+                :page-size-options="['8', '12', '16', '20', '24']"
                 :total="ServersTotal"
+                @change="(page) => fetchPageData(page)"
+                @showSizeChange="handlePageSizeChange"
                 v-if="isVisible"
-            />
+            >
+                <template #buildOptionText="{ value }">
+                    <span>{{ value }} 条/页</span>
+                </template>
+            </a-pagination>
         </div>
     </div>
 </template>

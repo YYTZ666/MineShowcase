@@ -92,10 +92,6 @@ export default defineNuxtConfig({
         },
         buildAssetsDir: '_nuxt', // 优化构建资源目录
     },
-
-    hub: {
-        cache: true,
-    },
     vite: {
         plugins: [content()],
         build: {
