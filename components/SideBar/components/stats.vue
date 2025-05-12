@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { shallowRef, ref, onMounted, onUnmounted } from 'vue'
 import Time from '../../Common/Time/Time.vue'
-import type { List } from '@/api/models'
+import type { List, ServerTotalPlayers } from '@/api/models'
 
 const stats = shallowRef({
     onlinePlayers: 0,
@@ -15,23 +15,12 @@ const fetchStats = async () => {
     try {
         loading.value = true
         // 获取服务器列表
-        const response = await $serverAPI.Get<List>('/v1/servers', {})
+        const response = await $serverAPI.Get<ServerTotalPlayers>('/v1/servers/players', {})
 
-        // 计算在线玩家总数
-        let totalOnlinePlayers = 0
-        const now = new Date()
-        let newServersCount = 0
-
-        response.server_list.forEach((server) => {
-            // 累加在线玩家数
-            if (server.status && server.status.players) {
-                totalOnlinePlayers += server.status.players.online || 0
-            }
-        })
 
         // 更新统计数据
         stats.value = {
-            onlinePlayers: totalOnlinePlayers,
+            onlinePlayers:  response.total_players,
         }
     } catch (error) {
         console.error('获取统计数据失败:', error)

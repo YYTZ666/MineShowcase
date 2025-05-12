@@ -278,3 +278,13 @@ export interface add_gallery {
     image: File | null
     code?: number
 }
+
+/**
+ * ServerTotalPlayers
+ */
+export interface ServerTotalPlayers {
+    /**
+     * 服务器总玩家数，服务器的总玩家数
+     */
+    total_players: number
+}
