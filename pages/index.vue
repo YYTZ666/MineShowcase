@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import Logo from 'https://free.boltp.com/2025/05/09/681e01399f508.webp'
+import Logo from '@/assets/newhomelogo.webp'
+
 
 // 设置使用home布局，仅首页使用
 definePageMeta({
