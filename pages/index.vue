@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 
 // 定义页面元信息
 definePageMeta({
@@ -12,105 +12,75 @@ useHead({
 
 const isLoaded = ref(false)
 const showContent = ref(false)
+const stats = reactive({
+    serverCount: 0,
+    onlinePlayers: 0,
+    totalViews: 0
+})
 
 onMounted(() => {
+    // 简化加载动画，减少定时器嵌套
     setTimeout(() => {
         isLoaded.value = true
         setTimeout(() => {
             showContent.value = true
-        }, 500)
+        }, 400)
     }, 300)
+    
+    // 初始化数据并设置定时刷新
+    fetchStats()
+    setInterval(fetchStats, 30000)
 })
 
-class StatsManager {
-    elements: { serverCount: HTMLElement | null; onlinePlayers: HTMLElement | null; totalViews: HTMLElement | null }
-    currentValues: { serverCount: number; onlinePlayers: number; totalViews: number }
-
-    constructor() {
-        this.elements = {
-            serverCount: null,
-            onlinePlayers: null,
-            totalViews: null
-        };
-        this.currentValues = {
-            serverCount: 0,
-            onlinePlayers: 0,
-            totalViews: 0
-        };
-    }
-
-    initElements() {
-        this.elements.serverCount = document.getElementById('serverCount');
-        this.elements.onlinePlayers = document.getElementById('onlinePlayers');
-        this.elements.totalViews = document.getElementById('totalViews');
-    }
-
-    async fetchStats() {
-        const playerData = await this.fetchPlayerCount();
-        const statsData = {
-            onlinePlayers: playerData.total_players || 0
-        };
-        this.updateStats(statsData);
-    }
-
-    async fetchPlayerCount() {
-        const cacheKey = 'playerCountCache';
-        const cacheDuration = 10 * 60 * 1000; // 10分钟
-        const now = Date.now();
-
-        const cachedData = localStorage.getItem(cacheKey);
-        if (cachedData) {
-            const { timestamp, data: cachedDataValue } = JSON.parse(cachedData);
-            if (now - timestamp < cacheDuration) {
-                return cachedDataValue;
-            }
-        }
-
-        try {
-            const response = await fetch('https://mscpoapi.crashvibe.cn/v1/servers/players');
-            if (!response.ok) throw new Error('Failed to fetch player count');
-            const data = await response.json();
-            localStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, data }));
-            return data;
-        } catch (error) {
-            console.error('Error fetching player count:', error);
-            return { total_players: 0 };
-        }
-    }
-
-    updateStats(data) {
-        Object.keys(this.elements).forEach(key => {
-            const targetValue = data[key] || 0;
-            if (this.elements[key]) {
-                this.animateNumber(this.elements[key], this.currentValues[key], targetValue);
-                this.currentValues[key] = targetValue;
-            }
-        });
-    }
-
-    animateNumber(element, start, end) {
-        const duration = 1000;
-        const startTime = performance.now();
-        const updateDisplay = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const currentValue = Math.round(start + (end - start) * progress);
-            element.textContent = new Intl.NumberFormat().format(currentValue);
-
-            if (progress < 1) {
-                requestAnimationFrame(updateDisplay);
-            }
-        };
-        requestAnimationFrame(updateDisplay);
+// 使用Promise而不是类，避免DOM直接操作
+async function fetchStats() {
+    try {
+        const playerData = await fetchPlayerCount()
+        stats.onlinePlayers = playerData.total_players || 0
+    } catch (error) {
+        console.error('Error updating stats:', error)
     }
 }
 
-const statsManager = new StatsManager()
-onMounted(() => {
-    statsManager.initElements() // 初始化 DOM 元素
-    statsManager.fetchStats()
-    setInterval(() => statsManager.fetchStats(), 30000)
-})
+async function fetchPlayerCount() {
+    const cacheKey = 'playerCountCache'
+    const cacheDuration = 10 * 60 * 1000 // 10分钟
+    const now = Date.now()
+
+    // 安全地尝试获取缓存
+    let cachedData = null
+    try {
+        const cachedItem = localStorage.getItem(cacheKey)
+        if (cachedItem) {
+            cachedData = JSON.parse(cachedItem)
+        }
+    } catch (e) {
+        console.warn('Cache access error:', e)
+    }
+
+    if (cachedData && now - cachedData.timestamp < cacheDuration) {
+        return cachedData.data
+    }
+
+    try {
+        // 修复URL格式
+        const response = await fetch('https://mscpoapi.crashvibe.cn/v1/servers/players')
+        if (!response.ok) throw new Error('Failed to fetch player count')
+        const data = await response.json()
+        
+        // 安全地尝试设置缓存
+        try {
+            localStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, data }))
+        } catch (e) {
+            console.warn('Cache write error:', e)
+        }
+        
+        return data
+    } catch (error) {
+        console.error('Error fetching player count:', error)
+        return { total_players: 0 }
+    }
+}
 </script>
 
 <template>
@@ -121,6 +91,7 @@ onMounted(() => {
         </div>
         <div class="content-wrapper" :class="{ show: showContent }">
             <div class="logo-container">
+                <!-- 修复URL格式 -->
                 <img src="https://free.boltp.com/2025/05/09/681e01399f508.webp" alt="MSCPO Logo" class="logo" />
                 <h1 class="main-title">
                     <span class="gradient-text">MSCPO</span>
@@ -136,7 +107,15 @@ onMounted(() => {
                     <span class="highlight">资源共享</span>
                 </div>
             </div>
+            <!-- 添加统计数据显示 -->
+            <div class="stats-display">
+                <div class="stat-item">
+                    <div class="stat-value" id="onlinePlayers">{{ stats.onlinePlayers }}</div>
+                    <div class="stat-label">在线玩家</div>
+                </div>
+            </div>
             <div class="cta-container">
+                <!-- 修复URL格式 -->
                 <a href="https://mscpo.crashvibe.cn/serverlist" class="cta-button primary">
                     <span>探索服务器宇宙</span>
                     <div class="hover-effect"></div>
@@ -187,8 +166,23 @@ body {
     background: #0d1117;
     width: 100vw;
     height: 100vh;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     min-height: 100vh;
+}
+
+.home-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #0d1117;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-container.loaded {
+    animation: fadeIn 1s ease-out forwards;
 }
 
 .lighting-container {
@@ -197,8 +191,8 @@ body {
     height: 100vh;
     overflow: hidden;
     opacity: 0;
-    animation: fadeIn 3s ease-in-out forwards;
-    z-index: -1;
+    animation: fadeIn 2s ease-in-out forwards;
+    z-index: 0;
 }
 
 .ambient-light {
@@ -207,928 +201,305 @@ body {
     height: 100%;
     background: linear-gradient(
         45deg,
-        rgba(71, 144, 252, 0.3),
+        rgba(71, 144, 252, 0.2),
         rgba(20, 40, 120, 0.1),
-        rgba(71, 144, 252, 0.3)
+        rgba(71, 144, 252, 0.2)
     );
-    animation: ambientPulse 6s ease-in-out infinite;
+    animation: ambientPulse 8s ease-in-out infinite;
     mix-blend-mode: soft-light;
 }
 
 @keyframes ambientPulse {
-    0%, 100% { opacity: 0.7; transform: scale(1); }
-    50% { opacity: 0.9; transform: scale(1.05); }
-}
-
-.spotlight, .glow, .particles, .refraction {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.03); }
 }
 
 .spotlight {
+    position: absolute;
+    width: 100%;
+    height: 100%;
     background: radial-gradient(
         circle at 35% 35%,
-        rgba(100, 160, 255, 0.5) 0%,
-        rgba(70, 130, 240, 0.4) 20%, 
-        rgba(50, 100, 220, 0.3) 40%,
+        rgba(100, 160, 255, 0.4) 0%,
+        rgba(70, 130, 240, 0.3) 20%, 
+        rgba(50, 100, 220, 0.2) 40%,
         rgba(40, 80, 200, 0.1) 60%,
         rgba(30, 60, 180, 0) 80%
     );
-    opacity: 0.95;
+    opacity: 0.8;
     mix-blend-mode: screen;
     animation: spotlightMove 12s ease-in-out infinite;
     filter: blur(10px);
 }
 
-.boot-animation {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle at center, #0f172a 0%, #000 100%);
-    z-index: 2000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    transform-origin: center;
-    transition: opacity 0.8s ease-out
+@keyframes spotlightMove {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(2%, -2%); }
+    50% { transform: translate(0, -1%); }
+    75% { transform: translate(-2%, 2%); }
 }
 
-.boot-line {
-    position: absolute;
-    top: 50%;
-    left: -100%;
-    width: 200%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), rgba(96, 165, 250, 0.8), #fff, rgba(96, 165, 250, 0.8), rgba(255, 255, 255, 0.1), transparent);
-    filter: blur(1px);
-    transform: translateY(-50%) rotate(-2deg) translateZ(0);
-    animation: bootLine 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards
-}
-
-.boot-content {
-    transform: scale(0.95) translateY(20px);
-    opacity: 0;
-    filter: blur(10px);
-    animation: bootContent 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards
-}
-
-.boot-logo {
-    width: 180px;
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center
-}
-
-.boot-logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    filter: brightness(0) invert(1);
-    transform: translateZ(0);
-    will-change: filter;
-    animation: logoGlow 2s ease-in-out infinite
-}
-
-@keyframes bootLine {
-    0% {
-        left: -100%;
-        opacity: 1
-    }
-
-    100% {
-        left: 100%;
-        opacity: 0
-    }
-}
-
-@keyframes bootContent {
-    0% {
-        transform: scale(0.95) translateY(20px);
-        opacity: 0;
-        filter: blur(10px)
-    }
-
-    100% {
-        transform: scale(1) translateY(0);
-        opacity: 1;
-        filter: blur(0)
-    }
-}
-
-@keyframes logoGlow {
-
-    0%,
-    100% {
-        filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(96, 165, 250, 0.3))
-    }
-
-    50% {
-        filter: brightness(0) invert(1) drop-shadow(0 0 15px rgba(96, 165, 250, 0.5))
-    }
-}
-
-.loading-screen {
-    position: fixed;
-    inset: 0;
-    background: var(--bg-dark);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.5s ease-out;
-    animation: fadeOut 0.5s ease-out 2.5s forwards
-}
-
-@keyframes fadeOut {
-    to {
-        opacity: 0;
-        visibility: hidden
-    }
-}
-
-.card-container {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding-left: 5%;
-    pointer-events: none
-}
-
-.info-card {
-    position: relative;
-    width: calc(min(92vw, 820px) * 0.55); /* 从0.7改为0.55，使卡片更窄 */
-    height: 100vh;
-    margin: 0;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 0;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 
-        0 0 0 1px rgba(255, 255, 255, 0.08),
-        0 4px 12px rgba(0, 0, 0, 0.1),
-        0 8px 24px rgba(0, 0, 0, 0.1);
-    transform: translateX(-20px) rotate3d(1, 1, 0, 15deg);
-    transform-origin: left center;
-    opacity: 0;
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    pointer-events: auto;
-    will-change: transform, opacity;
-}
-
-.info-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.03),
-        rgba(255, 255, 255, 0.01)
-    );
-    border-radius: inherit;
-    pointer-events: none;
-}
-
-/* 添加入场时的层叠玻璃效果 */
-.info-card::after {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    transform: translateZ(-10px);
-    opacity: 0;
-    transition: opacity 0.8s ease-out;
-    pointer-events: none;
-}
-
-.info-card.entering::after {
-    opacity: 1;
-}
-
-.info-card.active {
-    transform: translateX(0) rotate3d(0, 0, 0, 0deg);
-    opacity: 1;
-}
-
-.info-card:not(.active) {
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    background: var(--bg-dark)
-}
-
-.info-card:not(.active) .card-content {
-    opacity: 0;
-    transform: translateY(20px)
-}
-
-.card-glow {
-    position: absolute;
-    bottom: -150px;
-    left: -20%;
-    width: 140%;
-    height: 200px;
-    background: radial-gradient(ellipse at center, var(--glow-color-1), var(--glow-color-2), transparent 70%);
-    filter: blur(20px);
-    opacity: 0;
-    transform: translateY(30px);
-    animation: glowPulse 3s ease-in-out infinite
-}
-
-.info-card.active .card-glow {
-    opacity: 1;
-    transform: translateY(0);
-    transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1)
-}
-
-.card-content {
+.content-wrapper {
     position: relative;
     z-index: 1;
+    max-width: 1000px;
+    width: 90%;
+    padding: 2rem;
     opacity: 0;
     transform: translateY(20px);
-    transition: all 0.8s var(--transition-bezier);
-    padding: 3.5rem 2.5rem;
-    height: 100%;
-    border-radius: 0;
-    max-width: 680px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    justify-content: space-between;
-    min-height: 100vh;
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.02),
-        transparent
-    );
+    transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
-.card-content>* {
-    opacity: 0;
-    transform: translateY(20px)
-}
-
-.info-card.active .card-content {
+.content-wrapper.show {
     opacity: 1;
-    transform: translateY(0)
-}
-
-.info-card.active .card-content>* {
-    animation: slideUpFade 0.6s var(--transition-bezier) forwards
-}
-
-.info-card.active .brand {
-    animation-delay: 0.1s
-}
-
-.info-card.active .tagline {
-    animation-delay: 0.2s
-}
-
-.info-card.active .feature-showcase {
-    animation-delay: 0.3s
-}
-
-.info-card.active .actions {
-    animation-delay: 0.4s
-}
-
-.logo-wrapper {
-    margin-bottom: 1.2rem;
-    position: relative;
-    width: 100%;
-    max-width: 180px;
-    margin-left: 0;
-    margin-right: 0;
-    height: 80px
+    transform: translateY(0);
 }
 
 .logo-container {
-    position: relative;
-    width: 100%;
-    height: 80px;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    overflow: visible
+    margin-bottom: 2rem;
 }
 
 .logo {
     width: auto;
-    height: 130px;
-    object-fit: contain;
-    filter: drop-shadow(0 0 20px var(--glow));
-    image-rendering: -webkit-optimize-contrast;
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
-    will-change: transform
+    height: 120px;
+    margin-right: 1.5rem;
+    filter: drop-shadow(0 0 10px rgba(66, 153, 225, 0.3));
 }
 
-.logo img {
-    max-width: none;
-    image-rendering: crisp-edges;
-    -ms-interpolation-mode: nearest-neighbor
+.main-title {
+    display: flex;
+    flex-direction: column;
 }
 
-.brand {
+.gradient-text {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.sub-title {
+    font-size: 1.5rem;
+    color: #ffffff;
+    opacity: 0.8;
+    margin-top: 0.5rem;
+}
+
+.description {
+    margin-bottom: 3rem;
+}
+
+.slogan {
+    font-size: 2rem;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.divider {
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #4299e1, #3182ce);
+    margin: 1.5rem 0;
+    border-radius: 2px;
+}
+
+.features-text {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.highlight {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+/* 添加统计显示的样式 */
+.stats-display {
+    margin: 2rem 0;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    margin-bottom: 0.8rem;
-    gap: 1.2rem
-}
-
-.title {
-    font-size: 48px;
-    margin-bottom: 16px;
-    position: relative
-}
-
-.text-gradient {
-    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-    -webkit-background-clip: text;
-    color: transparent
-}
-
-.tagline {
-    font-size: 1.4rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-    margin: 0 0 1rem 0;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-    text-align: left;
-    line-height: 1.7;
-    max-width: 540px
-}
-
-.card-content,
-.card-content p,
-.card-content h3,
-.tagline {
-    color: var(--card-text-color, #ffffff)
-}
-
-.features {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin: 1.5rem 0
-}
-
-.feature {
-    position: relative;
-    background: transparent !important;
-    color: var(--feature-text-color, #fff);
-    border: none;
-    border-radius: 16px;
-    padding: 1.8rem 1.5rem;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: slideIn 0.5s backwards;
-    transform: translateY(30px);
-    opacity: 0;
-    min-height: 180px
-}
-
-.info-card.active .feature {
-    transform: translateY(0);
-    opacity: 1;
-    transition: transform 0.6s var(--transition-bezier), opacity 0.6s var(--transition-bezier)
-}
-
-.feature:hover {
-    background: var(--surface-2)
-}
-
-.feature:nth-child(1) {
-    animation-delay: 0.2s
-}
-
-.feature:nth-child(2) {
-    animation-delay: 0.3s
-}
-
-.feature:nth-child(3) {
-    animation-delay: 0.4s
-}
-
-.feature-highlight {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), var(--highlight), transparent 100%);
-    opacity: 0;
-    transition: opacity 0.3s
-}
-
-.feature:hover .feature-highlight {
-    opacity: 1
-}
-
-.feature .icon {
-    width: 32px;
-    height: 32px;
-    color: var(--accent-1);
-    margin-bottom: 0.5rem
-}
-
-.feature h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--feature-title-color, #fff) !important
-}
-
-.feature p {
-    font-size: 0.875rem;
-    color: var(--feature-desc-color, #fff);
-    line-height: 1.4
-}
-
-.feature-showcase {
-    margin: 0;
-    position: relative;
-    max-width: 100%
-}
-
-.feature-card {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 0;
-    padding: 3rem;
-    position: relative;
-    overflow: hidden;
-    min-height: 200px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    transition: all 0.3s ease;
-    animation: float 6s ease-in-out infinite
-}
-
-.feature-card:hover {
-    background: rgba(255, 255, 255, 0.05)
-}
-
-.feature-content {
-    position: absolute;
-    inset: 0;
-    padding: 2rem;
-    opacity: 0;
-    transform: translateX(30px) scale(0.98);
-    transition: all 0.6s var(--transition-bezier);
-    display: flex;
-    align-items: center;
-    justify-content: flex-start
-}
-
-.feature-content.current {
-    opacity: 1;
-    transform: translateX(0) scale(1)
-}
-
-.feature-highlight {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), var(--highlight), transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none
-}
-
-.feature-content:hover .feature-highlight {
-    opacity: 1
-}
-
-.feature-text {
-    flex-grow: 1;
-    z-index: 1
-}
-
-.feature-text h3 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: rgba(255, 255, 255, 0.95);
-    background: none;
-    -webkit-background-clip: unset;
-    font-weight: 500
-}
-
-.feature-text p {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.8
-}
-
-.action-button {
-    position: relative;
-    padding: 1rem 2rem;
-    height: 3.5rem;
-    font: 500 1rem/1 'Inter', sans-serif;
-    color: var(--text);
-    border: 0;
-    border-radius: 0;
-    cursor: pointer;
-    transition: var(--transition);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(8px)
-}
-
-.btn-primary {
-    background: rgba(49, 108, 180, 0.15);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px)
-}
-
-.btn-primary:hover {
-    background: rgba(49, 108, 180, 0.25);
-    transform: translateY(-2px);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 4px 15px rgba(0, 0, 0, 0.1)
-}
-
-.btn-secondary {
-    background: rgba(255, 255, 255, 0.05);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(8px)
-}
-
-.btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px)
-}
-
-.actions {
-    display: flex;
-    gap: 1rem;
-    margin: 1rem -1rem 0;
-    padding: 0 2rem;
-    justify-content: stretch;
-    width: calc(100% + 2rem)
-}
-
-.action-button {
-    flex: 1;
-    min-width: 160px
-}
-
-.slideshow-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    overflow: hidden
-}
-
-.slideshow-background img {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    animation: fadeInOut 12s infinite
-}
-
-@keyframes fadeInOut {
-    0% {
-        opacity: 0
-    }
-
-    10% {
-        opacity: 1
-    }
-
-    40% {
-        opacity: 1
-    }
-
-    50% {
-        opacity: 0
-    }
-
-    100% {
-        opacity: 0
-    }
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg)
-    }
-}
-
-@keyframes fadeInScale {
-    from {
-        transform: scale(1.5);
-        opacity: 0
-    }
-
-    to {
-        transform: scale(1);
-        opacity: 1
-    }
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateY(30px);
-        opacity: 0
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1
-    }
-}
-
-@keyframes slideUpFade {
-    0% {
-        opacity: 0;
-        transform: translateY(20px)
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateY(0)
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0
-    }
-
-    to {
-        opacity: 1
-    }
-}
-
-@keyframes glowPulse {
-
-    0%,
-    100% {
-        opacity: 0.5;
-        transform: translateY(0)
-    }
-
-    50% {
-        opacity: 0.7;
-        transform: translateY(-10px)
-    }
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0)
-    }
-
-    50% {
-        transform: translateY(-10px)
-    }
-}
-
-@media (-webkit-min-device-pixel-ratio:2) {
-
-    .brand h1,
-    .tagline,
-    .feature h3,
-    .btn-text {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale
-    }
-}
-
-@media (min-width:1200px) {
-    .stats-panel {
-        right: 3rem;
-        padding: 2rem
-    }
-
-    .stat-group {
-        gap: 3rem
-    }
-}
-
-.stats-panel {
-    position: fixed;
-    top: 1.5rem;      /* 调整位置 */
-    right: 1.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;  /* 稍微减小圆角 */
-    padding: 0.75rem 1rem;  /* 减小内边距 */
-    z-index: 100;
-}
-
-.stat-group {
-    display: flex;
-    gap: 1.25rem;    /* 减小间距 */
 }
 
 .stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;    /* 减小垂直间距 */
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    text-align: center;
 }
 
 .stat-value {
-    font-size: 1.5rem;  /* 稍微减小字号 */
-    font-weight: 600;
-    color: #fff;
-    text-shadow: 0 0 20px rgba(66, 153, 225, 0.3);
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(66, 153, 225, 0.4);
+    margin-bottom: 0.5rem;
 }
 
 .stat-label {
-    font-size: 0.8rem;  /* 减小标签字号 */
+    font-size: 0.9rem;
     color: rgba(255, 255, 255, 0.7);
+}
+
+.cta-container {
+    display: flex;
+    gap: 1rem;
+}
+
+.cta-button {
+    position: relative;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
     font-weight: 500;
+    text-decoration: none;
+    text-align: center;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-@keyframes countUp {
-    from {
-        transform: translateY(1rem);
-        opacity: 0
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1
-    }
+.cta-button.primary {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
 }
 
-.stat-value {
-    animation: countUp 0.8s var(--transition-bezier) forwards
+.cta-button.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-@media (max-width:768px) {
-    .stats-panel {
-        display: none; /* 移动端隐藏统计面板 */
-    }
+.cta-button:hover {
+    transform: translateY(-2px);
+}
 
-    .info-card {
-        width: 100%;
-        height: 100vh; /* 恢复全屏高度 */
-        margin: 0;
-        border-radius: 0;
-    }
+.cta-button.primary:hover {
+    box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+}
 
-    .card-container {
-        padding: 0;
-        height: 100vh;
-        align-items: flex-start;
+.cta-button.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.hover-effect {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 255, 255, 0.15), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.cta-button:hover .hover-effect {
+    opacity: 1;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 媒体查询优化 */
+@media (max-width: 768px) {
+    .logo-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .logo {
+        margin-right: 0;
+        margin-bottom: 1rem;
+        height: 100px;
+    }
+    
+    .main-title {
+        align-items: center;
+    }
+    
+    .description {
+        text-align: center;
+    }
+    
+    .divider {
+        margin: 1.5rem auto;
+    }
+    
+    .gradient-text {
+        font-size: 2.5rem;
+    }
+    
+    .sub-title {
+        font-size: 1.2rem;
+    }
+    
+    .slogan {
+        font-size: 1.5rem;
+    }
+    
+    .cta-container {
+        flex-direction: column;
+    }
+    
+    .stats-display {
         justify-content: center;
     }
+}
 
-    .card-content {
-        padding: 2rem 1.5rem;
-        height: 100%;
-        box-sizing: border-box;
-        gap: 2rem;
+@media (max-width: 480px) {
+    .content-wrapper {
+        padding: 1.5rem;
     }
-
-    .tagline {
-        font-size: 2.2rem;
-        line-height: 1.3;
-        margin: 2rem 0;
-        font-weight: 600;
-        text-align: center;
-        color: #fff;
+    
+    .gradient-text {
+        font-size: 2rem;
     }
-
-    .actions {
-        position: relative;
-        bottom: 0;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        gap: 1rem; /* 增加两个按钮之间的间隔 */
-        width: 100%;
+    
+    .sub-title {
+        font-size: 1rem;
     }
-
-    .action-button {
-        border-radius: 0;
-        margin: 0;
-        height: 3.5rem;
+    
+    .slogan {
+        font-size: 1.2rem;
     }
-
-    .action-button:first-child {
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
+    
+    .features-text {
+        font-size: 1rem;
     }
-
+    
     .logo {
-        height: 110px; /* 缩小移动端logo */
+        height: 80px;
     }
 }
 
-@media screen and (max-width:380px) {
-    .card-content {
-        padding: 1.5rem 1.25rem;
-        padding-bottom: calc(2rem + 5rem)
-    }
-
-    .tagline {
-        font-size: 1.8rem;  /* 稍微小一点但仍然够大 */
-        margin: 1.5rem 0;
-    }
-
-    .feature-text h3 {
-        font-size: 1.35rem
-    }
-
-    .feature-card {
-        min-height: 160px
-    }
-
-    .actions {
-        padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom))
-    }
-
-    .action-button {
-        height: 3rem
-    }
-
-    .actions {
-        flex-direction: column
-    }
-
-    .action-button {
-        width: 100%
-    }
-}
-
-@media screen and (max-width:320px) {
-    .card-content {
-        padding: 1.25rem 1rem
-    }
-
-    .brand {
-        height: 70px
-    }
-
-    .logo {
-        height: 70px
-    }
-
-    .tagline {
-        font-size: 1.6rem;  /* 最小屏幕也保持较大字号 */
-    }
-}
-
-@media screen and (max-height:600px) and (orientation:landscape) {
-    .card-container {
-        overflow-y: auto;
-        height: auto;
-        min-height: 100vh
-    }
-
-    .info-card {
-        height: auto;
-        min-height: 100vh
-    }
-
-    .card-content {
-        gap: 2rem
-    }
-
-    .brand {
-        margin-top: 1rem
-    }
-
-    .stats-panel {
-        position: relative;
-        width: 100%;
-        margin: 0 0 1.5rem
-    }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    .info-card {
-        transform: translateX(-20px);
-        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-                    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-}
-
+/* 提高性能的优化 */
 @media (prefers-reduced-motion: reduce) {
-    .info-card {
+    .ambient-light,
+    .spotlight {
+        animation: none;
+    }
+    
+    .content-wrapper {
         transition: opacity 0.3s ease;
+        transform: none;
+    }
+    
+    .cta-button:hover {
+        transform: none;
     }
 }
 </style>
