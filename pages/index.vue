@@ -234,6 +234,7 @@ function handleMouseMove(event, element) {
   height: 100vh;
   font-family: 'Inter', sans-serif;
   min-height: 100vh;
+  position: relative;
 }
 
 .lighting-container {
@@ -243,7 +244,7 @@ function handleMouseMove(event, element) {
   overflow: hidden;
   opacity: 0;
   animation: fadeIn 3s ease-in-out forwards;
-  z-index: -1;
+  z-index: 1; /* 改为正值，确保光照效果可见 */
 }
 
 .ambient-light {
@@ -252,6 +253,7 @@ function handleMouseMove(event, element) {
   background: linear-gradient(45deg, rgba(71, 144, 252, 0.3), rgba(20, 40, 120, 0.1), rgba(71, 144, 252, 0.3));
   animation: ambientPulse 6s ease-in-out infinite;
   mix-blend-mode: soft-light;
+  z-index: 1;
 }
 
 @keyframes ambientPulse {
@@ -271,6 +273,19 @@ function handleMouseMove(event, element) {
   mix-blend-mode: screen;
   animation: spotlightMove 12s ease-in-out infinite;
   filter: blur(10px);
+  z-index: 2;
+}
+
+.glow {
+  z-index: 3;
+}
+
+.particles {
+  z-index: 4;
+}
+
+.refraction {
+  z-index: 5;
 }
 
 .card-container {
@@ -281,6 +296,7 @@ function handleMouseMove(event, element) {
   justify-content: flex-start;
   padding-left: 5%;
   pointer-events: none;
+  z-index: 10; /* 确保卡片容器在光照效果之上 */
 }
 
 .info-card {
@@ -299,6 +315,7 @@ function handleMouseMove(event, element) {
   transition: all 0.6s var(--transition-bezier);
   pointer-events: auto;
   will-change: transform, opacity;
+  z-index: 1; /* 确保卡片有基本层级 */
 }
 
 .info-card::before {
@@ -307,6 +324,7 @@ function handleMouseMove(event, element) {
   inset: 0;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
   pointer-events: none;
+  z-index: 1; /* 确保伪元素在卡片内的层级 */
 }
 
 .info-card::after {
@@ -320,6 +338,7 @@ function handleMouseMove(event, element) {
   opacity: 0;
   transition: opacity 0.8s ease-out;
   pointer-events: none;
+  z-index: 2; /* 确保伪元素在卡片内的层级 */
 }
 
 .info-card.entering::after {
@@ -355,6 +374,7 @@ function handleMouseMove(event, element) {
   opacity: 0;
   transform: translateY(30px);
   animation: glowPulse 3s ease-in-out infinite;
+  z-index: 3; /* 确保发光效果在卡片内容下方 */
 }
 
 .info-card.active .card-glow {
@@ -365,7 +385,7 @@ function handleMouseMove(event, element) {
 
 .card-content {
   position: relative;
-  z-index: 1;
+  z-index: 5; /* 确保内容在发光效果之上 */
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.8s var(--transition-bezier);
@@ -384,6 +404,8 @@ function handleMouseMove(event, element) {
 .card-content > * {
   opacity: 0;
   transform: translateY(20px);
+  position: relative; /* 添加相对定位，使子元素可以正确设置z-index */
+  z-index: 1; /* 基础层级 */
 }
 
 .info-card.active .card-content {
@@ -419,6 +441,7 @@ function handleMouseMove(event, element) {
   align-items: center;
   justify-content: flex-start;
   overflow: visible;
+  z-index: 2; /* logo容器层级 */
 }
 
 .logo {
@@ -431,6 +454,8 @@ function handleMouseMove(event, element) {
   backface-visibility: hidden;
   perspective: 1000px;
   will-change: transform;
+  position: relative;
+  z-index: 3; /* logo层级 */
 }
 
 .brand {
@@ -439,6 +464,8 @@ function handleMouseMove(event, element) {
   align-items: center;
   margin-bottom: 0.8rem;
   gap: 1.2rem;
+  position: relative;
+  z-index: 2; /* 品牌区域层级 */
 }
 
 .tagline {
@@ -450,6 +477,8 @@ function handleMouseMove(event, element) {
   text-align: left;
   line-height: 1.7;
   max-width: 540px;
+  position: relative;
+  z-index: 2; /* 标语层级 */
 }
 
 .card-content,
@@ -463,6 +492,7 @@ function handleMouseMove(event, element) {
   margin: 0;
   position: relative;
   max-width: 100%;
+  z-index: 2; /* 特性展示区域层级 */
 }
 
 .feature-card {
@@ -475,6 +505,7 @@ function handleMouseMove(event, element) {
   backdrop-filter: blur(12px);
   transition: all 0.3s ease;
   animation: float 6s ease-in-out infinite;
+  z-index: 1; /* 特性卡片层级 */
 }
 
 .feature-card:hover {
@@ -491,6 +522,7 @@ function handleMouseMove(event, element) {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  z-index: 1; /* 特性内容层级 */
 }
 
 .feature-content.current {
@@ -500,7 +532,8 @@ function handleMouseMove(event, element) {
 
 .feature-text {
   flex-grow: 1;
-  z-index: 1;
+  z-index: 3; /* 确保文本在高亮效果之上 */
+  position: relative; /* 添加相对定位 */
 }
 
 .feature-text h3 {
@@ -508,12 +541,16 @@ function handleMouseMove(event, element) {
   margin-bottom: 1rem;
   color: rgba(255, 255, 255, 0.95);
   font-weight: 500;
+  position: relative; /* 添加相对定位 */
+  z-index: 1; /* 标题层级 */
 }
 
 .feature-text p {
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.8;
+  position: relative; /* 添加相对定位 */
+  z-index: 1; /* 段落层级 */
 }
 
 .feature-highlight {
@@ -522,6 +559,7 @@ function handleMouseMove(event, element) {
   background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), var(--highlight), transparent 100%);
   opacity: 0;
   transition: opacity 0.3s;
+  z-index: 2; /* 高亮效果在内容下方 */
 }
 
 .feature-content:hover .feature-highlight {
@@ -535,6 +573,7 @@ function handleMouseMove(event, element) {
   transform: translateX(-50%);
   display: flex;
   gap: 0.5rem;
+  z-index: 4; /* 确保指示器在最上层 */
 }
 
 .indicator {
@@ -544,6 +583,8 @@ function handleMouseMove(event, element) {
   background: rgba(255, 255, 255, 0.3);
   cursor: pointer;
   transition: all 0.3s ease;
+  position: relative; /* 添加相对定位 */
+  z-index: 1; /* 指示器层级 */
 }
 
 .indicator.active {
@@ -566,6 +607,7 @@ function handleMouseMove(event, element) {
   justify-content: center;
   backdrop-filter: blur(8px);
   overflow: hidden;
+  z-index: 2; /* 按钮层级 */
 }
 
 .btn-primary {
@@ -595,6 +637,12 @@ function handleMouseMove(event, element) {
   background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 255, 255, 0.2), transparent 70%);
   opacity: 0;
   transition: opacity 0.3s ease;
+  z-index: 1; /* 按钮发光效果在按钮文本下方 */
+}
+
+.btn-text {
+  position: relative;
+  z-index: 2; /* 按钮文本在按钮发光效果之上 */
 }
 
 .btn-primary:hover .btn-glow {
@@ -607,6 +655,8 @@ function handleMouseMove(event, element) {
   margin: 1rem 0 0;
   justify-content: stretch;
   width: 100%;
+  position: relative;
+  z-index: 3; /* 操作区域层级 */
 }
 
 .action-button {
@@ -621,6 +671,7 @@ function handleMouseMove(event, element) {
   transform: scale(0);
   animation: ripple 0.8s linear;
   pointer-events: none;
+  z-index: 3; /* 波纹效果在按钮文本之上 */
 }
 
 .stats-panel {
@@ -632,7 +683,7 @@ function handleMouseMove(event, element) {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 0.75rem 1rem;
-  z-index: 100;
+  z-index: 100; /* 保持高层级确保统计面板在最上层 */
 }
 
 .stat-group {
@@ -709,6 +760,14 @@ function handleMouseMove(event, element) {
 @keyframes countUp {
   from { transform: translateY(1rem); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+/* 添加缺失的动画 */
+@keyframes spotlightMove {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(5%, 5%); }
+  50% { transform: translate(0, 10%); }
+  75% { transform: translate(-5%, 5%); }
 }
 
 @media (min-width:1200px) {
