@@ -109,7 +109,7 @@ async function fetchPlayerCount() {
 
     try {
         // 修复URL格式
-        const response = await fetch('https/mscpoapi.crashvibe.cn/v1/servers/players')
+        const response = await fetch('https://mscpoapi.crashvibe.cn/v1/servers/players')
         if (!response.ok) throw new Error('Failed to fetch player count')
         const data = await response.json()
 
@@ -132,7 +132,7 @@ async function fetchPlayerCount() {
         <div class="content-wrapper" :class="{ show: showContent }">
             <div class="logo-container">
                 <!-- 修复URL格式 -->
-                <img src="https/free.boltp.com/2025/05/09/681e01399f508.webp" alt="MSCPO" class="logo" />
+                <img src="https://free.boltp.com/2025/05/09/681e01399f508.webp" alt="MSCPO" class="logo" />
                 <h1 class="main-title">
                     <span class="gradient-text">MSCPO</span>
                     <span class="sub-title">集体宣传组织</span>
@@ -156,11 +156,11 @@ async function fetchPlayerCount() {
             </div>
             <div class="cta-container">
                 <!-- 修复URL格式 -->
-                <a href="https/mscpo.crashvibe.cn/serverlist" class="cta-button primary">
+                <a href="https://mscpo.crashvibe.cn/serverlist" class="cta-button primary">
                     <span>立即体验</span>
                     <div class="hover-effect"></div>
                 </a>
-                <a href="https/mscpo.crashvibe.cn/about" class="cta-button secondary">
+                <a href="https://mscpo.crashvibe.cn/about" class="cta-button secondary">
                     <span>了解使命</span>
                     <div class="hover-effect"></div>
                 </a>
