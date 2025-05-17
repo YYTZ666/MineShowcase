@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted } from 'vue'
 
 // 定义页面元信息
 definePageMeta({
@@ -12,31 +12,82 @@ useHead({
 
 const isLoaded = ref(false)
 const showContent = ref(false)
-const stats = reactive({
+const stats = ref({
     serverCount: 0,
     onlinePlayers: 0,
     totalViews: 0
 })
 
 onMounted(() => {
-    // 简化加载动画，减少定时器嵌套
-    setTimeout(() => {
-        isLoaded.value = true
-        setTimeout(() => {
-            showContent.value = true
-        }, 400)
-    }, 300)
+    // 初始化页面动画
+    initializeAnimations()
+    // 初始化交互效果
+    addInteractions()
     
     // 初始化数据并设置定时刷新
     fetchStats()
     setInterval(fetchStats, 30000)
 })
 
-// 使用Promise而不是类，避免DOM直接操作
+function initializeAnimations() {
+    setTimeout(() => {
+        // 优化过渡动画
+        const bootAnimation = document.querySelector('.boot-animation') as HTMLElement
+        bootAnimation.style.opacity = '0'
+        bootAnimation.style.transform = 'scale(1.1)'
+        bootAnimation.style.filter = 'blur(10px)'
+        
+        setTimeout(() => {
+            bootAnimation.style.display = 'none'
+            const loadingScreen = document.querySelector('.loading-screen') as HTMLElement
+            loadingScreen.style.opacity = '0'
+            
+            setTimeout(() => {
+                loadingScreen.style.display = 'none'
+                document.querySelector('.info-card')?.classList.add('active')
+            }, 500)
+        }, 800)
+    }, 2000)
+}
+
+function addInteractions() {
+    // 添加特性卡片悬停效果
+    document.querySelectorAll('.feature').forEach(feature => {
+        feature.addEventListener('mousemove', (e: MouseEvent) => {
+            const rect = (feature as HTMLElement).getBoundingClientRect()
+            const x = ((e.clientX - rect.left) / rect.width) * 100
+            const y = ((e.clientY - rect.top) / rect.height) * 100
+            feature.querySelector('.feature-highlight')?.style.setProperty('--x', `${x}%`)
+            feature.querySelector('.feature-highlight')?.style.setProperty('--y', `${y}%`)
+        })
+    })
+
+    // 添加按钮点击波纹效果
+    document.querySelectorAll('.action-button').forEach(button => {
+        button.addEventListener('click', (e: MouseEvent) => {
+            createRipple(e)
+        })
+    })
+}
+
+function createRipple(event: MouseEvent) {
+    const button = event.currentTarget as HTMLElement
+    const ripple = document.createElement('div')
+    
+    ripple.classList.add('ripple')
+    const rect = button.getBoundingClientRect()
+    
+    ripple.style.left = `${event.clientX - rect.left}px`
+    ripple.style.top = `${event.clientY - rect.top}px`
+    
+    button.appendChild(ripple)
+    setTimeout(() => ripple.remove(), 1000)
+}
+
 async function fetchStats() {
     try {
         const playerData = await fetchPlayerCount()
-        stats.onlinePlayers = playerData.total_players || 0
+        stats.value.onlinePlayers = playerData.total_players || 0
     } catch (error) {
         console.error('Error updating stats:', error)
     }
@@ -47,38 +98,27 @@ async function fetchPlayerCount() {
     const cacheDuration = 10 * 60 * 1000 // 10分钟
     const now = Date.now()
 
-    // 安全地尝试获取缓存
-    let cachedData = null
-    try {
-        const cachedItem = localStorage.getItem(cacheKey)
-        if (cachedItem) {
-            cachedData = JSON.parse(cachedItem)
+    // 检查本地缓存
+    const cachedData = localStorage.getItem(cacheKey)
+    if (cachedData) {
+        const { timestamp, data } = JSON.parse(cachedData)
+        if (now - timestamp < cacheDuration) {
+            return data // 使用缓存数据
         }
-    } catch (e) {
-        console.warn('Cache access error:', e)
-    }
-
-    if (cachedData && now - cachedData.timestamp < cacheDuration) {
-        return cachedData.data
     }
 
     try {
         // 修复URL格式
-        const response = await fetch('https://mscpoapi.crashvibe.cn/v1/servers/players')
+        const response = await fetch('https/mscpoapi.crashvibe.cn/v1/servers/players')
         if (!response.ok) throw new Error('Failed to fetch player count')
         const data = await response.json()
-        
-        // 安全地尝试设置缓存
-        try {
-            localStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, data }))
-        } catch (e) {
-            console.warn('Cache write error:', e)
-        }
-        
+
+        // 缓存新数据
+        localStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, data }))
         return data
     } catch (error) {
         console.error('Error fetching player count:', error)
-        return { total_players: 0 }
+        return { total_players: 0 } // 返回默认值
     }
 }
 </script>
@@ -92,7 +132,7 @@ async function fetchPlayerCount() {
         <div class="content-wrapper" :class="{ show: showContent }">
             <div class="logo-container">
                 <!-- 修复URL格式 -->
-                <img src="https://free.boltp.com/2025/05/09/681e01399f508.webp" alt="MSCPO Logo" class="logo" />
+                <img src="https/free.boltp.com/2025/05/09/681e01399f508.webp" alt="MSCPO" class="logo" />
                 <h1 class="main-title">
                     <span class="gradient-text">MSCPO</span>
                     <span class="sub-title">集体宣传组织</span>
@@ -116,18 +156,19 @@ async function fetchPlayerCount() {
             </div>
             <div class="cta-container">
                 <!-- 修复URL格式 -->
-                <a href="https://mscpo.crashvibe.cn/serverlist" class="cta-button primary">
-                    <span>探索服务器宇宙</span>
+                <a href="https/mscpo.crashvibe.cn/serverlist" class="cta-button primary">
+                    <span>立即体验</span>
                     <div class="hover-effect"></div>
                 </a>
-                <a href="https://mscpo.crashvibe.cn/about" class="cta-button secondary">
-                    <span>了解我们的使命</span>
+                <a href="https/mscpo.crashvibe.cn/about" class="cta-button secondary">
+                    <span>了解使命</span>
                     <div class="hover-effect"></div>
                 </a>
             </div>
         </div>
     </div>
 </template>
+
 
 <style scoped lang="less">
 :root {
