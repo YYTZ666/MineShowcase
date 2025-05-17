@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import Logo from '@/assets/newhomelogo.svg';
+import Logo from '@/assets/logo.svg';
+import GridBackground from '@/components/Background/GridBackground.vue';
 
 definePageMeta({
     layout: 'home',
@@ -20,7 +21,45 @@ onMounted(() => {
             showContent.value = true;
         }, 500);
     }, 300);
+    
+    // 添加统计管理器逻辑
+    document.addEventListener('DOMContentLoaded', initStatsManager);
 });
+
+function initStatsManager() {
+    const elements = {
+        serverCount: document.getElementById('serverCount'),
+        onlinePlayers: document.getElementById('onlinePlayers'),
+        totalViews: document.getElementById('totalViews')
+    };
+    
+    const currentValues = {
+        serverCount: 0,
+        onlinePlayers: 0,
+        totalViews: 0
+    };
+    
+    async function fetchStats() {
+        // 这里可以添加实际的数据获取逻辑
+        // 示例数据
+        const statsData = {
+            serverCount: 120,
+            onlinePlayers: 1500,
+            totalViews: 25000
+        };
+        
+        // 更新统计数据显示
+        Object.keys(elements).forEach(key => {
+            if (elements[key]) {
+                elements[key].textContent = statsData[key].toString();
+            }
+        });
+    }
+    
+    // 初始获取并自动刷新
+    fetchStats();
+    setInterval(fetchStats, 30000); // 每30秒更新一次
+}
 </script>
 
 <template>
