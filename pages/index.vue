@@ -1,300 +1,340 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
 
 definePageMeta({
-    layout: 'home',
+  layout: 'home',
 })
 
 useHead({
-    title: 'Minecraft集体宣传组织(MSCPO)',
+  title: 'Minecraft集体宣传组织(MSCPO)',
 })
 
+// 响应式状态
 const isLoaded = ref(false)
 const showContent = ref(false)
 const currentIndex = ref(0)
-const currentValues = {
-    serverCount: 0,
-    onlinePlayers: 0,
-    totalViews: 0
-}
-
-onMounted(() => {
-    setTimeout(() => {
-        isLoaded.value = true
-        setTimeout(() => {
-            showContent.value = true
-        }, 500)
-    }, 300)
-
-    initializePageAnimation()
-    initializeFeatures()
-    initializeButtons()
-    initializeFeatureShowcase()
-    startStatsAutoRefresh()
+const currentValues = reactive({
+  serverCount: 0,
+  onlinePlayers: 0,
+  totalViews: 0
 })
 
-function initializePageAnimation() {
-    const cardElement = document.querySelector('.info-card')
-    if (cardElement) {
-        cardElement.classList.add('entering')
-        setTimeout(() => {
-            cardElement.classList.add('active')
-            setTimeout(() => {
-                cardElement.classList.remove('entering')
-            }, 800)
-        }, 100)
-    }
-}
-
-function initializeFeatures() {
-    const features = document.querySelectorAll('.feature')
-    features.forEach(feature => {
-        feature.addEventListener('mousemove', e => {
-            const rect = feature.getBoundingClientRect()
-            const x = ((e.clientX - rect.left) / rect.width) * 100
-            const y = ((e.clientY - rect.top) / rect.height) * 100
-            feature.querySelector('.feature-highlight').style.setProperty('--x', `${x}%`)
-            feature.querySelector('.feature-highlight').style.setProperty('--y', `${y}%`)
-        })
-    })
-}
-
-function initializeButtons() {
-    const buttons = document.querySelectorAll('.btn-primary')
-    buttons.forEach(btn => {
-        btn.addEventListener('mousemove', e => {
-            const rect = btn.getBoundingClientRect()
-            const x = ((e.clientX - rect.left) / rect.width) * 100
-            const y = ((e.clientY - rect.top) / rect.height) * 100
-            const btnGlow = btn.querySelector('.btn-glow')
-            if (btnGlow) {
-                btnGlow.style.setProperty('--x', `${x}%`)
-                btnGlow.style.setProperty('--y', `${y}%`)
-            }
-        })
-        btn.addEventListener('click', () => {
-            const text = btn.textContent.trim()
-            if (text.includes('立即体验')) {
-                window.location.href = 'https/mscpo.crashvibe.cn/serverlist'
-            } else if (text.includes('了解更多') || text.includes('了解使命')) {
-                window.location.href = 'https/mscpo.crashvibe.cn/about'
-            }
-        })
-    })
-}
-
-function initializeFeatureShowcase() {
-    const contents = document.querySelectorAll('.feature-content')
-    const indicators = document.querySelectorAll('.indicator')
-
-    contents.forEach((content, index) => {
-        content.addEventListener('click', () => showFeature(index))
-    })
-
-    indicators.forEach((indicator, index) => {
-        indicator.addEventListener('click', () => showFeature(index))
-    })
-
-    startAutoPlayFeatureShowcase()
-
-    const featureCard = document.querySelector('.feature-card')
-    featureCard?.addEventListener('mouseenter', stopAutoPlayFeatureShowcase)
-    featureCard?.addEventListener('mouseleave', startAutoPlayFeatureShowcase)
-}
-
-function showFeature(index) {
-    currentIndex.value = index
-
-    const contents = document.querySelectorAll('.feature-content')
-    contents.forEach(content => {
-        content.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
-        content.style.transform = 'translateX(-30px) scale(0.98)'
-        content.style.opacity = '0'
-
-        setTimeout(() => {
-            content.classList.remove('current')
-            content.style.transform = 'translateX(30px) scale(0.98)'
-        }, 0)
-    })
-
-    setTimeout(() => {
-        contents[index].classList.add('current')
-        contents[index].style.transform = 'translateX(0) scale(1)'
-        contents[index].style.opacity = '1'
-    }, 50)
-
-    const indicators = document.querySelectorAll('.indicator')
-    indicators.forEach(indicator => {
-        indicator.classList.remove('active')
-    })
-    indicators[index].classList.add('active')
-}
-
 let autoPlayInterval: ReturnType<typeof setInterval> | null = null
+let statsRefreshInterval: ReturnType<typeof setInterval> | null = null
+
+// 入口生命周期
+onMounted(() => {
+  // 初始化动画流程
+  setTimeout(() => {
+    isLoaded.value = true
+    setTimeout(() => {
+      showContent.value = true
+    }, 500)
+  }, 300)
+
+  initializePageAnimation()
+  initializeFeatures()
+  initializeButtons()
+  initializeFeatureShowcase()
+  startStatsAutoRefresh()
+})
+
+onUnmounted(() => {
+  stopAutoPlayFeatureShowcase()
+  stopStatsAutoRefresh()
+})
+
+// 页面动画
+function initializePageAnimation() {
+  const cardElement = document.querySelector('.info-card')
+  if (cardElement) {
+    cardElement.classList.add('entering')
+    setTimeout(() => {
+      cardElement.classList.add('active')
+      setTimeout(() => {
+        cardElement.classList.remove('entering')
+      }, 800)
+    }, 100)
+  }
+}
+
+// 特征高亮鼠标跟踪
+function initializeFeatures() {
+  const features = document.querySelectorAll<HTMLElement>('.feature')
+  features.forEach(feature => {
+    feature.addEventListener('mousemove', e => {
+      const rect = feature.getBoundingClientRect()
+      const x = ((e.clientX - rect.left) / rect.width) * 100
+      const y = ((e.clientY - rect.top) / rect.height) * 100
+      const highlight = feature.querySelector<HTMLElement>('.feature-highlight')
+      if (highlight) {
+        highlight.style.setProperty('--x', `${x}%`)
+        highlight.style.setProperty('--y', `${y}%`)
+        highlight.style.opacity = '1'
+      }
+    })
+    feature.addEventListener('mouseleave', () => {
+      const highlight = feature.querySelector<HTMLElement>('.feature-highlight')
+      if (highlight) {
+        highlight.style.opacity = '0'
+      }
+    })
+  })
+}
+
+// 按钮交互
+function initializeButtons() {
+  const buttons = document.querySelectorAll<HTMLElement>('.btn-primary')
+  buttons.forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const rect = btn.getBoundingClientRect()
+      const x = ((e.clientX - rect.left) / rect.width) * 100
+      const y = ((e.clientY - rect.top) / rect.height) * 100
+      const btnGlow = btn.querySelector<HTMLElement>('.btn-glow')
+      if (btnGlow) {
+        btnGlow.style.setProperty('--x', `${x}%`)
+        btnGlow.style.setProperty('--y', `${y}%`)
+      }
+    })
+    btn.addEventListener('click', () => {
+      const text = btn.textContent?.trim() ?? ''
+      if (text.includes('立即体验')) {
+        window.location.href = 'https://mscpo.crashvibe.cn/serverlist'
+      } else if (text.includes('了解更多') || text.includes('了解使命')) {
+        window.location.href = 'https://mscpo.crashvibe.cn/about'
+      }
+    })
+  })
+}
+
+// 轮播功能初始化
+function initializeFeatureShowcase() {
+  const contents = document.querySelectorAll<HTMLElement>('.feature-content')
+  const indicators = document.querySelectorAll<HTMLElement>('.indicator')
+
+  contents.forEach((content, index) => {
+    content.addEventListener('click', () => showFeature(index))
+  })
+  indicators.forEach((indicator, index) => {
+    indicator.addEventListener('click', () => showFeature(index))
+  })
+
+  startAutoPlayFeatureShowcase()
+
+  const featureCard = document.querySelector<HTMLElement>('.feature-card')
+  featureCard?.addEventListener('mouseenter', stopAutoPlayFeatureShowcase)
+  featureCard?.addEventListener('mouseleave', startAutoPlayFeatureShowcase)
+}
+
+// 显示指定特征
+function showFeature(index: number) {
+  currentIndex.value = index
+
+  const contents = document.querySelectorAll<HTMLElement>('.feature-content')
+  contents.forEach(content => {
+    content.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+    content.style.transform = 'translateX(-30px) scale(0.98)'
+    content.style.opacity = '0'
+    content.classList.remove('current')
+  })
+
+  setTimeout(() => {
+    const current = contents[index]
+    current.classList.add('current')
+    current.style.transform = 'translateX(0) scale(1)'
+    current.style.opacity = '1'
+  }, 50)
+
+  const indicators = document.querySelectorAll<HTMLElement>('.indicator')
+  indicators.forEach(indicator => {
+    indicator.classList.remove('active')
+  })
+  indicators[index]?.classList.add('active')
+}
 
 function startAutoPlayFeatureShowcase() {
-    autoPlayInterval = setInterval(() => {
-        const nextIndex = (currentIndex.value + 1) % 3
-        showFeature(nextIndex)
-    }, 3000)
+  if (autoPlayInterval) clearInterval(autoPlayInterval)
+  autoPlayInterval = setInterval(() => {
+    const nextIndex = (currentIndex.value + 1) % 3
+    showFeature(nextIndex)
+  }, 3000)
 }
 
 function stopAutoPlayFeatureShowcase() {
-    if (autoPlayInterval) {
-        clearInterval(autoPlayInterval)
-    }
+  if (autoPlayInterval) {
+    clearInterval(autoPlayInterval)
+    autoPlayInterval = null
+  }
 }
 
+// 获取玩家数缓存和接口请求
 async function fetchPlayerCount() {
-    const cacheKey = 'playerCountCache'
-    const cacheDuration = 10 * 60 * 1000 // 10分钟
-    const now = Date.now()
+  const cacheKey = 'playerCountCache'
+  const cacheDuration = 10 * 60 * 1000 // 10分钟
+  const now = Date.now()
 
-    const cachedData = localStorage.getItem(cacheKey)
-    if (cachedData) {
-        const { timestamp, data } = JSON.parse(cachedData)
-        if (now - timestamp < cacheDuration) {
-            return data
-        }
-    }
-
+  const cachedData = localStorage.getItem(cacheKey)
+  if (cachedData) {
     try {
-        const response = await fetch('https/mscpoapi.crashvibe.cn/v1/servers/players')
-        if (!response.ok) throw new Error('Failed to fetch player count')
-        const data = await response.json()
-        localStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, data }))
+      const { timestamp, data } = JSON.parse(cachedData)
+      if (now - timestamp < cacheDuration) {
         return data
-    } catch (error) {
-        console.error('Error fetching player count:', error)
-        return { total_players: 0 }
+      }
+    } catch {
+      // ignore parse errors
     }
+  }
+
+  try {
+    const response = await fetch('https://mscpoapi.crashvibe.cn/v1/servers/players')
+    if (!response.ok) throw new Error('Failed to fetch player count')
+    const data = await response.json()
+    localStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, data }))
+    return data
+  } catch (error) {
+    console.error('Error fetching player count:', error)
+    return { total_players: 0 }
+  }
 }
 
+// 更新统计数据
 async function updateStats() {
-    const playerData = await fetchPlayerCount()
-    const statsData = {
-        onlinePlayers: playerData.total_players || 0
+  const playerData = await fetchPlayerCount()
+  const statsData = {
+    serverCount: 0, // 你的接口如有返回可以替换
+    onlinePlayers: playerData.total_players || 0,
+    totalViews: 0 // 同上
+  }
+  animateNumbers(statsData)
+}
+
+function animateNumbers(data: Record<string, number>) {
+  Object.keys(currentValues).forEach(key => {
+    const targetValue = data[key] || 0
+    animateNumber(document.getElementById(key), currentValues[key], targetValue)
+    currentValues[key] = targetValue
+  })
+}
+
+function animateNumber(element: HTMLElement | null, start: number, end: number) {
+  if (!element) return
+  const duration = 1000
+  const startTime = performance.now()
+
+  const updateDisplay = (currentTime: number) => {
+    const elapsed = currentTime - startTime
+    const progress = Math.min(elapsed / duration, 1)
+    const currentValue = Math.round(start + (end - start) * progress)
+    element.textContent = formatNumber(currentValue)
+    if (progress < 1) {
+      requestAnimationFrame(updateDisplay)
     }
-    animateNumbers(statsData)
+  }
+  requestAnimationFrame(updateDisplay)
 }
 
-function animateNumbers(data) {
-    Object.keys(currentValues).forEach(key => {
-        const targetValue = data[key] || 0
-        animateNumber(document.getElementById(key), currentValues[key], targetValue)
-        currentValues[key] = targetValue
-    })
-}
-
-function animateNumber(element, start, end) {
-    const duration = 1000
-    const startTime = performance.now()
-    const updateDisplay = (currentTime) => {
-        const elapsed = currentTime - startTime
-        const progress = Math.min(elapsed / duration, 1)
-
-        const currentValue = Math.round(start + (end - start) * progress)
-        element.textContent = formatNumber(currentValue)
-
-        if (progress < 1) {
-            requestAnimationFrame(updateDisplay)
-        }
-    }
-    requestAnimationFrame(updateDisplay)
-}
-
-function formatNumber(num) {
-    return new Intl.NumberFormat().format(num)
+function formatNumber(num: number) {
+  return new Intl.NumberFormat().format(num)
 }
 
 function startStatsAutoRefresh() {
-    updateStats()
-    setInterval(updateStats, 30000) // 每30秒更新一次
+  updateStats()
+  if (statsRefreshInterval) clearInterval(statsRefreshInterval)
+  statsRefreshInterval = setInterval(updateStats, 30000) // 每30秒更新一次
+}
+
+function stopStatsAutoRefresh() {
+  if (statsRefreshInterval) {
+    clearInterval(statsRefreshInterval)
+    statsRefreshInterval = null
+  }
 }
 </script>
 
 <template>
-     <div class="lighting-container">
-        <div class="ambient-light"></div>
-        <div class="spotlight"></div>
-        <div class="glow"></div>
-        <div class="particles"></div>
-        <div class="refraction"></div>
+  <div class="lighting-container" :class="{ loaded: isLoaded }">
+    <div class="ambient-light"></div>
+    <div class="spotlight"></div>
+    <div class="glow"></div>
+    <div class="particles"></div>
+    <div class="refraction"></div>
+  </div>
+
+  <main class="card-container">
+    <div class="stats-panel" v-if="showContent">
+      <div class="stat-group">
+        <div class="stat-item">
+          <div class="stat-value" id="serverCount">0</div>
+          <div class="stat-label">服务器</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="onlinePlayers">0</div>
+          <div class="stat-label">在线玩家</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="totalViews">0</div>
+          <div class="stat-label">访问量</div>
+        </div>
+      </div>
     </div>
-    
-    <main class="card-container">
-        <div class="stats-panel">
-            <div class="stat-group">
-                <div class="stat-item">
-                    <div class="stat-value" data-value="0" id="serverCount">0</div>
-                    <div class="stat-label">服务器</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" data-value="0" id="onlinePlayers">0</div>
-                    <div class="stat-label">在线玩家</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" data-value="0" id="totalViews">0</div>
-                    <div class="stat-label">访问量</div>
-                </div>
-            </div>
+
+    <div class="info-card" :class="{ active: isLoaded }">
+      <div class="card-glow"></div>
+      <div class="card-content" v-show="showContent">
+        <div class="brand">
+          <div class="logo-container">
+            <img src="https://free.boltp.com/2025/05/09/681e01399f508.webp" alt="MSCPO" class="logo" />
+          </div>
         </div>
-        <div class="info-card">
-            <div class="card-glow"></div>
-            <div class="card-content">
-                <div class="brand">
-                    <div class="logo-container">
-                        <img src="https://free.boltp.com/2025/05/09/681e01399f508.webp" alt="MSCPO" class="logo">
-                    </div>
-                </div>
 
-                <p class="tagline">MSCPO<br>助力打造优质游戏社区</p>
+        <p class="tagline">MSCPO<br />助力打造优质游戏社区</p>
 
-                <div class="feature-showcase">
-                    <div class="feature-card">
-                        <div class="feature-content current" data-index="0">
-                            <div class="feature-highlight"></div>
-                            <div class="feature-text">
-                                <h3>服务器宣传</h3>
-                                <p>一站式服务器推广解决方案</p>
-                            </div>
-                        </div>
-                        <div class="feature-content" data-index="1">
-                            <div class="feature-highlight"></div>
-                            <div class="feature-text">
-                                <h3>技术交流</h3>
-                                <p>分享技术经验</p>
-                            </div>
-                        </div>
-                        <div class="feature-content" data-index="2">
-                            <div class="feature-highlight"></div>
-                            <div class="feature-text">
-                                <h3>资源分享</h3>
-                                <p>优质资源共享</p>
-                            </div>
-                        </div>
-                        <div class="feature-indicators">
-                            <div class="indicator active"></div>
-                            <div class="indicator"></div>
-                            <div class="indicator"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="actions">
-                    <a href="https://mscpo.crashvibe.cn/serverlist" class="action-button btn-primary">
-                        <span class="btn-text">立即体验</span>
-                        <div class="btn-glow"></div>
-                    </a>
-                    <a href="https://mscpo.crashvibe.cn/about" class="action-button btn-secondary">
-                        <span class="btn-text">了解使命</span>
-                    </a>
-                </div>
+        <div class="feature-showcase">
+          <div class="feature-card">
+            <div class="feature-content current" data-index="0">
+              <div class="feature-highlight"></div>
+              <div class="feature-text">
+                <h3>服务器宣传</h3>
+                <p>一站式服务器推广解决方案</p>
+              </div>
             </div>
+            <div class="feature-content" data-index="1">
+              <div class="feature-highlight"></div>
+              <div class="feature-text">
+                <h3>技术交流</h3>
+                <p>分享技术经验</p>
+              </div>
+            </div>
+            <div class="feature-content" data-index="2">
+              <div class="feature-highlight"></div>
+              <div class="feature-text">
+                <h3>资源分享</h3>
+                <p>优质资源共享</p>
+              </div>
+            </div>
+            <div class="feature-indicators">
+              <div class="indicator active"></div>
+              <div class="indicator"></div>
+              <div class="indicator"></div>
+            </div>
+          </div>
         </div>
-    </main>
 
+        <div class="actions">
+          <a href="https://mscpo.crashvibe.cn/serverlist" class="action-button btn-primary">
+            <span class="btn-text">立即体验</span>
+            <div class="btn-glow"></div>
+          </a>
+          <a href="https://mscpo.crashvibe.cn/about" class="action-button btn-secondary">
+            <span class="btn-text">了解使命</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
 </template>
+
+
 
 <style scoped lang="less">
 :root {
