@@ -144,7 +144,7 @@ async function fetchPlayerCount() {
         </div>
         <div class="content-wrapper" :class="{ show: showContent }">
             <div class="logo-container">
-                <img src="https/free.boltp.com/2025/05/09/681e01399f508.webp" alt="MSCPO" class="logo" />
+                <img src="https://free.boltp.com/2025/05/09/681e01399f508.webp" alt="MSCPO" class="logo" />
                 <h1 class="main-title">
                     <span class="gradient-text">MSCPO</span>
                     <span class="sub-title">集体宣传组织</span>
@@ -166,11 +166,11 @@ async function fetchPlayerCount() {
                 </div>
             </div>
             <div class="cta-container">
-                <a href="https/mscpo.crashvibe.cn/serverlist" class="cta-button primary">
+                <a href="https://mscpo.crashvibe.cn/serverlist" class="cta-button primary">
                     <span>立即体验</span>
                     <div class="hover-effect"></div>
                 </a>
-                <a href="https/mscpo.crashvibe.cn/about" class="cta-button secondary">
+                <a href="https://mscpo.crashvibe.cn/about" class="cta-button secondary">
                     <span>了解使命</span>
                     <div class="hover-effect"></div>
                 </a>
@@ -182,7 +182,7 @@ async function fetchPlayerCount() {
         <div class="boot-line"></div>
         <div class="boot-content">
             <div class="boot-logo">
-                <img src="https/free.boltp.com/2025/05/09/681e01399f508.webp" alt="MSCPO">
+                <img src="https://free.boltp.com/2025/05/09/681e01399f508.webp" alt="MSCPO">
             </div>
         </div>
     </div>
